@@ -195,127 +195,83 @@ body {
 .result-img { width: 100%; aspect-ratio: 1; object-fit: contain; background: white; border: 2px solid transparent; border-radius: 6px; cursor: pointer; padding: 2px; }
 
 /* =========================================
-   NOVO VISUAL DO MODAL (Organizado)
-   Cole no final do arquivo App.css
+   CORREÇÃO DO MODAL (Cole no final do App.css)
    ========================================= */
 
-/* Fundo escuro atrás do modal */
-.modal-overlay { 
-  background: rgba(0,0,0,0.8); /* Mais escuro para focar */
-  padding: 10px;
+/* 1. Botões FALA e PASTA (Lado a Lado e Coloridos) */
+.type-selector {
+  display: flex !important;       /* Força ficar um ao lado do outro */
+  flex-direction: row !important;
+  gap: 15px;
+  width: 100%;
+  margin-top: 10px;
 }
 
-/* A caixa branca do modal */
-.modal { 
-  background: white; 
-  border-radius: 16px; 
-  width: 100%; 
-  max-width: 450px; /* Largura ideal */
-  max-height: 90vh; /* Não ultrapassa a altura da tela */
-  overflow-y: auto; /* Permite rolar se for muito alto */
-  display: flex; 
-  flex-direction: column;
-  padding: 0; /* Remove padding padrão para usar seções */
+.type-selector label {
+  flex: 1;                        /* Cada botão ocupa metade do espaço */
+  text-align: center;
+  padding: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #6b7280;
+  background: white;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-/* Título fixo no topo */
-.modal-title {
-  margin: 0; 
-  padding: 15px; 
-  text-align: center; 
-  color: #1e3a8a; 
-  background: white; 
-  border-bottom: 1px solid #e2e8f0;
-  font-size: 1.2rem;
-  position: sticky; top: 0; z-index: 10; /* Fica preso no topo */
+/* Quando selecionado: Fundo Azul Transparente e Borda Azul */
+.type-selector label.selected {
+  background-color: rgba(37, 99, 235, 0.1) !important; /* Azul com transparência */
+  border-color: #2563EB !important;
+  color: #2563EB !important;
+  font-weight: 800;
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
 }
 
-/* Divisões (Caixas internas) */
-.modal-section {
-  padding: 20px;
-  border-bottom: 1px solid #f1f5f9;
+/* Esconde a bolinha do rádio para ficar só o botão */
+.type-selector input {
+  display: none; 
 }
 
-.section-label {
-  margin: 0 0 8px 0; 
-  font-size: 0.7rem; 
-  color: #94a3b8; 
-  letter-spacing: 1px; 
-  font-weight: 800; 
+
+/* 2. Seção de CORES (Títulos em cima) */
+.colors-row {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+}
+
+.color-group {
+  flex: 1; /* Ocupa metade cada um */
+  display: flex;
+  flex-direction: column; /* Força o título ficar EM CIMA da caixa */
+}
+
+/* Estilo do Título (Fundo / Borda) */
+.color-group label {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #1e3a8a;
   text-transform: uppercase;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
 }
 
-/* --- SEÇÃO 1: PREVIEW --- */
-.preview-section { background: #f8fafc; text-align: center; }
-
-.preview-box { 
-  display: flex; flex-direction: column; align-items: center; margin-bottom: 15px; 
-}
-.preview-box img { 
-  width: 80px; height: 80px; object-fit: contain; margin-bottom: 8px;
-  background: white; border-radius: 8px; padding: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-.preview-box span { 
-  padding: 6px 12px; border-radius: 6px; border: 3px solid; background: white; 
-  font-weight: bold; font-size: 1rem; color: #333;
+.color-group select {
+  padding: 12px;
+  border-radius: 10px;
+  border: 2px solid #e2e8f0;
+  font-size: 1rem;
+  background-color: #f8fafc;
+  cursor: pointer;
 }
 
-/* Botões de Fala / Pasta */
-.type-selector { display: flex; gap: 10px; justify-content: center; }
-.type-selector label { 
-  padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 20px; 
-  font-size: 0.9rem; cursor: pointer; background: white; transition: 0.2s;
+.color-group select:focus {
+  border-color: #2563EB;
+  outline: none;
 }
-.type-selector label.selected { 
-  background: #eff6ff; border-color: #2563eb; color: #2563eb; font-weight: bold; 
-  box-shadow: 0 0 0 2px #bfdbfe;
-}
-.type-selector input { display: none; }
-
-/* --- SEÇÃO 2: CONTEÚDO --- */
-.input-text-main {
-  width: 100%; padding: 12px; font-size: 1.1rem; 
-  border: 2px solid #e2e8f0; border-radius: 10px;
-  box-sizing: border-box; text-align: center; font-weight: bold; color: #1e293b;
-}
-.input-text-main:focus { border-color: #2563eb; outline: none; }
-
-.image-tools-box {
-  background: #f1f5f9; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0;
-}
-
-.search-row { display: flex; gap: 8px; margin-bottom: 10px; }
-.search-row input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; }
-.search-row button { padding: 0 15px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; }
-
-/* Carrossel de Imagens */
-.search-results { 
-  display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; margin-bottom: 10px; 
-}
-.result-img { 
-  width: 60px; height: 60px; border: 2px solid transparent; border-radius: 8px; 
-  background: white; flex-shrink: 0; padding: 4px; cursor: pointer;
-}
-.result-img:hover { border-color: #3b82f6; }
-
-.separator-or { text-align: center; font-size: 0.75rem; color: #94a3b8; margin: 10px 0; font-weight: bold; }
-
-.btn-upload {
-  display: block; text-align: center; background: white; border: 1px dashed #94a3b8;
-  color: #475569; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.9rem;
-}
-
-/* --- SEÇÃO 3: CORES --- */
-.colors-row { display: flex; gap: 15px; }
-.color-group { flex: 1; }
-.color-group label { display: block; font-size: 0.8rem; margin-bottom: 5px; font-weight: bold; color: #475569; }
-.color-group select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; }
-
-/* --- BOTÕES FINAIS --- */
-.modal-actions { 
-  padding: 15px; display: flex; gap: 10px; background: #f8fafc; 
-  position: sticky; bottom: 0; border-top: 1px solid #e2e8f0;
-}
-.btn-save { flex: 2; background: #2563EB; color: white; padding: 14px; border: none; border-radius: 10px; font-weight: bold; font-size: 1rem; cursor: pointer; }
-.btn-cancel { flex: 1; background: #e2e8f0; border: none; padding: 14px; border-radius: 10px; font-weight: bold; color: #475569; cursor: pointer; }
-.btn-delete { background: #fee2e2; border: 1px solid #fca5a5; color: #dc2626; padding: 14px; border-radius: 10px; cursor: pointer; }
