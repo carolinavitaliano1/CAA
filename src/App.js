@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
+import BoardGenerator from './components/BoardGenerator'; // <--- IMPORTANTE: Importando o novo componente
 
 // Cores Oficiais CAA
 const CAA_COLORS = [
@@ -36,23 +37,21 @@ function App() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingCard, setEditingCard] = useState(null);
   
-  // Estados Auxiliares
+  // Estados Auxiliares para o Modal (O gerador principal agora está no componente separado)
   const [modalSearchTerm, setModalSearchTerm] = useState("");
   const [modalSearchResults, setModalSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [generatorText, setGeneratorText] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
   
   const fileInputRef = useRef(null);
 
   // --- EFEITOS ---
   useEffect(() => {
-    const savedData = localStorage.getItem('neurocaa_v6_data');
+    const savedData = localStorage.getItem('neurocaa_v7_data'); // Atualizei versão para limpar cache antigo
     if (savedData) setData(JSON.parse(savedData));
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('neurocaa_v6_data', JSON.stringify(data));
+    localStorage.setItem('neurocaa_v7_data', JSON.stringify(data));
   }, [data]);
 
   const currentBoard = data.boards[currentBoardId] || data.boards['root'];
@@ -95,24 +94,14 @@ function App() {
     }
   };
 
-  const generateBoardFromText = async (e) => {
-    e.preventDefault();
-    if (!generatorText.trim()) return;
-    setIsGenerating(true);
-    const words = generatorText.trim().split(/\s+/);
-    const promises = words.map(async (word) => {
-      try {
-        const res = await fetch(`https://api.arasaac.org/api/pictograms/pt/search/${encodeURIComponent(word)}`);
-        const json = await res.json();
-        const img = (json && json.length > 0) ? `https://static.arasaac.org/pictograms/${json[0]._id}/${json[0]._id}_500.png` : 'https://static.arasaac.org/pictograms/2475/2475_500.png';
-        return { id: `gen_${Date.now()}_${Math.random()}`, text: word, type: 'speak', bgColor: '#FFFFFF', borderColor: '#e2e8f0', image: img };
-      } catch (err) { return { id: `err_${Date.now()}_${Math.random()}`, text: word, type: 'speak', bgColor: '#FFFFFF', borderColor: '#e2e8f0', image: 'https://static.arasaac.org/pictograms/2475/2475_500.png' }; }
-    });
-    const results = await Promise.all(promises);
-    const updatedBoard = { ...currentBoard, cards: [...currentBoard.cards, ...results] };
+  // --- FUNÇÃO QUE RECEBE OS DADOS DO GERADOR NOVO ---
+  const handleMassGeneration = (newCards) => {
+    const updatedBoard = { 
+      ...currentBoard, 
+      cards: [...currentBoard.cards, ...newCards] 
+    };
     setData({ ...data, boards: { ...data.boards, [currentBoardId]: updatedBoard } });
-    setGeneratorText("");
-    setIsGenerating(false);
+    alert(`Sucesso! ${newCards.length} novos cartões adicionados.`);
   };
 
   const searchArasaac = async (term) => {
@@ -256,14 +245,9 @@ function App() {
                 </div>
             </div>
 
+            {/* AQUI ESTÁ O NOVO GERADOR SEPARADO! */}
             {isEditMode && (
-                <div className="magic-generator">
-                <h3>✨ Criar Rápido</h3>
-                <form onSubmit={generateBoardFromText} className="generator-form">
-                    <textarea placeholder="Digite texto aqui..." value={generatorText} onChange={(e) => setGeneratorText(e.target.value)}/>
-                    <button type="submit" disabled={isGenerating}>Gerar</button>
-                </form>
-                </div>
+                <BoardGenerator onGenerate={handleMassGeneration} />
             )}
 
             <div className="nav-header">
@@ -294,14 +278,12 @@ function App() {
             
             <form onSubmit={handleSaveCard}>
               
-              {/* SEÇÃO 1: PREVIEW e TIPO */}
               <div className="modal-section preview-section">
                 <div className="preview-box">
                     <img src={editingCard.image} alt="Preview" />
                     <span style={{background: editingCard.bgColor, borderColor: editingCard.borderColor}}>{editingCard.text || "Seu Texto"}</span>
                 </div>
                 
-                {/* BOTÕES LADO A LADO */}
                 <div className="type-selector">
                     <label className={editingCard.type === 'speak' ? 'selected' : ''}>
                         <input type="radio" name="type" value="speak" checked={editingCard.type === 'speak'} onChange={() => setEditingCard({...editingCard, type: 'speak'})} /> 
@@ -314,7 +296,6 @@ function App() {
                 </div>
               </div>
 
-              {/* SEÇÃO 2: CONTEÚDO */}
               <div className="modal-section content-section">
                 <h5 className="section-label">1. O QUE ESTÁ ESCRITO?</h5>
                 <input 
@@ -355,7 +336,6 @@ function App() {
                 </div>
               </div>
 
-              {/* SEÇÃO 3: CORES COM TÍTULOS EM CIMA */}
               <div className="modal-section style-section">
                 <h5 className="section-label">3. CORES</h5>
                 <div className="colors-row">
@@ -376,7 +356,6 @@ function App() {
                 </div>
               </div>
 
-              {/* AÇÕES */}
               <div className="modal-actions">
                 {editingCard.id && <button type="button" onClick={handleDeleteCard} className="btn-delete">🗑️ Excluir</button>}
                 <button type="button" onClick={() => setEditingCard(null)} className="btn-cancel">Cancelar</button>
