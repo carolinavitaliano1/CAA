@@ -3,194 +3,108 @@
    ========================================= */
 :root { 
   --bg-color: #f3f4f6; 
-  --header-height: 60px;
-  --sentence-height: 90px;
+  --header-height: 50px;
 }
 
 body { 
   margin: 0; 
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
   background-color: var(--bg-color);
-  overflow-x: hidden; /* Evita rolagem lateral */
+  overflow-x: hidden;
 }
 
 .container { 
-  max-width: 1000px; 
+  max-width: 100%; /* Mudança: Ocupa 100% da largura disponível */
   margin: 0 auto; 
-  padding: 15px; 
+  padding: 10px; /* Padding menor para ganhar espaço no celular */
   display: flex; 
   flex-direction: column; 
-  gap: 12px; 
-  height: 100vh; /* Ocupa a altura total da tela */
+  gap: 10px; 
+  height: 100vh; 
+  box-sizing: border-box;
 }
 
 /* =========================================
-   BARRA DE TOPO (ADMIN & MENU)
+   BARRA DE TOPO
    ========================================= */
 .admin-bar { 
   display: flex; 
   justify-content: space-between; 
   align-items: center; 
-  padding: 5px 0;
+  min-height: 40px;
 }
 
 .brand { 
   font-weight: 800; 
-  font-size: 1.3rem; 
+  font-size: 1.1rem; 
   color: #1e3a8a; 
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .btn-menu { 
-  background: none; 
-  border: none; 
-  font-size: 1.6rem; 
-  cursor: pointer; 
-  color: #1e3a8a; 
+  background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #1e3a8a; padding: 0 10px 0 0; 
 }
 
 .btn-toggle { 
-  background: white; 
-  border: 1px solid #e5e7eb; 
-  padding: 8px 16px; 
-  border-radius: 20px; 
-  font-weight: 600; 
-  cursor: pointer; 
-  font-size: 0.9rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  background: white; border: 1px solid #e5e7eb; padding: 6px 12px; border-radius: 20px; font-weight: 600; cursor: pointer; font-size: 0.8rem;
 }
-.btn-toggle.active { 
-  background: #FEF3C7; 
-  color: #D97706; 
-  border-color: #D97706; 
-}
+.btn-toggle.active { background: #FEF3C7; color: #D97706; border-color: #D97706; }
 
 /* =========================================
-   BARRA DA FRASE (SENTENCE BAR)
+   BARRA DA FRASE
    ========================================= */
 .sentence-bar { 
   background: white; 
-  padding: 10px; 
-  border-radius: 16px; 
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); 
+  padding: 8px; 
+  border-radius: 12px; 
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
   display: flex; 
   justify-content: space-between; 
   align-items: center; 
-  min-height: var(--sentence-height);
-  flex-shrink: 0; /* Impede que a barra encolha demais */
+  min-height: 70px;
+  flex-shrink: 0;
 }
 
 .sentence-display { 
-  flex-grow: 1; 
-  display: flex; 
-  gap: 8px; 
-  overflow-x: auto; /* Permite rolar se a frase for longa */
-  align-items: center; 
-  padding-right: 10px;
+  flex-grow: 1; display: flex; gap: 5px; overflow-x: auto; align-items: center; padding-right: 5px;
 }
 
-/* Esconde a barra de rolagem feia na frase */
-.sentence-display::-webkit-scrollbar { height: 4px; }
-.sentence-display::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+.sentence-item { display: flex; flex-direction: column; align-items: center; min-width: 45px; }
+.mini-img { width: 30px; height: 30px; object-fit: contain; }
+.sentence-item span { font-size: 0.7rem; font-weight: bold; border-bottom: 2px solid; width: 100%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.sentence-item { 
-  display: flex; 
-  flex-direction: column; 
-  align-items: center; 
-  min-width: 55px; 
-}
-
-.mini-img { 
-  width: 35px; 
-  height: 35px; 
-  object-fit: contain; 
-}
-
-.sentence-item span { 
-  font-size: 0.75rem; 
-  font-weight: bold; 
-  border-bottom: 3px solid; 
-  width: 100%; 
-  text-align: center; 
-  white-space: nowrap; 
-  overflow: hidden; 
-  text-overflow: ellipsis; 
-}
-
-.controls { 
-  display: flex; 
-  gap: 8px; 
-}
-
-.btn-clear, .btn-play { 
-  border: none; 
-  width: 45px; 
-  height: 45px; 
-  border-radius: 12px; 
-  font-weight: bold; 
-  cursor: pointer; 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  font-size: 1.2rem;
-}
-.btn-play { background: #2563EB; color: white; box-shadow: 0 4px 0 #1d4ed8; }
-.btn-play:active { transform: translateY(4px); box-shadow: none; }
+.controls { display: flex; gap: 5px; }
+.btn-clear, .btn-play { border: none; width: 40px; height: 40px; border-radius: 10px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+.btn-play { background: #2563EB; color: white; }
 .btn-clear { background: #fee2e2; color: #dc2626; }
 
 /* =========================================
-   NAVEGAÇÃO E GERADOR
-   ========================================= */
-.nav-header { 
-  display: flex; 
-  align-items: center; 
-  gap: 10px; 
-  padding: 8px 12px; 
-  background: #e2e8f0; 
-  border-radius: 12px; 
-  justify-content: space-between;
-}
-
-.board-title { font-weight: bold; color: #475569; }
-.btn-back { background: white; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; color: #475569; font-size: 0.9rem;}
-
-.magic-generator {
-  background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
-  border: 1px solid #93c5fd;
-  padding: 15px;
-  border-radius: 12px;
-  margin-bottom: 10px;
-}
-.generator-form { display: flex; gap: 8px; }
-.generator-form textarea { flex: 1; border-radius: 8px; border: 1px solid #bfdbfe; padding: 8px; resize: none; height: 40px; }
-.generator-form button { background: #2563eb; color: white; border: none; border-radius: 8px; padding: 0 15px; font-weight: bold; }
-
-/* =========================================
-   GRID PRINCIPAL (RESPONSIVO) - AQUI ESTÁ A MÁGICA
+   GRID PRINCIPAL (RESPONSIVO TIPO ASTERICS)
    ========================================= */
 .grid-area { 
   display: grid; 
-  /* MUDANÇA PRINCIPAL: minmax reduzido para 85px para caber no celular */
-  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); 
-  gap: 10px; 
-  padding-bottom: 80px; /* Espaço extra para rolar até o fim */
-  overflow-y: auto; /* Permite rolar apenas o grid */
+  /* AQUI ESTÁ O SEGREDO: minmax(75px) permite até 4 ou 5 colunas no celular */
+  grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); 
+  gap: 6px; /* Gap pequeno para caber mais */
+  padding-bottom: 60px; 
+  overflow-y: auto; 
+  align-content: start; /* Impede que os cartões estiquem verticalmente se forem poucos */
 }
 
 .card { 
-  aspect-ratio: 1; /* Mantém sempre quadrado */
-  border-radius: 14px; 
+  aspect-ratio: 1; /* Mantém quadrado */
+  border-radius: 10px; 
   display: flex; 
   flex-direction: column; 
   align-items: center; 
   justify-content: center; 
   cursor: pointer; 
-  box-shadow: 0 3px 5px rgba(0,0,0,0.1); 
+  box-shadow: 0 2px 3px rgba(0,0,0,0.1); 
   position: relative; 
-  border: 3px solid transparent; 
-  padding: 6px; 
+  border: 2px solid transparent; 
+  padding: 4px; 
   background: white; 
   transition: transform 0.1s;
   user-select: none;
@@ -201,103 +115,81 @@ body {
 
 .folder-tag { 
   position: absolute; top: 0; left: 0; width: 100%; 
-  padding: 2px; font-size: 0.55rem; color: white; 
+  padding: 2px; font-size: 0.5rem; color: white; 
   text-transform: uppercase; text-align: center; 
-  border-radius: 10px 10px 0 0; font-weight: bold; 
+  border-radius: 8px 8px 0 0; font-weight: bold; 
 }
 
 .card-img { 
-  width: 65%; 
-  height: 65%; 
+  width: 70%; 
+  height: 70%; 
   object-fit: contain; 
-  margin-bottom: 4px; 
+  margin-bottom: 2px; 
 }
 
 .label { 
   font-weight: 700; 
   text-align: center; 
-  font-size: 0.9rem; /* Texto responsivo */
+  font-size: 0.75rem; /* Fonte pequena para não quebrar */
   color: #333; 
   line-height: 1.1;
   word-wrap: break-word;
   max-width: 100%;
 }
 
-.add-card { 
-  background: #E5E7EB !important; 
-  border: 2px dashed #9CA3AF; 
-  color: #6B7280; 
-  justify-content: center;
-}
-.add-card .icon { font-size: 2rem; }
+.add-card { background: #E5E7EB !important; border: 2px dashed #9CA3AF; color: #6B7280; justify-content: center; }
+.add-card .icon { font-size: 1.5rem; }
 
 /* =========================================
-   AJUSTES ESPECÍFICOS PARA CELULAR (MOBILE FIRST)
+   MEDIA QUERIES (AJUSTES PARA TABLET/PC)
    ========================================= */
-@media (max-width: 600px) {
-  .container {
-    padding: 10px; /* Menos borda para aproveitar a tela */
-    gap: 10px;
-  }
-
+/* Quando a tela for maior (Tablet/PC), aumentamos o tamanho mínimo */
+@media (min-width: 768px) {
   .grid-area {
-    /* No celular, diminui ainda mais o tamanho mínimo e o gap */
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); /* Maior no PC */
+    gap: 15px;
   }
-
-  .card {
-    border-radius: 12px;
-  }
-
-  .label {
-    font-size: 0.8rem; /* Texto menor no celular */
-  }
-
-  .admin-bar .brand {
-    font-size: 1.1rem;
-  }
+  
+  .label { font-size: 1rem; }
+  .container { padding: 20px; max-width: 1000px; }
+  .add-card .icon { font-size: 2.5rem; }
 }
 
 /* =========================================
    MODAL DE EDIÇÃO
    ========================================= */
-.modal-overlay { 
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-  background: rgba(0,0,0,0.6); 
-  display: flex; align-items: center; justify-content: center; 
-  z-index: 2000; 
-  padding: 20px;
-}
-.modal { 
-  background: white; 
-  padding: 20px; 
-  border-radius: 20px; 
-  width: 100%; 
-  max-width: 400px; 
-  max-height: 85vh; 
-  overflow-y: auto; 
-  box-shadow: 0 20px 25px rgba(0,0,0,0.2); 
-}
-
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 10px; }
+.modal { background: white; padding: 15px; border-radius: 15px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
 .modal h3 { margin-top: 0; text-align: center; color: #1e3a8a; }
-.preview-box { background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; align-items: center; margin-bottom: 15px; }
-.preview-box img { width: 80px; height: 80px; object-fit: contain; }
+.preview-box { background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; align-items: center; margin-bottom: 10px; }
+.preview-box img { width: 60px; height: 60px; object-fit: contain; }
+.modal input, .modal select { width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; margin-bottom: 8px; box-sizing: border-box; }
+.modal-actions { display: flex; gap: 8px; margin-top: 10px; }
+.btn-save { flex: 2; background: #2563EB; color: white; padding: 10px; border: none; border-radius: 8px; font-weight: bold; }
+.btn-cancel { flex: 1; background: #E5E7EB; border: none; padding: 10px; border-radius: 8px; font-weight: bold; }
+.btn-delete { background: #fee2e2; color: #dc2626; border: none; padding: 10px; border-radius: 8px; }
 
-.modal input, .modal select { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 1rem; margin-bottom: 10px; box-sizing: border-box;}
-.modal-actions { display: flex; gap: 10px; margin-top: 15px; }
-.btn-save { flex: 2; background: #2563EB; color: white; padding: 12px; border: none; border-radius: 10px; font-weight: bold; font-size: 1rem;}
-.btn-cancel { flex: 1; background: #E5E7EB; border: none; padding: 12px; border-radius: 10px; font-weight: bold; }
-.btn-delete { background: #fee2e2; color: #dc2626; border: none; padding: 12px; border-radius: 10px; }
+/* =========================================
+   OUTROS (Sidebar, Search, Nav)
+   ========================================= */
+.nav-header { display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: #e2e8f0; border-radius: 10px; justify-content: space-between; margin-bottom: 5px;}
+.board-title { font-weight: bold; color: #475569; font-size: 0.9rem; }
+.btn-back { background: white; border: 1px solid #cbd5e1; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; color: #475569; font-size: 0.8rem;}
 
-/* SIDEBAR e MENU (CÓDIGO ANTERIOR MANTIDO) */
-.sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: white; box-shadow: 2px 0 10px rgba(0,0,0,0.2); z-index: 3000; transition: left 0.3s ease; display: flex; flex-direction: column; }
+.magic-generator { background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%); border: 1px solid #93c5fd; padding: 10px; border-radius: 10px; margin-bottom: 10px; }
+.generator-form { display: flex; gap: 5px; }
+.generator-form textarea { flex: 1; border-radius: 8px; border: 1px solid #bfdbfe; padding: 5px; resize: none; height: 35px; }
+.generator-form button { background: #2563eb; color: white; border: none; border-radius: 8px; padding: 0 10px; font-weight: bold; font-size: 0.8rem; }
+
+/* SIDEBAR MANTIDA IGUAL */
+.sidebar { position: fixed; top: 0; left: -280px; width: 260px; height: 100%; background: white; box-shadow: 2px 0 10px rgba(0,0,0,0.2); z-index: 3000; transition: left 0.3s ease; display: flex; flex-direction: column; }
 .sidebar.open { left: 0; }
 .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2999; opacity: 0; visibility: hidden; transition: opacity 0.3s; }
 .sidebar-overlay.open { opacity: 1; visibility: visible; }
-.sidebar-header { padding: 20px; background: #1e3a8a; color: white; display: flex; justify-content: space-between; align-items: center; }
-.sidebar-nav { padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-.sidebar-nav button { background: none; border: none; text-align: left; padding: 12px; font-size: 1.1rem; cursor: pointer; color: #374151; }
-/* Library Grid */
-.library-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; margin-top: 20px; }
-.library-card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #e5e7eb; cursor: pointer; }
+.sidebar-header { padding: 15px; background: #1e3a8a; color: white; display: flex; justify-content: space-between; align-items: center; }
+.sidebar-nav { padding: 15px; display: flex; flex-direction: column; gap: 8px; }
+.sidebar-nav button { background: none; border: none; text-align: left; padding: 10px; font-size: 1rem; cursor: pointer; color: #374151; }
+.library-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-top: 15px; }
+.library-card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #e5e7eb; cursor: pointer; }
+.search-results { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; max-height: 120px; overflow-y: auto; background: #f9fafb; padding: 5px; border-radius: 8px; }
+.result-img { width: 100%; aspect-ratio: 1; object-fit: contain; background: white; border: 2px solid transparent; border-radius: 6px; cursor: pointer; padding: 2px; }
