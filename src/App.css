@@ -147,3 +147,59 @@ body { margin: 0; font-family: 'Segoe UI', sans-serif; background-color: var(--b
 }
 
 hr { border: none; border-top: 1px solid #eee; margin: 15px 0; }
+
+/* --- Botão Menu --- */
+.btn-menu {
+  background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #1e3a8a; padding-right: 15px;
+}
+
+/* --- SIDEBAR (Menu Lateral) --- */
+.sidebar {
+  position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
+  background: white; box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+  z-index: 1000; transition: left 0.3s ease; display: flex; flex-direction: column;
+}
+.sidebar.open { left: 0; }
+.sidebar-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5); z-index: 999;
+  opacity: 0; visibility: hidden; transition: opacity 0.3s;
+}
+.sidebar-overlay.open { opacity: 1; visibility: visible; }
+
+.sidebar-header {
+  padding: 20px; background: #1e3a8a; color: white; display: flex; justify-content: space-between; align-items: center;
+}
+.sidebar-header h2 { margin: 0; font-size: 1.4rem; }
+.sidebar-header button { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+
+.sidebar-nav { padding: 20px; display: flex; flex-direction: column; gap: 10px; flex-grow: 1; }
+.sidebar-nav button {
+  background: none; border: none; text-align: left; padding: 12px; font-size: 1.1rem;
+  cursor: pointer; color: #374151; border-radius: 8px; transition: background 0.2s;
+}
+.sidebar-nav button:hover { background: #f3f4f6; color: #1e3a8a; font-weight: bold; }
+.sidebar-nav hr { width: 100%; border: 0; border-top: 1px solid #e5e7eb; margin: 10px 0; }
+.sidebar-footer { padding: 20px; text-align: center; color: #9ca3af; border-top: 1px solid #eee; }
+
+/* --- Biblioteca de Pranchas --- */
+.library-view { padding: 20px; }
+.library-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 20px;
+}
+.library-card {
+  background: white; padding: 20px; border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer; border: 2px solid transparent;
+  transition: transform 0.2s, border-color 0.2s; position: relative;
+}
+.library-card:hover { transform: translateY(-3px); border-color: #3b82f6; }
+.library-card h3 { margin: 0 0 5px 0; color: #1f2937; }
+.library-card p { margin: 0; color: #6b7280; font-size: 0.9rem; }
+.tag-home {
+  position: absolute; top: 10px; right: 10px; background: #dbeafe; color: #1e40af;
+  font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: bold;
+}
+.btn-back-home {
+  margin-top: 20px; padding: 10px 20px; background: #e5e7eb; border: none;
+  border-radius: 8px; cursor: pointer; font-weight: bold; color: #4b5563;
+}
