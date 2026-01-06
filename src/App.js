@@ -304,44 +304,120 @@ function App() {
         </>
       )}
 
-      {/* MODAL EDITOR */}
+     {/* ================= MODAL DE EDIÇÃO (TRECHO NOVO) ================= */}
       {editingCard && (
         <div className="modal-overlay">
           <div className="modal">
-            <h3>✏️ Editar</h3>
+            <h3 className="modal-title">
+              {editingCard.id ? '✏️ Editar Cartão' : '➕ Novo Cartão'}
+            </h3>
+            
             <form onSubmit={handleSaveCard}>
-              <div className="preview-box">
-                <img src={editingCard.image} alt="Preview" />
-                <span style={{background: editingCard.bgColor, borderColor: editingCard.borderColor}}>{editingCard.text || "Texto"}</span>
+              
+              {/* SEÇÃO 1: VISUAL (Como vai ficar) */}
+              <div className="modal-section preview-section">
+                <div className="preview-box">
+                    <img src={editingCard.image} alt="Preview" />
+                    <span style={{background: editingCard.bgColor, borderColor: editingCard.borderColor}}>
+                      {editingCard.text || "Seu Texto"}
+                    </span>
+                </div>
+                
+                {/* Escolha: Fala ou Pasta */}
+                <div className="type-selector">
+                    <label className={editingCard.type === 'speak' ? 'selected' : ''}>
+                        <input type="radio" name="type" value="speak" checked={editingCard.type === 'speak'} onChange={() => setEditingCard({...editingCard, type: 'speak'})} /> 
+                        🗣️ Falar
+                    </label>
+                    <label className={editingCard.type === 'folder' ? 'selected' : ''}>
+                        <input type="radio" name="type" value="folder" checked={editingCard.type === 'folder'} onChange={() => setEditingCard({...editingCard, type: 'folder'})} /> 
+                        📂 Pasta
+                    </label>
+                </div>
               </div>
-              <div className="type-selector">
-                <label className={editingCard.type === 'speak' ? 'selected' : ''}><input type="radio" name="type" value="speak" checked={editingCard.type === 'speak'} onChange={() => setEditingCard({...editingCard, type: 'speak'})} /> 🗣️ Fala</label>
-                <label className={editingCard.type === 'folder' ? 'selected' : ''}><input type="radio" name="type" value="folder" checked={editingCard.type === 'folder'} onChange={() => setEditingCard({...editingCard, type: 'folder'})} /> 📂 Pasta</label>
+
+              {/* SEÇÃO 2: CONTEÚDO (Texto e Imagem) */}
+              <div className="modal-section content-section">
+                <h5 className="section-label">1. O QUE ESTÁ ESCRITO?</h5>
+                <input 
+                    className="input-text-main"
+                    value={editingCard.text} 
+                    onChange={(e) => setEditingCard({...editingCard, text: e.target.value})} 
+                    required 
+                    placeholder="Ex: Água, Banheiro..." 
+                />
+
+                <h5 className="section-label" style={{marginTop: '15px'}}>2. ESCOLHA A IMAGEM</h5>
+                <div className="image-tools-box">
+                    {/* Busca ARASAAC */}
+                    <div className="search-row">
+                        <input 
+                            value={modalSearchTerm} 
+                            onChange={(e) => setModalSearchTerm(e.target.value)} 
+                            placeholder="Buscar no ARASAAC (Ex: comer)" 
+                        />
+                        <button type="button" onClick={() => searchArasaac(modalSearchTerm)}>🔎</button>
+                    </div>
+                    
+                    {/* Resultados da Busca (Carrossel) */}
+                    {modalSearchResults.length > 0 && (
+                        <div className="search-results">
+                            {modalSearchResults.map(p => (
+                                <img key={p._id} src={`https://static.arasaac.org/pictograms/${p._id}/${p._id}_300.png`} 
+                                onClick={() => setEditingCard({...editingCard, image: `https://static.arasaac.org/pictograms/${p._id}/${p._id}_300.png`})} 
+                                className="result-img" alt="resultado" />
+                            ))}
+                        </div>
+                    )}
+
+                    <div className="separator-or">- OU -</div>
+                    
+                    {/* Upload do Computador */}
+                    <label className="btn-upload">
+                       📁 Carregar foto do seu computador
+                       <input type="file" accept="image/*" onChange={handleImageUpload} style={{display: 'none'}} />
+                    </label>
+                </div>
               </div>
-              <input value={editingCard.text} onChange={(e) => setEditingCard({...editingCard, text: e.target.value})} required placeholder="Texto" />
-              <div className="search-box">
-                <input value={modalSearchTerm} onChange={(e) => setModalSearchTerm(e.target.value)} placeholder="Buscar ARASAAC..." />
-                <button type="button" onClick={() => searchArasaac(modalSearchTerm)} className="btn-search">🔎</button>
+
+              {/* SEÇÃO 3: ESTILO (Cores) */}
+              <div className="modal-section style-section">
+                <h5 className="section-label">3. CORES</h5>
+                <div className="colors-row">
+                    <div className="color-group">
+                        <label>Fundo do Cartão:</label>
+                        <select value={editingCard.bgColor} onChange={(e) => setEditingCard({...editingCard, bgColor: e.target.value})}>
+                            <option value="#FFFFFF">Branco (Padrão)</option>
+                            {CAA_COLORS.map(c => <option key={c.color} value={c.color}>{c.label}</option>)}
+                        </select>
+                    </div>
+                    <div className="color-group">
+                        <label>Cor da Borda:</label>
+                        <select value={editingCard.borderColor} onChange={(e) => setEditingCard({...editingCard, borderColor: e.target.value})}>
+                            <option value="#e2e8f0">Cinza (Padrão)</option>
+                            {CAA_COLORS.map(c => <option key={c.color} value={c.color}>{c.label}</option>)}
+                        </select>
+                    </div>
+                </div>
               </div>
-              <div className="search-results">
-                 {isSearching ? <p>⏳...</p> : modalSearchResults.map(p => (<img key={p._id} src={`https://static.arasaac.org/pictograms/${p._id}/${p._id}_300.png`} onClick={() => setEditingCard({...editingCard, image: `https://static.arasaac.org/pictograms/${p._id}/${p._id}_300.png`})} className="result-img" alt="" />))}
-              </div>
-              <label>Ou envie foto: <input type="file" accept="image/*" onChange={handleImageUpload} /></label>
-              <div className="colors-section">
-                <select value={editingCard.bgColor} onChange={(e) => setEditingCard({...editingCard, bgColor: e.target.value})}>{CAA_COLORS.map(c => <option key={c.color} value={c.color}>Fundo {c.label}</option>)}</select>
-                <select value={editingCard.borderColor} onChange={(e) => setEditingCard({...editingCard, borderColor: e.target.value})}>{CAA_COLORS.map(c => <option key={c.color} value={c.color}>Borda {c.label}</option>)}</select>
-              </div>
+
+              {/* BOTÕES DE AÇÃO (Ficam fixos no final) */}
               <div className="modal-actions">
-                {editingCard.id && <button type="button" onClick={handleDeleteCard} className="btn-delete">Excluir</button>}
-                <button type="button" onClick={() => setEditingCard(null)} className="btn-cancel">Cancelar</button>
-                <button type="submit" className="btn-save">Salvar</button>
+                {editingCard.id && (
+                  <button type="button" onClick={handleDeleteCard} className="btn-delete">
+                    🗑️ Excluir
+                  </button>
+                )}
+                <button type="button" onClick={() => setEditingCard(null)} className="btn-cancel">
+                  Cancelar
+                </button>
+                <button type="submit" className="btn-save">
+                  ✅ Salvar Alterações
+                </button>
               </div>
+
             </form>
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
 export default App;
