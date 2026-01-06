@@ -1,25 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
-// Dados Iniciais (Versão 3.0 - Com Pastas)
+// Cores Oficiais CAA (Baseado no seu data.js)
+const CAA_COLORS = [
+  { color: '#FDE047', label: 'Pessoas (Amarelo)' },    // Amarelo
+  { color: '#86EFAC', label: 'Verbos (Verde)' },       // Verde
+  { color: '#93C5FD', label: 'Adjetivos (Azul)' },     // Azul
+  { color: '#FDBA74', label: 'Substantivos (Laranja)' }, // Laranja
+  { color: '#F9A8D4', label: 'Social (Rosa)' },        // Rosa
+  { color: '#FFFFFF', label: 'Artigos (Branco)' },     // Branco
+  { color: '#C4B5FD', label: 'Preposições (Roxo)' },   // Roxo
+  { color: '#D6B28A', label: 'Advérbios (Marrom)' }    // Marrom
+];
+
 const initialData = {
   boards: {
     'root': {
       id: 'root',
       title: 'Início',
       cards: [
-        { id: 'c1', text: 'Eu quero', type: 'speak', color: '#60A5FA', image: 'https://static.arasaac.org/pictograms/36940/36940_500.png' },
-        { id: 'c2', text: 'Comer', type: 'folder', targetId: 'foods', color: '#FBBF24', image: 'https://static.arasaac.org/pictograms/5672/5672_500.png' },
-        { id: 'c3', text: 'Não', type: 'speak', color: '#F87171', image: 'https://static.arasaac.org/pictograms/6156/6156_500.png' },
-      ]
-    },
-    'foods': {
-      id: 'foods',
-      title: 'Comidas',
-      parentId: 'root',
-      cards: [
-        { id: 'f1', text: 'Maçã', type: 'speak', color: '#FBBF24', image: 'https://static.arasaac.org/pictograms/5456/5456_500.png' },
-        { id: 'f2', text: 'Água', type: 'speak', color: '#34D399', image: 'https://static.arasaac.org/pictograms/8687/8687_500.png' },
+        { id: 'c1', text: 'Eu', type: 'speak', color: '#FDE047', image: 'https://static.arasaac.org/pictograms/36940/36940_500.png' },
+        { id: 'c2', text: 'Quero', type: 'speak', color: '#86EFAC', image: 'https://static.arasaac.org/pictograms/5672/5672_500.png' },
       ]
     }
   }
@@ -33,27 +34,30 @@ function App() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingCard, setEditingCard] = useState(null);
   
+  // Estados do Gerador Mágico
+  const [generatorText, setGeneratorText] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  
+  // Estados da Busca Manual
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
 
+  // Carregar/Salvar
   useEffect(() => {
-    const savedData = localStorage.getItem('neurocaa_v3_data');
-    if (savedData) {
-      setData(JSON.parse(savedData));
-    }
+    const savedData = localStorage.getItem('neurocaa_v4_data');
+    if (savedData) setData(JSON.parse(savedData));
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('neurocaa_v3_data', JSON.stringify(data));
+    localStorage.setItem('neurocaa_v4_data', JSON.stringify(data));
   }, [data]);
 
   const currentBoard = data.boards[currentBoardId] || data.boards['root'];
 
+  // --- Navegação e Voz ---
   const goBack = () => {
-    if (currentBoard.parentId) {
-      setCurrentBoardId(currentBoard.parentId);
-    }
+    if (currentBoard.parentId) setCurrentBoardId(currentBoard.parentId);
   };
 
   const speak = (text) => {
@@ -71,6 +75,7 @@ function App() {
     window.speechSynthesis.speak(utterance);
   };
 
+  // --- Ações de Cartão ---
   const handleCardClick = (card) => {
     if (isEditMode) {
       setSearchTerm(card.text);
@@ -86,17 +91,61 @@ function App() {
     }
   };
 
-  const searchArasaac = async () => {
-    if (!searchTerm) return;
-    setIsSearching(true);
-    try {
-      const res = await fetch(`https://api.arasaac.org/api/pictograms/pt/search/${searchTerm}`);
-      const json = await res.json();
-      setSearchResults(json.slice(0, 6)); 
-    } catch (e) { console.error(e); } 
-    finally { setIsSearching(false); }
+  // --- O "CÉREBRO" DO GERADOR MÁGICO ---
+  const generateBoardFromText = async (e) => {
+    e.preventDefault();
+    if (!generatorText.trim()) return;
+
+    setIsGenerating(true);
+    const words = generatorText.trim().split(/\s+/); // Separa por espaço
+    const newCards = [];
+
+    // Processa todas as palavras em paralelo (muito mais rápido)
+    const promises = words.map(async (word) => {
+      try {
+        // Busca exata no ARASAAC
+        const res = await fetch(`https://api.arasaac.org/api/pictograms/pt/search/${encodeURIComponent(word)}`);
+        const json = await res.json();
+        
+        let imageUrl = null;
+        if (json && json.length > 0) {
+          // Pega a primeira imagem encontrada
+          imageUrl = `https://static.arasaac.org/pictograms/${json[0]._id}/${json[0]._id}_500.png`;
+        }
+
+        return {
+          id: `gen_${Date.now()}_${Math.random()}`,
+          text: word,
+          type: 'speak',
+          color: '#FFFFFF', // Padrão branco, usuário muda depois
+          image: imageUrl || 'https://static.arasaac.org/pictograms/2475/2475_500.png' // Interrogação se não achar
+        };
+      } catch (err) {
+        console.error(err);
+        return {
+          id: `err_${Date.now()}`, text: word, type: 'speak', color: '#FFFFFF',
+          image: 'https://static.arasaac.org/pictograms/2475/2475_500.png'
+        };
+      }
+    });
+
+    const results = await Promise.all(promises);
+    
+    // Atualiza a prancha atual com os novos cartões
+    const updatedBoard = {
+      ...currentBoard,
+      cards: [...currentBoard.cards, ...results]
+    };
+
+    const newBoards = { ...data.boards, [currentBoardId]: updatedBoard };
+    setData({ ...data, boards: newBoards });
+    
+    setGeneratorText(""); // Limpa o campo
+    setIsGenerating(false);
+    alert(`Prancha gerada com ${results.length} novos cartões!`);
   };
 
+  // --- Salvar Edição Manual ---
   const handleSaveCard = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -128,47 +177,45 @@ function App() {
       ? currentBoard.cards.map(c => c.id === newCard.id ? newCard : c)
       : [...currentBoard.cards, newCard];
 
-    newBoards[currentBoardId] = {
-      ...currentBoard,
-      cards: updatedCurrentBoardCards
-    };
-
+    newBoards[currentBoardId] = { ...currentBoard, cards: updatedCurrentBoardCards };
     setData({ ...data, boards: newBoards });
     setEditingCard(null);
   };
 
+  // --- Deletar e Adicionar Manual ---
   const handleDeleteCard = () => {
-    if (!editingCard.id) return;
     const newCards = currentBoard.cards.filter(c => c.id !== editingCard.id);
-    setData({
-      ...data,
-      boards: {
-        ...data.boards,
-        [currentBoardId]: { ...currentBoard, cards: newCards }
-      }
-    });
+    setData({ ...data, boards: { ...data.boards, [currentBoardId]: { ...currentBoard, cards: newCards } } });
     setEditingCard(null);
   };
 
   const addNewCard = () => {
-    setEditingCard({ 
-      id: null, text: '', type: 'speak', 
-      image: 'https://static.arasaac.org/pictograms/2475/2475_500.png', 
-      color: '#fbbf24' 
-    });
-    setSearchTerm("");
-    setSearchResults([]);
+    setEditingCard({ id: null, text: '', type: 'speak', image: 'https://static.arasaac.org/pictograms/2475/2475_500.png', color: '#FFFFFF' });
+    setSearchTerm(""); setSearchResults([]);
+  };
+
+  const searchArasaac = async () => {
+    if (!searchTerm) return;
+    setIsSearching(true);
+    try {
+      const res = await fetch(`https://api.arasaac.org/api/pictograms/pt/search/${searchTerm}`);
+      const json = await res.json();
+      setSearchResults(json.slice(0, 6)); 
+    } catch (e) {} finally { setIsSearching(false); }
   };
 
   return (
     <div className={`container ${isEditMode ? 'mode-edit' : 'mode-play'}`}>
+      
+      {/* Topo */}
       <div className="admin-bar">
-        <div className="brand">NeuroCAA <small>v3.0</small></div>
+        <div className="brand">NeuroCAA <small>v4.0 IA</small></div>
         <button className={`btn-toggle ${isEditMode ? 'active' : ''}`} onClick={() => setIsEditMode(!isEditMode)}>
-          {isEditMode ? '🔓 Editando' : '🔒 Usando'}
+          {isEditMode ? '🔓 Modo Edição' : '🔒 Modo Uso'}
         </button>
       </div>
 
+      {/* Frase Montada */}
       <div className="sentence-bar">
         <div className="sentence-display">
           {sentence.length === 0 ? <span className="placeholder">A frase aparece aqui...</span> : 
@@ -186,13 +233,36 @@ function App() {
         </div>
       </div>
 
+      {/* ÁREA DO GERADOR MÁGICO (Só aparece na Edição) */}
+      {isEditMode && (
+        <div className="magic-generator">
+          <h3>✨ Gerador Automático de Prancha</h3>
+          <form onSubmit={generateBoardFromText} className="generator-form">
+            <textarea 
+              placeholder="Digite uma frase, letra de música ou diálogo e clique em Gerar..." 
+              value={generatorText}
+              onChange={(e) => setGeneratorText(e.target.value)}
+            />
+            <button type="submit" disabled={isGenerating}>
+              {isGenerating ? '⏳ Criando...' : '⚡ Gerar Prancha Agora'}
+            </button>
+          </form>
+          <small>Isso vai buscar imagens automaticamente para cada palavra e adicionar abaixo.</small>
+        </div>
+      )}
+
+      {/* Navegação */}
       <div className="nav-header">
-        {currentBoard.parentId && (
-          <button onClick={goBack} className="btn-back">⬅ Voltar</button>
-        )}
+        {currentBoard.parentId && <button onClick={goBack} className="btn-back">⬅ Voltar</button>}
         <span className="board-title">📂 {currentBoard.title}</span>
+        {isEditMode && <button className="btn-clear-board" onClick={() => {
+           if(window.confirm('Limpar toda esta prancha?')) {
+             setData({...data, boards: {...data.boards, [currentBoardId]: {...currentBoard, cards: []}}});
+           }
+        }}>🗑️ Limpar Prancha</button>}
       </div>
 
+      {/* Grid */}
       <div className="grid-area">
         {currentBoard.cards.map((item) => (
           <div
@@ -204,7 +274,7 @@ function App() {
             {isEditMode && <span className="edit-badge">✏️</span>}
             {item.type === 'folder' && <div className="folder-tag" style={{backgroundColor: item.color}}>PASTA</div>}
             <img src={item.image} alt={item.text} className="card-img" />
-            <span className="label" style={{color: item.type === 'folder' ? '#333' : '#FFF'}}>{item.text}</span>
+            <span className="label" style={{color: (item.type === 'folder' || item.color === '#FFFFFF') ? '#333' : '#FFF'}}>{item.text}</span>
           </div>
         ))}
         {isEditMode && (
@@ -214,35 +284,25 @@ function App() {
         )}
       </div>
 
+      {/* Modal Editor Manual */}
       {editingCard && (
         <div className="modal-overlay">
           <div className="modal">
-            <h3>{editingCard.id ? 'Editar' : 'Criar Novo'}</h3>
+            <h3>{editingCard.id ? 'Editar' : 'Novo'}</h3>
             <form onSubmit={handleSaveCard}>
               <div className="type-selector">
-                <label>O que este botão faz?</label>
-                <div className="radio-group">
-                  <label className={editingCard.type === 'speak' ? 'selected' : ''}>
-                    <input type="radio" name="type" value="speak" 
-                      defaultChecked={editingCard.type === 'speak'} 
-                      onChange={() => setEditingCard({...editingCard, type: 'speak'})} 
-                    /> 🗣️ Fala
-                  </label>
-                  <label className={editingCard.type === 'folder' ? 'selected' : ''}>
-                    <input type="radio" name="type" value="folder" 
-                      defaultChecked={editingCard.type === 'folder'}
-                      onChange={() => setEditingCard({...editingCard, type: 'folder'})} 
-                    /> 📂 Abre Pasta
-                  </label>
-                </div>
+                <label className={editingCard.type === 'speak' ? 'selected' : ''}>
+                  <input type="radio" name="type" value="speak" defaultChecked={editingCard.type === 'speak'} onChange={() => setEditingCard({...editingCard, type: 'speak'})}/> 🗣️ Fala
+                </label>
+                <label className={editingCard.type === 'folder' ? 'selected' : ''}>
+                  <input type="radio" name="type" value="folder" defaultChecked={editingCard.type === 'folder'} onChange={() => setEditingCard({...editingCard, type: 'folder'})}/> 📂 Pasta
+                </label>
               </div>
 
-              <label>Texto:</label>
-              <input name="text" defaultValue={editingCard.text} onChange={(e) => setSearchTerm(e.target.value)} required />
+              <input name="text" defaultValue={editingCard.text} onChange={(e) => setSearchTerm(e.target.value)} required placeholder="Texto do cartão" />
 
-              <label>Buscar Imagem (ARASAAC):</label>
               <div className="search-box">
-                <input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                <input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Buscar no ARASAAC..." />
                 <button type="button" onClick={searchArasaac} className="btn-search">🔎</button>
               </div>
 
@@ -256,15 +316,13 @@ function App() {
                 </div>
               )}
               
-              <div className="preview-container">
-                <img src={editingCard.image} className="preview-img" alt="preview"/>
-              </div>
+              <div className="preview-container"><img src={editingCard.image} className="preview-img" alt="preview"/></div>
 
-              <label>Cor do Cartão:</label>
-              <div className="color-picker">
-                {['#F87171', '#FBBF24', '#34D399', '#60A5FA', '#A78BFA'].map(c => (
-                  <label key={c} style={{backgroundColor: c}} className="color-option">
-                    <input type="radio" name="color" value={c} defaultChecked={editingCard.color === c} />
+              <label>Cor CAA:</label>
+              <div className="color-grid">
+                {CAA_COLORS.map(c => (
+                  <label key={c.color} style={{backgroundColor: c.color}} className="color-option" title={c.label}>
+                    <input type="radio" name="color" value={c.color} defaultChecked={editingCard.color === c.color} />
                   </label>
                 ))}
               </div>
