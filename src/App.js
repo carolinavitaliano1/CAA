@@ -3,14 +3,14 @@ import './App.css';
 
 // Cores Oficiais CAA (Baseado no seu data.js)
 const CAA_COLORS = [
-  { color: '#FDE047', label: 'Pessoas (Amarelo)' },    // Amarelo
-  { color: '#86EFAC', label: 'Verbos (Verde)' },       // Verde
-  { color: '#93C5FD', label: 'Adjetivos (Azul)' },     // Azul
-  { color: '#FDBA74', label: 'Substantivos (Laranja)' }, // Laranja
-  { color: '#F9A8D4', label: 'Social (Rosa)' },        // Rosa
-  { color: '#FFFFFF', label: 'Artigos (Branco)' },     // Branco
-  { color: '#C4B5FD', label: 'Preposições (Roxo)' },   // Roxo
-  { color: '#D6B28A', label: 'Advérbios (Marrom)' }    // Marrom
+  { color: '#FDE047', label: 'Pessoas (Amarelo)' },
+  { color: '#86EFAC', label: 'Verbos (Verde)' },
+  { color: '#93C5FD', label: 'Adjetivos (Azul)' },
+  { color: '#FDBA74', label: 'Substantivos (Laranja)' },
+  { color: '#F9A8D4', label: 'Social (Rosa)' },
+  { color: '#FFFFFF', label: 'Artigos/Outros (Branco)' },
+  { color: '#C4B5FD', label: 'Preposições (Roxo)' },
+  { color: '#D6B28A', label: 'Advérbios (Marrom)' }
 ];
 
 const initialData = {
@@ -19,8 +19,8 @@ const initialData = {
       id: 'root',
       title: 'Início',
       cards: [
-        { id: 'c1', text: 'Eu', type: 'speak', color: '#FDE047', image: 'https://static.arasaac.org/pictograms/36940/36940_500.png' },
-        { id: 'c2', text: 'Quero', type: 'speak', color: '#86EFAC', image: 'https://static.arasaac.org/pictograms/5672/5672_500.png' },
+        { id: 'c1', text: 'Eu', type: 'speak', bgColor: '#FDE047', borderColor: '#FDE047', image: 'https://static.arasaac.org/pictograms/36940/36940_500.png' },
+        { id: 'c2', text: 'Quero', type: 'speak', bgColor: '#86EFAC', borderColor: '#86EFAC', image: 'https://static.arasaac.org/pictograms/5672/5672_500.png' },
       ]
     }
   }
@@ -31,26 +31,27 @@ function App() {
   const [currentBoardId, setCurrentBoardId] = useState('root');
   const [sentence, setSentence] = useState([]);
   
+  // Estados de Edição e Modal
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingCard, setEditingCard] = useState(null);
+  
+  // Estados do Modal Avançado
+  const [modalSearchTerm, setModalSearchTerm] = useState("");
+  const [modalSearchResults, setModalSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
   
   // Estados do Gerador Mágico
   const [generatorText, setGeneratorText] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
-  
-  // Estados da Busca Manual
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
 
-  // Carregar/Salvar
+  // --- Carregar/Salvar Dados ---
   useEffect(() => {
-    const savedData = localStorage.getItem('neurocaa_v4_data');
+    const savedData = localStorage.getItem('neurocaa_v5_data');
     if (savedData) setData(JSON.parse(savedData));
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('neurocaa_v4_data', JSON.stringify(data));
+    localStorage.setItem('neurocaa_v5_data', JSON.stringify(data));
   }, [data]);
 
   const currentBoard = data.boards[currentBoardId] || data.boards['root'];
@@ -75,12 +76,14 @@ function App() {
     window.speechSynthesis.speak(utterance);
   };
 
-  // --- Ações de Cartão ---
+  // --- Abrir Modal de Edição ---
   const handleCardClick = (card) => {
     if (isEditMode) {
-      setSearchTerm(card.text);
-      setSearchResults([]);
-      setEditingCard(card);
+      setEditingCard({ ...card }); // Clona para não editar direto
+      setModalSearchTerm(card.text); // Preenche busca com o nome atual
+      setModalSearchResults([]); // Limpa buscas anteriores
+      // Carrega imagens iniciais baseadas no nome
+      searchArasaac(card.text); 
     } else {
       if (card.type === 'folder' && card.targetId) {
         setCurrentBoardId(card.targetId);
@@ -91,39 +94,48 @@ function App() {
     }
   };
 
-  // --- O "CÉREBRO" DO GERADOR MÁGICO ---
+  const addNewCard = () => {
+    const newCard = { 
+      id: null, 
+      text: '', 
+      type: 'speak', 
+      image: 'https://static.arasaac.org/pictograms/2475/2475_500.png', 
+      bgColor: '#FFFFFF',
+      borderColor: '#e2e8f0' 
+    };
+    setEditingCard(newCard);
+    setModalSearchTerm("");
+    setModalSearchResults([]);
+  };
+
+  // --- Lógica do Gerador Mágico (Texto -> Prancha) ---
   const generateBoardFromText = async (e) => {
     e.preventDefault();
     if (!generatorText.trim()) return;
 
     setIsGenerating(true);
-    const words = generatorText.trim().split(/\s+/); // Separa por espaço
+    const words = generatorText.trim().split(/\s+/);
     const newCards = [];
 
-    // Processa todas as palavras em paralelo (muito mais rápido)
     const promises = words.map(async (word) => {
       try {
-        // Busca exata no ARASAAC
         const res = await fetch(`https://api.arasaac.org/api/pictograms/pt/search/${encodeURIComponent(word)}`);
         const json = await res.json();
-        
         let imageUrl = null;
         if (json && json.length > 0) {
-          // Pega a primeira imagem encontrada
           imageUrl = `https://static.arasaac.org/pictograms/${json[0]._id}/${json[0]._id}_500.png`;
         }
-
         return {
           id: `gen_${Date.now()}_${Math.random()}`,
           text: word,
           type: 'speak',
-          color: '#FFFFFF', // Padrão branco, usuário muda depois
-          image: imageUrl || 'https://static.arasaac.org/pictograms/2475/2475_500.png' // Interrogação se não achar
+          bgColor: '#FFFFFF',
+          borderColor: '#e2e8f0',
+          image: imageUrl || 'https://static.arasaac.org/pictograms/2475/2475_500.png'
         };
       } catch (err) {
-        console.error(err);
         return {
-          id: `err_${Date.now()}`, text: word, type: 'speak', color: '#FFFFFF',
+          id: `err_${Date.now()}_${Math.random()}`, text: word, type: 'speak', bgColor: '#FFFFFF', borderColor: '#e2e8f0',
           image: 'https://static.arasaac.org/pictograms/2475/2475_500.png'
         };
       }
@@ -131,7 +143,6 @@ function App() {
 
     const results = await Promise.all(promises);
     
-    // Atualiza a prancha atual com os novos cartões
     const updatedBoard = {
       ...currentBoard,
       cards: [...currentBoard.cards, ...results]
@@ -139,37 +150,54 @@ function App() {
 
     const newBoards = { ...data.boards, [currentBoardId]: updatedBoard };
     setData({ ...data, boards: newBoards });
-    
-    setGeneratorText(""); // Limpa o campo
+    setGeneratorText("");
     setIsGenerating(false);
-    alert(`Prancha gerada com ${results.length} novos cartões!`);
   };
 
-  // --- Salvar Edição Manual ---
+  // --- Busca ARASAAC (Modal) ---
+  const searchArasaac = async (term) => {
+    const query = term || modalSearchTerm;
+    if (!query) return;
+    setIsSearching(true);
+    try {
+      const res = await fetch(`https://api.arasaac.org/api/pictograms/pt/search/${encodeURIComponent(query)}`);
+      const json = await res.json();
+      setModalSearchResults(json.slice(0, 9)); // Limita a 9 resultados
+    } catch (e) {} finally { setIsSearching(false); }
+  };
+
+  // --- Upload de Imagem (Do PC) ---
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setEditingCard({ ...editingCard, image: reader.result }); // Salva como Base64 temporário
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // --- Salvar Card (Final) ---
   const handleSaveCard = (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const cardType = formData.get('type');
     
+    // Verifica se é pasta e cria estrutura se necessário
     let newTargetId = editingCard.targetId;
     let newBoards = { ...data.boards };
 
-    if (cardType === 'folder' && !newTargetId) {
+    if (editingCard.type === 'folder' && !newTargetId) {
       newTargetId = `board_${Date.now()}`;
       newBoards[newTargetId] = {
         id: newTargetId,
-        title: formData.get('text'),
+        title: editingCard.text,
         parentId: currentBoardId,
         cards: []
       };
     }
 
     const newCard = {
+      ...editingCard,
       id: editingCard.id || `card_${Date.now()}`,
-      text: formData.get('text'),
-      image: editingCard.image,
-      color: formData.get('color'),
-      type: cardType,
       targetId: newTargetId
     };
 
@@ -182,26 +210,11 @@ function App() {
     setEditingCard(null);
   };
 
-  // --- Deletar e Adicionar Manual ---
   const handleDeleteCard = () => {
+    if (!editingCard.id) return;
     const newCards = currentBoard.cards.filter(c => c.id !== editingCard.id);
     setData({ ...data, boards: { ...data.boards, [currentBoardId]: { ...currentBoard, cards: newCards } } });
     setEditingCard(null);
-  };
-
-  const addNewCard = () => {
-    setEditingCard({ id: null, text: '', type: 'speak', image: 'https://static.arasaac.org/pictograms/2475/2475_500.png', color: '#FFFFFF' });
-    setSearchTerm(""); setSearchResults([]);
-  };
-
-  const searchArasaac = async () => {
-    if (!searchTerm) return;
-    setIsSearching(true);
-    try {
-      const res = await fetch(`https://api.arasaac.org/api/pictograms/pt/search/${searchTerm}`);
-      const json = await res.json();
-      setSearchResults(json.slice(0, 6)); 
-    } catch (e) {} finally { setIsSearching(false); }
   };
 
   return (
@@ -209,20 +222,20 @@ function App() {
       
       {/* Topo */}
       <div className="admin-bar">
-        <div className="brand">NeuroCAA <small>v4.0 IA</small></div>
+        <div className="brand">NeuroCAA <small>v5.0</small></div>
         <button className={`btn-toggle ${isEditMode ? 'active' : ''}`} onClick={() => setIsEditMode(!isEditMode)}>
-          {isEditMode ? '🔓 Modo Edição' : '🔒 Modo Uso'}
+          {isEditMode ? '🔓 Editando' : '🔒 Usando'}
         </button>
       </div>
 
-      {/* Frase Montada */}
+      {/* Frase */}
       <div className="sentence-bar">
         <div className="sentence-display">
-          {sentence.length === 0 ? <span className="placeholder">A frase aparece aqui...</span> : 
+          {sentence.length === 0 ? <span className="placeholder">Toque nos cartões...</span> : 
             sentence.map((item, idx) => (
               <div key={idx} className="sentence-item">
                 <img src={item.image} alt="" className="mini-img" />
-                <span style={{ borderColor: item.color }}>{item.text}</span>
+                <span style={{ borderColor: item.borderColor || 'transparent' }}>{item.text}</span>
               </div>
             ))
           }
@@ -233,21 +246,20 @@ function App() {
         </div>
       </div>
 
-      {/* ÁREA DO GERADOR MÁGICO (Só aparece na Edição) */}
+      {/* Gerador Mágico (Só Editando) */}
       {isEditMode && (
         <div className="magic-generator">
-          <h3>✨ Gerador Automático de Prancha</h3>
+          <h3>✨ Criar Prancha Automática</h3>
           <form onSubmit={generateBoardFromText} className="generator-form">
             <textarea 
-              placeholder="Digite uma frase, letra de música ou diálogo e clique em Gerar..." 
+              placeholder="Ex: Bom dia eu quero comer pão" 
               value={generatorText}
               onChange={(e) => setGeneratorText(e.target.value)}
             />
             <button type="submit" disabled={isGenerating}>
-              {isGenerating ? '⏳ Criando...' : '⚡ Gerar Prancha Agora'}
+              {isGenerating ? '⏳...' : '⚡ Gerar'}
             </button>
           </form>
-          <small>Isso vai buscar imagens automaticamente para cada palavra e adicionar abaixo.</small>
         </div>
       )}
 
@@ -256,10 +268,10 @@ function App() {
         {currentBoard.parentId && <button onClick={goBack} className="btn-back">⬅ Voltar</button>}
         <span className="board-title">📂 {currentBoard.title}</span>
         {isEditMode && <button className="btn-clear-board" onClick={() => {
-           if(window.confirm('Limpar toda esta prancha?')) {
+           if(window.confirm('Apagar tudo nesta pasta?')) {
              setData({...data, boards: {...data.boards, [currentBoardId]: {...currentBoard, cards: []}}});
            }
-        }}>🗑️ Limpar Prancha</button>}
+        }}>🗑️ Limpar</button>}
       </div>
 
       {/* Grid */}
@@ -268,13 +280,16 @@ function App() {
           <div
             key={item.id}
             className={`card ${item.type === 'folder' ? 'is-folder' : ''}`}
-            style={{ backgroundColor: item.type === 'folder' ? '#FFF' : item.color, borderColor: item.color }}
+            style={{ 
+              backgroundColor: item.bgColor || '#FFF', 
+              borderColor: item.borderColor || '#ccc' 
+            }}
             onClick={() => handleCardClick(item)}
           >
             {isEditMode && <span className="edit-badge">✏️</span>}
-            {item.type === 'folder' && <div className="folder-tag" style={{backgroundColor: item.color}}>PASTA</div>}
+            {item.type === 'folder' && <div className="folder-tag" style={{backgroundColor: item.borderColor}}>PASTA</div>}
             <img src={item.image} alt={item.text} className="card-img" />
-            <span className="label" style={{color: (item.type === 'folder' || item.color === '#FFFFFF') ? '#333' : '#FFF'}}>{item.text}</span>
+            <span className="label" style={{color: '#333'}}>{item.text}</span>
           </div>
         ))}
         {isEditMode && (
@@ -284,52 +299,104 @@ function App() {
         )}
       </div>
 
-      {/* Modal Editor Manual */}
+      {/* ================= MODAL AVANÇADO ================= */}
       {editingCard && (
         <div className="modal-overlay">
           <div className="modal">
-            <h3>{editingCard.id ? 'Editar' : 'Novo'}</h3>
+            <h3>✏️ Editar Pictograma</h3>
             <form onSubmit={handleSaveCard}>
+              
+              {/* Preview */}
+              <div className="preview-box">
+                <img src={editingCard.image} alt="Preview" />
+                <span style={{background: editingCard.bgColor, borderColor: editingCard.borderColor}}>
+                  {editingCard.text || "Texto"}
+                </span>
+              </div>
+
+              {/* Tipo */}
               <div className="type-selector">
                 <label className={editingCard.type === 'speak' ? 'selected' : ''}>
-                  <input type="radio" name="type" value="speak" defaultChecked={editingCard.type === 'speak'} onChange={() => setEditingCard({...editingCard, type: 'speak'})}/> 🗣️ Fala
+                  <input type="radio" name="type" value="speak" 
+                    checked={editingCard.type === 'speak'} 
+                    onChange={() => setEditingCard({...editingCard, type: 'speak'})} 
+                  /> 🗣️ Fala
                 </label>
                 <label className={editingCard.type === 'folder' ? 'selected' : ''}>
-                  <input type="radio" name="type" value="folder" defaultChecked={editingCard.type === 'folder'} onChange={() => setEditingCard({...editingCard, type: 'folder'})}/> 📂 Pasta
+                  <input type="radio" name="type" value="folder" 
+                    checked={editingCard.type === 'folder'}
+                    onChange={() => setEditingCard({...editingCard, type: 'folder'})} 
+                  /> 📂 Pasta
                 </label>
               </div>
 
-              <input name="text" defaultValue={editingCard.text} onChange={(e) => setSearchTerm(e.target.value)} required placeholder="Texto do cartão" />
+              {/* Texto */}
+              <label>Texto da célula:</label>
+              <input 
+                value={editingCard.text} 
+                onChange={(e) => setEditingCard({...editingCard, text: e.target.value})} 
+                required 
+              />
 
+              {/* Upload PC */}
+              <label>📎 Anexar imagem do computador:</label>
+              <input type="file" accept="image/*" onChange={handleImageUpload} className="file-input" />
+
+              <hr />
+
+              {/* Busca ARASAAC */}
+              <label>🔄 Buscar no ARASAAC:</label>
               <div className="search-box">
-                <input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Buscar no ARASAAC..." />
-                <button type="button" onClick={searchArasaac} className="btn-search">🔎</button>
+                <input 
+                  value={modalSearchTerm} 
+                  onChange={(e) => setModalSearchTerm(e.target.value)} 
+                  placeholder="Digite para buscar..."
+                />
+                <button type="button" onClick={() => searchArasaac(modalSearchTerm)} className="btn-search">🔎</button>
               </div>
 
-              {isSearching ? <small>Buscando...</small> : (
-                <div className="search-results">
-                  {searchResults.map(p => (
-                    <img key={p._id} src={`https://static.arasaac.org/pictograms/${p._id}/${p._id}_500.png`} 
-                      onClick={() => setEditingCard({...editingCard, image: `https://static.arasaac.org/pictograms/${p._id}/${p._id}_500.png`})}
-                      className="result-img" alt="" />
-                  ))}
+              <div className="search-results">
+                 {isSearching ? <p>⏳ Carregando...</p> : modalSearchResults.map(p => (
+                    <img 
+                      key={p._id} 
+                      src={`https://static.arasaac.org/pictograms/${p._id}/${p._id}_300.png`} 
+                      onClick={() => setEditingCard({...editingCard, image: `https://static.arasaac.org/pictograms/${p._id}/${p._id}_300.png`})}
+                      className="result-img" 
+                      alt=""
+                    />
+                 ))}
+              </div>
+
+              <hr />
+
+              {/* Cores Individuais */}
+              <div className="colors-section">
+                <div>
+                  <label>Cor de Fundo:</label>
+                  <select 
+                    value={editingCard.bgColor} 
+                    onChange={(e) => setEditingCard({...editingCard, bgColor: e.target.value})}
+                  >
+                    <option value="#FFFFFF">Branco (Padrão)</option>
+                    {CAA_COLORS.map(c => <option key={c.color} value={c.color}>{c.label}</option>)}
+                  </select>
                 </div>
-              )}
-              
-              <div className="preview-container"><img src={editingCard.image} className="preview-img" alt="preview"/></div>
-
-              <label>Cor CAA:</label>
-              <div className="color-grid">
-                {CAA_COLORS.map(c => (
-                  <label key={c.color} style={{backgroundColor: c.color}} className="color-option" title={c.label}>
-                    <input type="radio" name="color" value={c.color} defaultChecked={editingCard.color === c.color} />
-                  </label>
-                ))}
+                <div>
+                  <label>Cor da Borda:</label>
+                  <select 
+                    value={editingCard.borderColor} 
+                    onChange={(e) => setEditingCard({...editingCard, borderColor: e.target.value})}
+                  >
+                     <option value="#e2e8f0">Cinza (Padrão)</option>
+                    {CAA_COLORS.map(c => <option key={c.color} value={c.color}>{c.label}</option>)}
+                  </select>
+                </div>
               </div>
 
+              {/* Botões Finais */}
               <div className="modal-actions">
-                {editingCard.id && <button type="button" onClick={handleDeleteCard} className="btn-delete">🗑️</button>}
-                <button type="button" onClick={() => setEditingCard(null)} className="btn-cancel">Cancelar</button>
+                {editingCard.id && <button type="button" onClick={handleDeleteCard} className="btn-delete">Excluir</button>}
+                <button type="button" onClick={() => setEditingCard(null)} className="btn-cancel">Fechar</button>
                 <button type="submit" className="btn-save">Salvar</button>
               </div>
             </form>
