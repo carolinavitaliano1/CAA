@@ -1,5 +1,5 @@
 /* =========================================
-   ESTILO DO GERADOR (Visualização e Impressão)
+   ESTILO DO GERADOR (Limpo e Funcional)
    ========================================= */
 
 .board-generator-wrapper {
@@ -15,7 +15,7 @@
   box-sizing: border-box;
 }
 
-/* --- MENU LATERAL --- */
+/* MENU LATERAL */
 .config-panel {
   flex: 0 0 300px; 
   background: white;
@@ -33,7 +33,7 @@
 .config-group input, .config-group select { padding: 8px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 0.85rem; background: white; width: 100%; box-sizing: border-box; }
 .margins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
 
-/* --- PREVIEW PANEL --- */
+/* PREVIEW PANEL */
 .preview-panel {
   flex: 1;
   display: flex;
@@ -62,7 +62,7 @@
 .zoom-controls label { font-size: 0.8rem; font-weight: bold; color: #475569; white-space: nowrap; }
 .zoom-controls input[type="range"] { cursor: pointer; width: 100px; }
 
-/* --- ÁREA CINZA (VISUALIZADOR) --- */
+/* ÁREA CINZA */
 .paper-preview-container {
   flex: 1;
   background: #94a3b8;
@@ -82,10 +82,9 @@
   align-items: center;
   width: 100%;
   height: 100%;
-  overflow: hidden; /* Na tela, corta o excesso */
 }
 
-/* --- FOLHA DE PAPEL --- */
+/* FOLHA DE PAPEL */
 .paper-sheet {
   background: white;
   box-shadow: 0 20px 60px rgba(0,0,0,0.5);
@@ -93,25 +92,25 @@
   flex-shrink: 0;
   display: flex; 
   flex-direction: column;
+  
+  /* Centralização do Zoom */
   transform-origin: center center;
   transition: transform 0.2s ease;
 }
 
-/* Esconde páginas não ativas NA TELA */
 .hidden-page { display: none !important; }
 
-/* Conteúdo Interno */
 .paper-content-wrapper { 
     flex: 1; width: 100%; display: flex; flex-direction: column; box-sizing: border-box; background: white; position: relative; overflow: hidden; 
 }
 
-/* Dimensões da Tela (Pixels Fixos) */
+/* Dimensões Fixas (SÓ PARA TELA) */
 .paper-sheet.A4.portrait { width: 794px; height: 1123px; }
 .paper-sheet.A4.landscape { width: 1123px; height: 794px; }
 .paper-sheet.A3.portrait { width: 1123px; height: 1587px; }
 .paper-sheet.A3.landscape { width: 1587px; height: 1123px; }
 
-/* Elementos da Prancha */
+/* Conteúdo */
 .paper-header { text-align: center; font-weight: bold; font-size: 24pt; padding: 10px; margin-bottom: 5px; flex-shrink: 0; }
 .paper-grid { display: grid; width: 100%; flex: 1; min-height: 0; height: 100%; }
 .paper-cell { display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; min-width: 0; min-height: 0; }
@@ -146,91 +145,71 @@
 
 
 /* ==========================================================================
-   CSS DE IMPRESSÃO - A MÁGICA ACONTECE AQUI
+   CSS DE IMPRESSÃO (CORRIGIDO PARA SÓ SAIR A PRANCHA)
    ========================================================================== */
 @media print {
-  /* 1. Configura a página física */
+  /* Remove margens do navegador e deixa a impressora decidir */
   @page {
-    margin: 0mm; /* Remove margens da impressora */
-    size: auto;  /* Usa o tamanho do conteúdo */
+    margin: 10mm; /* Pequena margem de segurança */
+    size: auto; 
   }
 
-  /* 2. Reseta o corpo da página */
   body, html {
     background: white;
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
-    overflow: visible !important;
   }
 
-  /* 3. ESCONDE TUDO O QUE NÃO É PAPEL */
-  .board-generator-wrapper * {
-    visibility: hidden; /* Esconde tudo dentro do gerador... */
-  }
-  
-  .admin-bar, .sidebar, .sidebar-overlay, .config-panel, .preview-toolbar, .action-buttons-row, .pagination-controls {
-    display: none !important; /* Remove do fluxo completamente */
+  /* 1. Oculta TUDO */
+  body * {
+    visibility: hidden;
   }
 
-  /* 4. REVELA APENAS AS FOLHAS DE PAPEL */
-  .paper-preview-container, .book-viewer {
+  /* 2. Revela APENAS a prancha */
+  .paper-sheet, .paper-sheet * {
     visibility: visible !important;
-    position: static !important;
-    display: block !important;
-    background: none !important;
-    box-shadow: none !important;
-    width: 100% !important;
-    height: auto !important;
-    overflow: visible !important;
-    margin: 0 !important;
-    padding: 0 !important;
   }
 
-  /* 5. ESTILO DA FOLHA NA IMPRESSÃO */
+  /* 3. Posiciona a prancha no topo da folha */
   .paper-sheet {
-    visibility: visible !important; /* Traz de volta a visibilidade */
-    
-    /* Remove o Zoom da tela */
-    transform: none !important; 
-    
-    /* Remove sombras e fundos de tela */
-    box-shadow: none !important;
-    background: white !important;
-    
-    /* Posicionamento para impressão */
-    position: relative !important;
-    display: flex !important;
-    margin: 0 !important;
+    position: absolute !important;
     left: 0 !important;
     top: 0 !important;
     
-    /* QUEBRA DE PÁGINA: Força cada folha em uma nova página */
-    break-after: page;
+    /* LARGURA INTELIGENTE: Ocupa 100% da largura do papel, não pixels fixos */
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important; /* Altura automática para não esticar */
+    
+    margin: 0 !important;
+    padding: 0 !important;
+    
+    transform: none !important; /* Remove zoom */
+    box-shadow: none !important;
+    background: white !important;
+    border: none !important;
+    
+    /* Quebra de página correta */
     page-break-after: always;
+    break-after: page;
   }
-  
-  /* Revela todas as páginas (mesmo as ocultas na navegação) */
+
+  /* Garante que todas as páginas apareçam, não só a ativa */
   .hidden-page {
     display: flex !important;
-  }
-  
-  /* Garante que o conteúdo interno seja visível */
-  .paper-sheet * {
-    visibility: visible !important;
+    position: relative !important; /* Volta ao fluxo normal para paginar */
+    page-break-after: always;
   }
 
-  /* Ajuste Fino para A4/A3 na Impressão (Remove pixels, usa 100%) */
-  .paper-sheet.A4.portrait { width: 210mm !important; height: 297mm !important; }
-  .paper-sheet.A4.landscape { width: 297mm !important; height: 210mm !important; }
-  .paper-sheet.A3.portrait { width: 297mm !important; height: 420mm !important; }
-  .paper-sheet.A3.landscape { width: 420mm !important; height: 297mm !important; }
-
-  /* Limpa slots vazios para economizar tinta */
-  .empty-slot { background: none !important; border: 1px solid #eee; }
-  
-  /* Rodapé Preto na impressão */
+  /* Limpa elementos extras */
+  .empty-slot { border: 1px solid #ccc; background: none !important; }
   .paper-footer { color: black !important; }
-  .paper-footer a { color: #0044CC !important; text-decoration: underline !important; }
+  .paper-footer a { color: #0044CC !important; text-decoration: none !important; }
+  
+  /* ESCONDE BARRAS E MENUS EXPLICITAMENTE */
+  .pagination-controls, .preview-toolbar, .config-panel, .action-buttons-row {
+    display: none !important;
+  }
 }
