@@ -1,5 +1,5 @@
 /* =========================================
-   ESTILO DO GERADOR (Com Zoom Manual)
+   ESTILO DO GERADOR (Com Botão de Impressão)
    ========================================= */
 
 .board-generator-wrapper {
@@ -80,7 +80,6 @@
   min-width: 0;
 }
 
-/* BARRA DE FERRAMENTAS DO PREVIEW (Novo) */
 .preview-toolbar {
     display: flex;
     gap: 15px;
@@ -119,7 +118,6 @@
     cursor: pointer;
 }
 
-/* CONTROLE DE ZOOM */
 .zoom-controls {
     display: flex;
     align-items: center;
@@ -147,14 +145,14 @@
   background: white;
   box-shadow: 0 15px 50px rgba(0,0,0,0.5);
   box-sizing: border-box; 
-  transition: width 0.3s, height 0.3s, transform 0.1s; /* Transform mais rápido para zoom fluido */
+  transition: width 0.3s, height 0.3s, transform 0.1s;
   
   /* Centralização Absoluta */
   position: absolute;
   top: 50%;
   left: 50%;
   transform-origin: center center;
-  /* O scale é controlado via inline style no JS agora */
+  /* Scale é controlado pelo JS */
 }
 
 .paper-content-wrapper {
@@ -217,26 +215,104 @@
 .cell-content span { line-height: 1; word-break: break-word; flex-shrink: 0; }
 .empty-slot { width: 100%; height: 100%; background: radial-gradient(#cbd5e1 2px, transparent 2px); background-size: 15px 15px; }
 
-.btn-finalize {
+
+/* --- BOTÕES FINAIS (Lado a Lado) --- */
+.action-buttons-row {
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.btn-finalize, .btn-print {
   padding: 12px;
-  background: #16a34a;
-  color: white;
   font-weight: bold;
   border: none;
   border-radius: 8px;
-  width: 100%;
+  flex: 1; /* Tamanho igual */
   cursor: pointer;
-  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
 }
+
+.btn-finalize { background: #16a34a; color: white; }
+.btn-finalize:hover { background: #15803d; }
+.btn-finalize:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+.btn-print { background: #3b82f6; color: white; }
+.btn-print:hover { background: #2563eb; }
+
 
 /* MOBILE FIX */
 @media (max-width: 850px) {
-  .board-generator-wrapper {
-    flex-direction: column;
-    height: auto !important;
-    padding-bottom: 80px;
-  }
+  .board-generator-wrapper { flex-direction: column; height: auto !important; padding-bottom: 80px; }
   .config-panel { width: 100%; flex: none; }
   .preview-panel { width: 100%; flex: none; }
   .paper-preview-container { height: 50vh; min-height: 350px; width: 100%; }
+}
+
+/* =================================================================
+   CSS DE IMPRESSÃO (O SEGREDO DO SUCESSO)
+   Isso esconde tudo o que não é papel e força o tamanho real
+   ================================================================= */
+@media print {
+  @page {
+    margin: 0; /* Remove margem padrão da impressora */
+    size: auto; /* Tenta respeitar o tamanho do papel */
+  }
+
+  body {
+    background: white;
+    margin: 0;
+    padding: 0;
+    overflow: visible !important;
+  }
+
+  /* ESCONDE TUDO O QUE NÃO É A PRANCHA */
+  .admin-bar, .sidebar, .sidebar-overlay, .config-panel, .preview-toolbar, .action-buttons-row {
+    display: none !important;
+  }
+
+  .board-generator-wrapper {
+    height: auto !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+    display: block !important;
+    background: white !important;
+  }
+
+  .preview-panel {
+    display: block !important;
+    height: auto !important;
+  }
+
+  .paper-preview-container {
+    background: white !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    height: auto !important;
+    display: block !important;
+  }
+
+  /* FORÇA A FOLHA A FICAR EM TAMANHO REAL (SEM ZOOM) */
+  .paper-sheet {
+    position: relative !important; /* Remove o position absolute */
+    top: 0 !important;
+    left: 0 !important;
+    transform: none !important; /* REMOVE O ZOOM DO JS */
+    box-shadow: none !important;
+    margin: 0 auto !important;
+    page-break-after: always;
+  }
+  
+  /* Remove o fundo quadriculado dos espaços vazios para economizar tinta */
+  .empty-slot {
+      background: none !important;
+      border: 1px solid #eee; /* Deixa só uma borda leve */
+  }
 }
