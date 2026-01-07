@@ -1,0 +1,100 @@
+/* src/utils/BoardPDF.css */
+
+/* Container invisível que segura as páginas durante a geração */
+#pdf-generator-container {
+    position: fixed;
+    top: -10000px;
+    left: -10000px;
+    z-index: -1;
+    visibility: hidden; /* Invisível pro usuário, mas visível pro html2canvas */
+}
+
+/* A Folha de Papel (Configuração Rígida para A4/A3) */
+.pdf-sheet {
+    background: white;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 20px; /* Separação se tiver debug */
+}
+
+/* Tamanhos em MM para precisão no PDF */
+.pdf-sheet.A4.portrait { width: 210mm; height: 296mm; padding: 10mm; }
+.pdf-sheet.A4.landscape { width: 296mm; height: 210mm; padding: 10mm; }
+.pdf-sheet.A3.portrait { width: 296mm; height: 419mm; padding: 10mm; }
+.pdf-sheet.A3.landscape { width: 419mm; height: 296mm; padding: 10mm; }
+
+/* Conteúdo Interno */
+.pdf-content {
+    width: 100%;
+    height: 100%;
+    border: 1px solid #000; /* Borda padrão se não vier da config */
+    display: flex;
+    flex-direction: column;
+}
+
+.pdf-header {
+    text-align: center;
+    font-weight: bold;
+    font-size: 24pt;
+    padding: 10px;
+    border-bottom: 2px solid #000;
+}
+
+/* Grid Perfeito */
+.pdf-grid {
+    display: grid;
+    flex: 1;
+    width: 100%;
+    height: 100%;
+}
+
+.pdf-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.pdf-cell-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 4px;
+    text-align: center;
+}
+
+/* Imagem e Texto controlados */
+.pdf-cell-inner img {
+    object-fit: contain;
+    max-width: 95%;
+    max-height: 75%; /* Garante espaço pro texto */
+}
+
+.pdf-cell-inner span {
+    font-family: Arial, sans-serif;
+    line-height: 1.1;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    font-weight: bold;
+}
+
+/* Rodapé */
+.pdf-footer {
+    text-align: center;
+    font-size: 9pt;
+    color: #555;
+    padding-top: 5px;
+    font-family: Arial, sans-serif;
+}
+.pdf-footer span {
+    color: #0044CC;
+    font-weight: bold;
+}
