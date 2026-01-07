@@ -1,90 +1,83 @@
 /* =========================================
-   ESTILO DO GERADOR DE PRANCHAS (Fit to Screen PC & Mobile)
+   ESTILO DO GERADOR (Fixo e Centralizado)
    ========================================= */
 
 .board-generator-wrapper {
   display: flex;
-  gap: 20px;
-  /* Altura fixa para caber na tela sem barra de rolagem geral */
+  gap: 15px;
   height: calc(100vh - 100px); 
   background: #f8fafc;
-  padding: 15px;
-  border-radius: 16px;
+  padding: 10px;
+  border-radius: 12px;
   border: 1px solid #e2e8f0;
   max-width: 1600px;
   margin: 0 auto;
   box-sizing: border-box;
 }
 
-/* --- PAINEL ESQUERDO (Configurações) --- */
+/* --- MENU LATERAL --- */
 .config-panel {
-  flex: 0 0 320px; /* Largura fixa para o menu */
+  flex: 0 0 300px; 
   background: white;
-  padding: 20px;
-  border-radius: 12px;
-  overflow-y: auto; /* Permite rolar apenas o menu */
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  padding: 15px;
+  border-radius: 10px;
+  overflow-y: auto;
   border: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 12px;
 }
 
 .config-panel h3 {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: #1e3a8a;
   border-bottom: 2px solid #e2e8f0;
-  padding-bottom: 8px;
+  padding-bottom: 5px;
   margin: 0;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-weight: 800;
 }
 
 .config-group {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-  background: #f8fafc;
-  padding: 12px;
+  flex-direction: column;
+  gap: 6px;
+  background: #f1f5f9;
+  padding: 10px;
   border-radius: 8px;
-  border: 1px solid #f1f5f9;
 }
 
 .config-group label {
   font-size: 0.75rem;
-  font-weight: 800;
-  color: #64748b;
-  width: 100%;
+  font-weight: 700;
+  color: #475569;
   text-transform: uppercase;
 }
 
-.config-group input, 
-.config-group select {
+.config-group input, .config-group select {
   padding: 8px;
   border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  flex: 1;
+  border-radius: 5px;
   font-size: 0.9rem;
   background: white;
+  width: 100%;
+  box-sizing: border-box; /* Garante que padding não estoure largura */
 }
 
 .margins-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  width: 100%;
+  gap: 5px;
 }
 
-/* --- PAINEL DIREITO (Preview) --- */
+/* --- PREVIEW --- */
 .preview-panel {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 10px;
   height: 100%;
   min-width: 0;
-  position: relative;
 }
 
 .input-area {
@@ -92,65 +85,66 @@
   gap: 10px;
   background: white;
   padding: 10px;
-  border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
   flex-shrink: 0;
-  z-index: 10;
 }
 
 .input-area textarea {
   flex: 1;
   height: 40px;
+  padding: 8px;
   border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  padding: 10px;
+  border-radius: 6px;
   resize: none;
-  font-family: inherit;
 }
 
 .input-area button {
   background: #2563EB;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 0 20px;
   font-weight: bold;
   cursor: pointer;
-  white-space: nowrap;
 }
-.input-area button:hover { background: #1d4ed8; }
 
-/* ÁREA CINZA (O Palco) */
+/* --- PALCO CINZA --- */
 .paper-preview-container {
   flex: 1;
-  background: #94a3b8; /* Cinza escuro */
-  border-radius: 12px;
-  overflow: hidden; /* Corta o que sobrar */
-  position: relative; 
+  background: #94a3b8;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden; 
   box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
 }
 
-/* A FOLHA DE PAPEL */
+/* --- FOLHA DE PAPEL --- */
 .paper-sheet {
   background: white;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-  transition: all 0.3s ease;
+  box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+  box-sizing: border-box; /* CRUCIAL: Padding conta dentro do tamanho total */
+  transition: width 0.3s, height 0.3s;
   
-  /* CENTRALIZAÇÃO PERFEITA */
+  /* Centralização Absoluta */
   position: absolute;
   top: 50%;
   left: 50%;
   transform-origin: center center;
   
-  /* ZOOM PADRÃO PARA PC (Seguro para Notebooks) */
-  /* Reduzi de 0.55 para 0.45 para garantir que caiba inteira */
-  transform: translate(-50%, -50%) scale(0.45); 
+  /* ZOOM FIXO PARA PC - Reduzi para 0.38 para garantir visualização total */
+  transform: translate(-50%, -50%) scale(0.38); 
 }
 
-/* DIMENSÕES REAIS (Pixels para impressão) */
+/* Wrapper interno para garantir que o Grid obedeça a altura restante */
+.paper-content-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Dimensões em Pixels (Aproximado 96DPI) */
 .paper-sheet.A4.portrait { width: 794px; height: 1123px; }
 .paper-sheet.A4.landscape { width: 1123px; height: 794px; }
 .paper-sheet.A3.portrait { width: 1123px; height: 1587px; }
@@ -159,69 +153,77 @@
 .paper-sheet.A5.landscape { width: 794px; height: 559px; }
 
 
-/* AJUSTES DE ZOOM AUTOMÁTICO */
-
-/* Monitores Grandes (Full HD ou maior) */
-@media (min-height: 900px) {
-  .paper-sheet { transform: translate(-50%, -50%) scale(0.6); }
+/* --- MEDIA QUERIES (Zoom Adaptativo) --- */
+@media (min-height: 950px) {
+  .paper-sheet { transform: translate(-50%, -50%) scale(0.55); }
 }
 
-/* Notebooks Padrão (1366x768) */
 @media (max-height: 800px) {
-  .paper-sheet { transform: translate(-50%, -50%) scale(0.42); }
-}
-
-/* Telas Pequenas de PC/Tablet */
-@media (max-height: 650px) {
+  /* Telas baixas de notebook */
   .paper-sheet { transform: translate(-50%, -50%) scale(0.35); }
 }
 
-
-/* --- CELULAR (LAYOUT VERTICAL) --- */
-@media (max-width: 850px) {
-  .board-generator-wrapper {
-    flex-direction: column;
-    height: auto !important; /* Rola a página no celular */
-    padding-bottom: 80px;
-  }
-
-  .config-panel { width: 100%; flex: none; max-height: none; }
-  
-  .preview-panel { width: 100%; flex: none; display: flex; flex-direction: column; }
-
-  /* Área cinza com altura fixa no celular */
-  .paper-preview-container {
-    height: 50vh; 
-    min-height: 350px;
-    width: 100%;
-  }
-
-  /* Zoom pequeno para celular */
-  .paper-sheet {
-    transform: translate(-50%, -50%) scale(0.32); 
-  }
-}
-
-/* --- CONTEÚDO DA FOLHA --- */
+/* --- CONTEÚDO --- */
 .paper-header {
   text-align: center;
   font-weight: bold;
   font-size: 24pt;
-  margin-bottom: 10px;
-  border: 1px dashed #ccc;
   padding: 10px;
-  background: #f8fafc;
-  color: #334155;
+  border: 1px dashed #ccc;
+  margin-bottom: 10px;
+  flex-shrink: 0; /* Cabeçalho não encolhe */
 }
 
-.paper-grid { display: grid; width: 100%; height: 100%; }
-.paper-cell { display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
-.cell-content { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; padding: 4px; text-align: center; }
-.cell-content img { object-fit: contain; max-width: 90%; max-height: 80%; }
-.cell-content.top { flex-direction: column-reverse; justify-content: flex-end; }
-.cell-content.bottom { justify-content: flex-end; }
-.cell-content span { line-height: 1.1; width: 100%; word-break: break-word; }
-.empty-slot { width: 100%; height: 100%; background: radial-gradient(#e2e8f0 2px, transparent 2px); background-size: 20px 20px; }
+.paper-grid {
+  display: grid;
+  width: 100%;
+  flex: 1; /* Ocupa todo o resto do espaço (respeitando margem inferior) */
+  min-height: 0; /* CRUCIAL para o grid não estourar */
+}
+
+.paper-cell {
+  border-color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  
+  /* CRUCIAL: Permite que a célula encolha muito se for 10x10 */
+  min-width: 0; 
+  min-height: 0;
+}
+
+.cell-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 2px;
+  text-align: center;
+}
+
+.cell-content img {
+  object-fit: contain;
+  max-width: 95%;
+  max-height: 80%; /* Deixa espaço para o texto */
+  flex-shrink: 1; /* Imagem pode encolher */
+}
+
+.cell-content span {
+  line-height: 1;
+  word-break: break-word;
+  flex-shrink: 0;
+}
+
+.empty-slot {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(#cbd5e1 2px, transparent 2px);
+  background-size: 15px 15px;
+}
 
 .btn-finalize {
   padding: 12px;
@@ -230,9 +232,27 @@
   font-weight: bold;
   border: none;
   border-radius: 8px;
-  cursor: pointer;
   width: 100%;
-  margin-top: 10px;
+  cursor: pointer;
+  margin-top: auto;
 }
-.btn-finalize:hover { background: #15803d; }
-.btn-finalize:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+/* MOBILE FIX */
+@media (max-width: 850px) {
+  .board-generator-wrapper {
+    flex-direction: column;
+    height: auto !important;
+    padding-bottom: 80px;
+  }
+  .config-panel { width: 100%; flex: none; }
+  .preview-panel { width: 100%; flex: none; }
+  
+  .paper-preview-container {
+    height: 50vh; 
+    min-height: 350px;
+    width: 100%;
+  }
+  .paper-sheet {
+    transform: translate(-50%, -50%) scale(0.32);
+  }
+}
