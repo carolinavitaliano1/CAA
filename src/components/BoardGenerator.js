@@ -17,8 +17,7 @@ const BoardGenerator = ({ onGenerate }) => {
   const [text, setText] = useState("");
   const [pages, setPages] = useState([]); 
   const [isGenerating, setIsGenerating] = useState(false);
-  // ZOOM INICIAL AJUSTADO PARA 32% (Caber na tela)
-  const [zoomLevel, setZoomLevel] = useState(0.32); 
+  const [zoomLevel, setZoomLevel] = useState(0.35); // Zoom confortável
   const [currentPage, setCurrentPage] = useState(0);
 
   const [config, setConfig] = useState({
@@ -251,6 +250,7 @@ const BoardGenerator = ({ onGenerate }) => {
                             transform: `scale(${zoomLevel})`
                         }}
                     >
+                        {/* WRAPPER RÍGIDO - Impede vazar */}
                         <div className="paper-content-wrapper" style={{ border: `${config.borderWidth}px ${config.borderStyle} ${config.boardBorderColor}` }}>
                             {config.header && (
                                 <div className="paper-header" style={{ backgroundColor: config.headerBgColor, borderBottom: `${config.borderWidth}px ${config.borderStyle} ${config.cellBorderColor}` }}>
@@ -266,16 +266,8 @@ const BoardGenerator = ({ onGenerate }) => {
                                                 <div className={`cell-content ${config.textPosition}`}>
                                                     {config.textPosition === 'top' && <span style={{ fontFamily: config.fontFamily, fontSize: `${config.fontSize}pt`, textTransform: config.textCase }}>{card.text}</span>}
                                                     
-                                                    {/* IMAGEM AJUSTÁVEL: Max Height de 70% garante espaço para o texto */}
-                                                    <img 
-                                                        src={card.image} 
-                                                        alt="" 
-                                                        style={{ 
-                                                            maxWidth: '100%', 
-                                                            maxHeight: config.textPosition === 'none' ? '100%' : '70%', 
-                                                            objectFit: 'contain' 
-                                                        }} 
-                                                    />
+                                                    {/* IMAGEM CONTIDA */}
+                                                    <img src={card.image} alt="" />
                                                     
                                                     {config.textPosition === 'bottom' && <span style={{ fontFamily: config.fontFamily, fontSize: `${config.fontSize}pt`, textTransform: config.textCase }}>{card.text}</span>}
                                                 </div>
@@ -286,7 +278,6 @@ const BoardGenerator = ({ onGenerate }) => {
                             </div>
                         </div>
 
-                        {/* RODAPÉ (Corrigido) */}
                         <div className="paper-footer">
                             Gerado via NeuroCAA - Sistema protegido por direitos autorais - Pictogramas utilizados sob licença ARASAAC (CC BY-NC-SA 4.0) - <a href="https://neurocaa.com" target="_blank" rel="noreferrer">Conheça a plataforma</a>
                         </div>
