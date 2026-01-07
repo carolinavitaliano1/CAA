@@ -17,9 +17,7 @@ const BoardGenerator = ({ onGenerate }) => {
   const [text, setText] = useState("");
   const [pages, setPages] = useState([]); 
   const [isGenerating, setIsGenerating] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState(0.45); // Zoom inicial um pouco maior
-  
-  // NOVO: Controle de Página Atual (Livro)
+  const [zoomLevel, setZoomLevel] = useState(0.45);
   const [currentPage, setCurrentPage] = useState(0);
 
   const [config, setConfig] = useState({
@@ -48,7 +46,6 @@ const BoardGenerator = ({ onGenerate }) => {
     if (!text.trim()) return;
 
     setIsGenerating(true);
-    // Reinicia para a página 1 ao atualizar
     setCurrentPage(0);
 
     const words = text.trim().split(/[\n\s]+/);
@@ -90,7 +87,6 @@ const BoardGenerator = ({ onGenerate }) => {
     onGenerate(allFlattenedCards);
   };
 
-  // Funções de Navegação (Livro)
   const nextPage = () => {
     if (currentPage < pages.length - 1) setCurrentPage(prev => prev + 1);
   };
@@ -102,7 +98,6 @@ const BoardGenerator = ({ onGenerate }) => {
   return (
     <div className="board-generator-wrapper">
       
-      {/* MENU LATERAL */}
       <div className="config-panel">
         <h3>🛠️ Estrutura</h3>
         <div className="config-group">
@@ -148,6 +143,12 @@ const BoardGenerator = ({ onGenerate }) => {
         <div className="config-group">
             <label>Cor da Borda:</label>
             <select value={config.cellBorderColor} onChange={(e) => handleChange('cellBorderColor', e.target.value)}>
+                {CAA_COLORS.map(c => <option key={c.color} value={c.color} style={{backgroundColor: c.color}}>{c.label}</option>)}
+            </select>
+        </div>
+        <div className="config-group">
+            <label>Cor da Borda da Prancha:</label>
+            <select value={config.boardBorderColor} onChange={(e) => handleChange('boardBorderColor', e.target.value)}>
                 {CAA_COLORS.map(c => <option key={c.color} value={c.color} style={{backgroundColor: c.color}}>{c.label}</option>)}
             </select>
         </div>
@@ -201,8 +202,8 @@ const BoardGenerator = ({ onGenerate }) => {
                     <option value="A3">A3</option>
                 </select>
                 <select value={config.orientation} onChange={(e) => handleChange('orientation', e.target.value)}>
-                    <option value="landscape">Horizontal</option>
-                    <option value="portrait">Vertical</option>
+                    <option value="landscape">Deitado</option>
+                    <option value="portrait">Em Pé</option>
                 </select>
             </div>
         </div>
@@ -218,7 +219,6 @@ const BoardGenerator = ({ onGenerate }) => {
         </div>
       </div>
 
-      {/* --- ÁREA DE VISUALIZAÇÃO --- */}
       <div className="preview-panel">
         <div className="preview-toolbar">
             <div className="input-area-mini">
@@ -240,11 +240,8 @@ const BoardGenerator = ({ onGenerate }) => {
 
         <div className="paper-preview-container">
             
-            {/* RENDERIZAÇÃO DAS PÁGINAS */}
             <div className="book-viewer">
                 {pages.length > 0 ? pages.map((pageCards, pageIdx) => (
-                    // O segredo está aqui: Se não for a página atual, aplicamos a classe 'hidden-page'
-                    // Mas na impressão, o CSS vai ignorar essa classe e mostrar tudo!
                     <div 
                         key={pageIdx}
                         className={`paper-sheet ${config.paperSize} ${config.orientation} ${pageIdx !== currentPage ? 'hidden-page' : ''}`}
@@ -253,6 +250,7 @@ const BoardGenerator = ({ onGenerate }) => {
                             transform: `scale(${zoomLevel})`
                         }}
                     >
+                        {/* WRAPPER COM A BORDA DA PRANCHA */}
                         <div className="paper-content-wrapper" style={{ border: `${config.borderWidth}px ${config.borderStyle} ${config.boardBorderColor}` }}>
                             {config.header && (
                                 <div className="paper-header" style={{ backgroundColor: config.headerBgColor, borderBottom: `${config.borderWidth}px ${config.borderStyle} ${config.cellBorderColor}` }}>
@@ -275,19 +273,22 @@ const BoardGenerator = ({ onGenerate }) => {
                                     );
                                 })}
                             </div>
-                            {/* Número da Página no Rodapé (Opcional, bom para livro) */}
-                            <div className="page-number-footer">Página {pageIdx + 1} de {pages.length}</div>
                         </div>
+
+                        {/* --- RODAPÉ COM CRÉDITOS (Abaixo da borda, mas no papel) --- */}
+                        <div className="paper-footer">
+                            © Gerado via © NeuroCAA - Sistema protegido por direitos autorais - Pictogramas utilizados sob licença ARASAAC (CC BY-NC-SA 4.0) - <a href="https://neurocaa.com" target="_blank" rel="noreferrer">Conheça a plataforma</a>
+                        </div>
+
                     </div>
                 )) : <div className="no-pages-msg">Digite palavras e clique em Atualizar</div>}
             </div>
 
-            {/* CONTROLES DE NAVEGAÇÃO FLUTUANTES (SÓ APARECEM SE TIVER PÁGINAS) */}
             {pages.length > 0 && (
                 <div className="pagination-controls">
-                    <button onClick={prevPage} disabled={currentPage === 0} title="Página Anterior">⬅</button>
+                    <button onClick={prevPage} disabled={currentPage === 0} title="Anterior">⬅</button>
                     <span className="page-indicator">Pág {currentPage + 1} / {pages.length}</span>
-                    <button onClick={nextPage} disabled={currentPage === pages.length - 1} title="Próxima Página">➡</button>
+                    <button onClick={nextPage} disabled={currentPage === pages.length - 1} title="Próxima">➡</button>
                 </div>
             )}
 
