@@ -5,9 +5,7 @@ const BoardGenerator = ({ onGenerate }) => {
   const [text, setText] = useState("");
   const [cards, setCards] = useState([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  
-  // NOVO ESTADO: Controle de Zoom (Padrão 35%)
-  const [zoomLevel, setZoomLevel] = useState(0.35);
+  const [zoomLevel, setZoomLevel] = useState(0.35); // Zoom inicial
 
   const [config, setConfig] = useState({
     rows: 4,
@@ -57,6 +55,7 @@ const BoardGenerator = ({ onGenerate }) => {
     setConfig(prev => ({ ...prev, [field]: value }));
   };
 
+  // Salva no App (Grid Digital)
   const handleFinalize = () => {
     const finalCards = cards.map(c => ({
       ...c,
@@ -65,6 +64,11 @@ const BoardGenerator = ({ onGenerate }) => {
       borderColor: config.borderColor
     }));
     onGenerate(finalCards);
+  };
+
+  // Imprime ou Salva PDF
+  const handlePrint = () => {
+    window.print();
   };
 
   return (
@@ -77,9 +81,9 @@ const BoardGenerator = ({ onGenerate }) => {
         <div className="config-group">
           <label>Linhas X Colunas:</label>
           <div style={{display:'flex', gap:'5px', width:'100%'}}>
-             <input type="number" min="1" max="20" value={config.rows} onChange={(e) => handleChange('rows', e.target.value)} placeholder="Linhas" />
+             <input type="number" min="1" max="20" value={config.rows} onChange={(e) => handleChange('rows', e.target.value)} placeholder="L" />
              <span style={{alignSelf:'center'}}>X</span>
-             <input type="number" min="1" max="20" value={config.cols} onChange={(e) => handleChange('cols', e.target.value)} placeholder="Colunas" />
+             <input type="number" min="1" max="20" value={config.cols} onChange={(e) => handleChange('cols', e.target.value)} placeholder="C" />
           </div>
         </div>
 
@@ -152,7 +156,7 @@ const BoardGenerator = ({ onGenerate }) => {
       {/* ÁREA DE PRÉVIA */}
       <div className="preview-panel">
         
-        {/* BARRA DE FERRAMENTAS DO PREVIEW */}
+        {/* BARRA DE FERRAMENTAS */}
         <div className="preview-toolbar">
             <div className="input-area-mini">
                 <textarea 
@@ -165,7 +169,6 @@ const BoardGenerator = ({ onGenerate }) => {
                 </button>
             </div>
             
-            {/* CONTROLE DE ZOOM MANUAL */}
             <div className="zoom-controls">
                 <label>🔍 Zoom: {Math.round(zoomLevel * 100)}%</label>
                 <input 
@@ -180,7 +183,7 @@ const BoardGenerator = ({ onGenerate }) => {
         </div>
 
         <div className="paper-preview-container">
-            {/* A FOLHA DE PAPEL - Agora usa o zoomLevel dinâmico */}
+            {/* A FOLHA DE PAPEL */}
             <div 
                 className={`paper-sheet ${config.paperSize} ${config.orientation}`}
                 style={{
@@ -188,7 +191,7 @@ const BoardGenerator = ({ onGenerate }) => {
                     paddingBottom: `${config.marginBottom}cm`,
                     paddingLeft: `${config.marginLeft}cm`,
                     paddingRight: `${config.marginRight}cm`,
-                    transform: `translate(-50%, -50%) scale(${zoomLevel})` // <--- AQUI ESTÁ O SEGREDO
+                    transform: `translate(-50%, -50%) scale(${zoomLevel})`
                 }}
             >
                 <div className="paper-content-wrapper">
@@ -243,9 +246,15 @@ const BoardGenerator = ({ onGenerate }) => {
             </div>
         </div>
 
-        <button className="btn-finalize" onClick={handleFinalize} disabled={cards.length === 0}>
-            ✅ Gerar Prancha
-        </button>
+        {/* ÁREA DE BOTÕES FINAIS */}
+        <div className="action-buttons-row">
+            <button className="btn-print" onClick={handlePrint}>
+                🖨️ Imprimir / PDF
+            </button>
+            <button className="btn-finalize" onClick={handleFinalize} disabled={cards.length === 0}>
+                ✅ Salvar no App
+            </button>
+        </div>
       </div>
     </div>
   );
