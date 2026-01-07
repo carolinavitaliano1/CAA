@@ -1,5 +1,5 @@
 /* =========================================
-   ESTILO DO GERADOR (Modo Livro / Slide)
+   ESTILO DO GERADOR (Botões Abaixo da Prancha)
    ========================================= */
 
 .board-generator-wrapper {
@@ -15,7 +15,7 @@
   box-sizing: border-box;
 }
 
-/* --- MENU LATERAL (Mantido) --- */
+/* --- MENU LATERAL --- */
 .config-panel {
   flex: 0 0 300px; 
   background: white;
@@ -62,42 +62,54 @@
 .zoom-controls label { font-size: 0.8rem; font-weight: bold; color: #475569; white-space: nowrap; }
 .zoom-controls input[type="range"] { cursor: pointer; width: 100px; }
 
-/* --- ÁREA DE VISUALIZAÇÃO (Modo Livro) --- */
+/* --- ÁREA DE VISUALIZAÇÃO (Modo Coluna) --- */
 .paper-preview-container {
   flex: 1;
   background: #94a3b8;
   border-radius: 10px;
   position: relative;
-  overflow: hidden; /* Corta o que estiver fora */
+  overflow: hidden;
+  
+  /* MUDANÇA PRINCIPAL: Usamos coluna para empilhar Papel em cima e Botões embaixo */
   display: flex;
-  align-items: center;     /* Centraliza Verticalmente */
-  justify-content: center; /* Centraliza Horizontalmente */
+  flex-direction: column; 
+  align-items: center;
+  justify-content: space-between; /* Espalha o conteúdo */
+  
   box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+  padding-bottom: 10px; /* Espaço para os botões não colarem no fundo */
 }
 
+/* Container que segura APENAS a folha (ocupa o espaço de cima) */
 .book-viewer {
+  flex: 1; /* Ocupa todo o espaço disponível, empurrando os botões para baixo */
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 100%;
+  overflow: hidden; /* Se der muito zoom, corta aqui e não empurra os botões */
 }
 
-/* PAGINAÇÃO (Setas de Navegação) */
+/* PAGINAÇÃO (Agora é um bloco estático embaixo, não flutuante) */
 .pagination-controls {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(255, 255, 255, 0.9);
-    padding: 8px 20px;
+    /* Removemos position absolute */
+    position: relative;
+    transform: none;
+    left: auto;
+    bottom: auto;
+    
+    background: rgba(255, 255, 255, 0.95);
+    padding: 8px 25px;
     border-radius: 30px;
     display: flex;
     align-items: center;
-    gap: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    z-index: 100;
+    gap: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    z-index: 10;
+    
+    margin-top: 10px; /* Margem para separar da folha */
 }
+
 .pagination-controls button {
     background: #2563EB; color: white; border: none; width: 40px; height: 40px; border-radius: 50%;
     font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
@@ -114,15 +126,10 @@
   box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   box-sizing: border-box;
   flex-shrink: 0;
-  
-  /* Centralização via Flex no pai, não precisa mais de position absolute */
-  transition: transform 0.2s ease; /* Animação suave no zoom */
+  transition: transform 0.2s ease;
 }
 
-/* CLASSE PARA ESCONDER PÁGINAS QUE NÃO SÃO A ATUAL */
-.hidden-page {
-    display: none !important;
-}
+.hidden-page { display: none !important; }
 
 .paper-content-wrapper { width: 100%; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; background: white; position: relative; }
 
@@ -137,7 +144,6 @@
 /* CONTEÚDO */
 .paper-header { text-align: center; font-weight: bold; font-size: 24pt; padding: 10px; margin-bottom: 5px; flex-shrink: 0; }
 .page-number-footer { position: absolute; bottom: 5px; right: 10px; font-size: 10pt; color: #94a3b8; }
-
 .paper-grid { display: grid; width: 100%; flex: 1; min-height: 0; }
 .paper-cell { display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; min-width: 0; min-height: 0; }
 .cell-content { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; padding: 2px; text-align: center; }
@@ -158,38 +164,23 @@
   .config-panel { width: 100%; flex: none; }
   .preview-panel { width: 100%; flex: none; }
   .paper-preview-container { height: 50vh; min-height: 350px; width: 100%; }
-  .pagination-controls { width: 90%; justify-content: space-between; }
+  
+  /* No mobile, garantimos que os botões fiquem visíveis e grandes */
+  .pagination-controls { 
+    width: 90%; 
+    justify-content: space-between; 
+    margin-top: auto; 
+    margin-bottom: 5px;
+  }
 }
 
-/* =========================================
-   CSS DE IMPRESSÃO (O TRUQUE PARA IMPRIMIR TODAS)
-   ========================================= */
+/* PRINT CSS */
 @media print {
   @page { margin: 0; size: auto; }
   body { background: white; margin: 0; padding: 0; overflow: visible !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-
-  /* Esconde interface */
   .admin-bar, .sidebar, .sidebar-overlay, .config-panel, .preview-toolbar, .action-buttons-row, .pagination-controls { display: none !important; }
-
-  /* Limpa containers */
-  .board-generator-wrapper, .preview-panel, .paper-preview-container, .book-viewer {
-    display: block !important; height: auto !important; border: none !important; margin: 0 !important; padding: 0 !important; max-width: none !important; background: white !important; overflow: visible !important;
-  }
-
-  /* FORÇA MOSTRAR TODAS AS PÁGINAS (Remove display:none) */
-  .hidden-page {
-    display: block !important;
-  }
-
-  /* Estilo da Folha na Impressão */
-  .paper-sheet {
-    transform: none !important; /* Tira o Zoom */
-    box-shadow: none !important;
-    margin: 0 auto !important;
-    page-break-after: always !important; /* Uma folha por página */
-    display: block !important;
-    position: relative !important; /* Garante fluxo normal */
-  }
-  
+  .board-generator-wrapper, .preview-panel, .paper-preview-container, .book-viewer { display: block !important; height: auto !important; border: none !important; margin: 0 !important; padding: 0 !important; max-width: none !important; background: white !important; overflow: visible !important; }
+  .hidden-page { display: block !important; }
+  .paper-sheet { transform: none !important; box-shadow: none !important; margin: 0 auto !important; page-break-after: always !important; display: block !important; position: relative !important; }
   .empty-slot { background: none !important; border: 1px solid #eee; }
 }
