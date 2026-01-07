@@ -2,18 +2,17 @@ import React, { useState, useEffect } from 'react';
 import './BoardGenerator.css';
 
 const BoardGenerator = ({ onGenerate }) => {
-  // --- ESTADOS ---
   const [text, setText] = useState("");
   const [cards, setCards] = useState([]);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // CONFIGURAÇÕES COMPLETAS
+  // CONFIGURAÇÕES PADRÃO
   const [config, setConfig] = useState({
-    rows: 3,
-    cols: 4,
+    rows: 4,
+    cols: 5,
     header: true,
     headerText: 'Minha Prancha',
-    borderWidth: 2,
+    borderWidth: 1,
     borderStyle: 'solid',
     borderColor: '#000000',
     paperSize: 'A4',
@@ -27,13 +26,12 @@ const BoardGenerator = ({ onGenerate }) => {
     gap: 2
   });
 
-  // GERAÇÃO DA PRÉVIA (Busca imagens)
   const handlePreview = async (e) => {
     e.preventDefault();
     if (!text.trim()) return;
 
     setIsGenerating(true);
-    const words = text.trim().split(/[\n\s]+/); // Separa por linha ou espaço
+    const words = text.trim().split(/[\n\s]+/);
     const maxCards = config.rows * config.cols;
     const wordsToProcess = words.slice(0, maxCards);
 
@@ -70,24 +68,24 @@ const BoardGenerator = ({ onGenerate }) => {
   return (
     <div className="board-generator-wrapper">
       
-      {/* --- PAINEL DE CONFIGURAÇÕES (ESQUERDA) --- */}
+      {/* PAINEL DE CONFIGURAÇÕES */}
       <div className="config-panel">
         <h3>🛠️ Configuração da Planilha</h3>
         
         <div className="config-group">
-          <label>Estrutura (Linhas x Colunas):</label>
+          <label>Linhas X Colunas:</label>
           <div style={{display:'flex', gap:'5px', width:'100%'}}>
-             <input type="number" min="1" value={config.rows} onChange={(e) => handleChange('rows', e.target.value)} placeholder="Linhas" />
+             <input type="number" min="1" max="20" value={config.rows} onChange={(e) => handleChange('rows', e.target.value)} placeholder="Linhas" />
              <span style={{alignSelf:'center'}}>X</span>
-             <input type="number" min="1" value={config.cols} onChange={(e) => handleChange('cols', e.target.value)} placeholder="Colunas" />
+             <input type="number" min="1" max="20" value={config.cols} onChange={(e) => handleChange('cols', e.target.value)} placeholder="Colunas" />
           </div>
         </div>
 
         <div className="config-group">
             <label>Cabeçalho:</label>
             <select value={config.header} onChange={(e) => handleChange('header', e.target.value === 'true')}>
-                <option value="false">Sem cabeçalho</option>
-                <option value="true">Com cabeçalho</option>
+                <option value="false">Não</option>
+                <option value="true">Sim</option>
             </select>
             {config.header && (
               <input type="text" value={config.headerText} onChange={(e) => handleChange('headerText', e.target.value)} placeholder="Texto do Título" />
@@ -95,21 +93,21 @@ const BoardGenerator = ({ onGenerate }) => {
         </div>
 
         <div className="config-group">
-            <label>Bordas:</label>
+            <label>Bordas (px / estilo / cor):</label>
             <div style={{display:'flex', gap:'5px', width:'100%'}}>
-                <input type="number" value={config.borderWidth} onChange={(e) => handleChange('borderWidth', e.target.value)} placeholder="px" />
+                <input type="number" value={config.borderWidth} onChange={(e) => handleChange('borderWidth', e.target.value)} />
                 <select value={config.borderStyle} onChange={(e) => handleChange('borderStyle', e.target.value)}>
                     <option value="solid">Sólida</option>
                     <option value="dashed">Tracejada</option>
                     <option value="dotted">Pontilhada</option>
                 </select>
-                <input type="color" value={config.borderColor} onChange={(e) => handleChange('borderColor', e.target.value)} style={{width:'40px', padding:'0'}} />
+                <input type="color" value={config.borderColor} onChange={(e) => handleChange('borderColor', e.target.value)} style={{width:'40px', padding:'0', height:'38px'}} />
             </div>
         </div>
 
         <h3>📄 Papel e Margens</h3>
         <div className="config-group">
-            <label>Formato:</label>
+            <label>Papel:</label>
             <select value={config.paperSize} onChange={(e) => handleChange('paperSize', e.target.value)}>
                 <option value="A4">A4</option>
                 <option value="A3">A3</option>
@@ -124,52 +122,52 @@ const BoardGenerator = ({ onGenerate }) => {
         <div className="config-group">
             <label>Margens (cm):</label>
             <div className="margins-grid">
-                <input placeholder="Sup" type="number" step="0.1" value={config.marginTop} onChange={(e) => handleChange('marginTop', e.target.value)} />
-                <input placeholder="Inf" type="number" step="0.1" value={config.marginBottom} onChange={(e) => handleChange('marginBottom', e.target.value)} />
-                <input placeholder="Esq" type="number" step="0.1" value={config.marginLeft} onChange={(e) => handleChange('marginLeft', e.target.value)} />
-                <input placeholder="Dir" type="number" step="0.1" value={config.marginRight} onChange={(e) => handleChange('marginRight', e.target.value)} />
+                <input placeholder="Sup" type="number" step="0.5" value={config.marginTop} onChange={(e) => handleChange('marginTop', e.target.value)} />
+                <input placeholder="Inf" type="number" step="0.5" value={config.marginBottom} onChange={(e) => handleChange('marginBottom', e.target.value)} />
+                <input placeholder="Esq" type="number" step="0.5" value={config.marginLeft} onChange={(e) => handleChange('marginLeft', e.target.value)} />
+                <input placeholder="Dir" type="number" step="0.5" value={config.marginRight} onChange={(e) => handleChange('marginRight', e.target.value)} />
             </div>
         </div>
 
-        <h3>🔤 Texto</h3>
+        <h3>🔤 Texto e Fonte</h3>
         <div className="config-group">
-            <label>Fonte e Posição:</label>
-            <select value={config.textPosition} onChange={(e) => handleChange('textPosition', e.target.value)}>
+            <label>Posição / Fonte / Tam / Caixa:</label>
+            <select value={config.textPosition} onChange={(e) => handleChange('textPosition', e.target.value)} style={{marginBottom: '5px'}}>
                 <option value="bottom">Abaixo</option>
                 <option value="top">Acima</option>
-                <option value="none">Sem texto</option>
+                <option value="none">Ocultar</option>
             </select>
-            <select value={config.fontFamily} onChange={(e) => handleChange('fontFamily', e.target.value)}>
+            <select value={config.fontFamily} onChange={(e) => handleChange('fontFamily', e.target.value)} style={{marginBottom: '5px'}}>
                 <option value="Arial">Arial</option>
                 <option value="Times New Roman">Times</option>
                 <option value="Verdana">Verdana</option>
                 <option value="Comic Sans MS">Comic Sans</option>
             </select>
-            <div style={{display:'flex', gap:'5px', width:'100%', marginTop:'5px'}}>
-                <input type="number" value={config.fontSize} onChange={(e) => handleChange('fontSize', e.target.value)} placeholder="Tam." />
+            <div style={{display:'flex', gap:'5px'}}>
+                <input type="number" value={config.fontSize} onChange={(e) => handleChange('fontSize', e.target.value)} placeholder="Px" />
                 <select value={config.textCase} onChange={(e) => handleChange('textCase', e.target.value)}>
-                    <option value="uppercase">MAIÚSCULA</option>
-                    <option value="lowercase">minúscula</option>
+                    <option value="uppercase">ABC</option>
+                    <option value="lowercase">abc</option>
                 </select>
             </div>
         </div>
       </div>
 
-      {/* --- ÁREA DE PRÉVIA (DIREITA) --- */}
+      {/* ÁREA DE PRÉVIA */}
       <div className="preview-panel">
         <div className="input-area">
             <textarea 
-            placeholder="Digite palavras (uma por linha)..." 
+            placeholder="Digite aqui (uma palavra por linha)..." 
             value={text}
             onChange={(e) => setText(e.target.value)}
             />
             <button onClick={handlePreview} disabled={isGenerating}>
-                {isGenerating ? '🔄...' : 'ATUALIZAR'}
+                {isGenerating ? '⏳...' : 'ATUALIZAR'}
             </button>
         </div>
 
         <div className="paper-preview-container">
-            {/* A FOLHA DE PAPEL SIMULADA */}
+            {/* A FOLHA DE PAPEL */}
             <div 
                 className={`paper-sheet ${config.paperSize} ${config.orientation}`}
                 style={{
@@ -179,52 +177,55 @@ const BoardGenerator = ({ onGenerate }) => {
                     paddingRight: `${config.marginRight}cm`,
                 }}
             >
-                {config.header && <div className="paper-header">{config.headerText}</div>}
-                
-                <div 
-                    className="paper-grid"
-                    style={{
-                        gridTemplateColumns: `repeat(${config.cols}, 1fr)`,
-                        gridTemplateRows: `repeat(${config.rows}, 1fr)`,
-                        gap: `${config.gap}px`
-                    }}
-                >
-                    {Array.from({ length: config.rows * config.cols }).map((_, i) => {
-                        const card = cards[i];
-                        return (
-                            <div 
-                                key={i} 
-                                className="paper-cell"
-                                style={{
-                                    borderWidth: `${config.borderWidth}px`,
-                                    borderStyle: config.borderStyle,
-                                    borderColor: config.borderColor
-                                }}
-                            >
-                                {card ? (
-                                    <div className={`cell-content ${config.textPosition}`}>
-                                        {config.textPosition === 'top' && (
-                                            <span style={{
-                                                fontFamily: config.fontFamily, 
-                                                fontSize: `${config.fontSize}pt`,
-                                                textTransform: config.textCase
-                                            }}>{card.text}</span>
-                                        )}
-                                        
-                                        <img src={card.image} alt={card.text} />
+                {/* O FLEXBOX AQUI GARANTE QUE O HEADER EMPURRE O GRID PARA BAIXO */}
+                <div className="paper-content-wrapper">
+                    {config.header && <div className="paper-header">{config.headerText}</div>}
+                    
+                    <div 
+                        className="paper-grid"
+                        style={{
+                            gridTemplateColumns: `repeat(${config.cols}, 1fr)`,
+                            gridTemplateRows: `repeat(${config.rows}, 1fr)`,
+                            gap: `${config.gap}px`
+                        }}
+                    >
+                        {Array.from({ length: config.rows * config.cols }).map((_, i) => {
+                            const card = cards[i];
+                            return (
+                                <div 
+                                    key={i} 
+                                    className="paper-cell"
+                                    style={{
+                                        borderWidth: `${config.borderWidth}px`,
+                                        borderStyle: config.borderStyle,
+                                        borderColor: config.borderColor
+                                    }}
+                                >
+                                    {card ? (
+                                        <div className={`cell-content ${config.textPosition}`}>
+                                            {config.textPosition === 'top' && (
+                                                <span style={{
+                                                    fontFamily: config.fontFamily, 
+                                                    fontSize: `${config.fontSize}pt`,
+                                                    textTransform: config.textCase
+                                                }}>{card.text}</span>
+                                            )}
+                                            
+                                            <img src={card.image} alt={card.text} />
 
-                                        {config.textPosition === 'bottom' && (
-                                            <span style={{
-                                                fontFamily: config.fontFamily, 
-                                                fontSize: `${config.fontSize}pt`,
-                                                textTransform: config.textCase
-                                            }}>{card.text}</span>
-                                        )}
-                                    </div>
-                                ) : <div className="empty-slot"></div>}
-                            </div>
-                        );
-                    })}
+                                            {config.textPosition === 'bottom' && (
+                                                <span style={{
+                                                    fontFamily: config.fontFamily, 
+                                                    fontSize: `${config.fontSize}pt`,
+                                                    textTransform: config.textCase
+                                                }}>{card.text}</span>
+                                            )}
+                                        </div>
+                                    ) : <div className="empty-slot"></div>}
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
         </div>
