@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './BoardGenerator.css';
 
 const CAA_COLORS = [
@@ -17,32 +17,26 @@ const BoardGenerator = ({ onGenerate }) => {
   const [text, setText] = useState("");
   const [pages, setPages] = useState([]); 
   const [isGenerating, setIsGenerating] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState(0.35);
+  const [zoomLevel, setZoomLevel] = useState(0.45); // Zoom inicial um pouco maior
+  
+  // NOVO: Controle de Página Atual (Livro)
+  const [currentPage, setCurrentPage] = useState(0);
 
   const [config, setConfig] = useState({
-    // Estrutura
     rows: 4,
     cols: 5,
     gap: 2,
-    
-    // Cabeçalho
     header: true,
     headerText: 'Minha Prancha',
     headerBgColor: '#FFFFFF',
-    
-    // Estilo Célula
     cellBgColor: '#FFFFFF',
     cellBorderColor: '#000000',
     borderWidth: 1,
     borderStyle: 'solid',
     boardBorderColor: '#000000',
-    
-    // Papel
     paperSize: 'A4',
     orientation: 'landscape',
     marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1,
-    
-    // Texto
     textPosition: 'bottom',
     fontFamily: 'Arial',
     fontSize: 12,
@@ -54,6 +48,9 @@ const BoardGenerator = ({ onGenerate }) => {
     if (!text.trim()) return;
 
     setIsGenerating(true);
+    // Reinicia para a página 1 ao atualizar
+    setCurrentPage(0);
+
     const words = text.trim().split(/[\n\s]+/);
     const cardsPerPage = config.rows * config.cols;
     
@@ -70,7 +67,6 @@ const BoardGenerator = ({ onGenerate }) => {
 
     const allCards = await Promise.all(allCardsPromises);
 
-    // Paginação
     const newPages = [];
     for (let i = 0; i < allCards.length; i += cardsPerPage) {
       newPages.push(allCards.slice(i, i + cardsPerPage));
@@ -94,13 +90,20 @@ const BoardGenerator = ({ onGenerate }) => {
     onGenerate(allFlattenedCards);
   };
 
+  // Funções de Navegação (Livro)
+  const nextPage = () => {
+    if (currentPage < pages.length - 1) setCurrentPage(prev => prev + 1);
+  };
+
+  const prevPage = () => {
+    if (currentPage > 0) setCurrentPage(prev => prev - 1);
+  };
+
   return (
     <div className="board-generator-wrapper">
       
-      {/* --- MENU DE CONFIGURAÇÃO --- */}
+      {/* MENU LATERAL */}
       <div className="config-panel">
-        
-        {/* 1. ESTRUTURA */}
         <h3>🛠️ Estrutura</h3>
         <div className="config-group">
           <label>Linhas X Colunas (p/ pág):</label>
@@ -111,7 +114,6 @@ const BoardGenerator = ({ onGenerate }) => {
           </div>
         </div>
 
-        {/* 2. CABEÇALHO (Aqui estão as opções que sumiram!) */}
         <h3>🏷️ Cabeçalho</h3>
         <div className="config-group">
             <label>Mostrar Cabeçalho:</label>
@@ -125,12 +127,7 @@ const BoardGenerator = ({ onGenerate }) => {
             <>
                 <div className="config-group">
                     <label>Texto do Título:</label>
-                    <input 
-                        type="text" 
-                        value={config.headerText} 
-                        onChange={(e) => handleChange('headerText', e.target.value)} 
-                        placeholder="Ex: Rotina da Manhã"
-                    />
+                    <input type="text" value={config.headerText} onChange={(e) => handleChange('headerText', e.target.value)} />
                 </div>
                 <div className="config-group">
                     <label>Cor de Fundo (Título):</label>
@@ -141,7 +138,6 @@ const BoardGenerator = ({ onGenerate }) => {
             </>
         )}
 
-        {/* 3. CORES E ESTILO */}
         <h3>🎨 Células e Bordas</h3>
         <div className="config-group">
             <label>Fundo da Célula:</label>
@@ -167,29 +163,22 @@ const BoardGenerator = ({ onGenerate }) => {
             </div>
         </div>
 
-        {/* 4. TEXTO (Opções recuperadas!) */}
-        <h3>🔤 Texto dos Cartões</h3>
+        <h3>🔤 Texto</h3>
         <div className="config-group">
             <label>Posição:</label>
             <select value={config.textPosition} onChange={(e) => handleChange('textPosition', e.target.value)}>
-                <option value="bottom">Embaixo da Imagem</option>
-                <option value="top">Em cima da Imagem</option>
-                <option value="none">Sem texto (Só imagem)</option>
+                <option value="bottom">Embaixo</option>
+                <option value="top">Em cima</option>
+                <option value="none">Ocultar</option>
             </select>
         </div>
         <div className="config-group">
             <label>Tamanho e Caixa:</label>
             <div style={{display:'flex', gap:'5px'}}>
-                <input 
-                    type="number" 
-                    value={config.fontSize} 
-                    onChange={(e) => handleChange('fontSize', e.target.value)} 
-                    placeholder="Tam"
-                    title="Tamanho da fonte"
-                />
+                <input type="number" value={config.fontSize} onChange={(e) => handleChange('fontSize', e.target.value)} />
                 <select value={config.textCase} onChange={(e) => handleChange('textCase', e.target.value)}>
-                    <option value="uppercase">ABC (Maiúsculas)</option>
-                    <option value="lowercase">abc (Minúsculas)</option>
+                    <option value="uppercase">ABC</option>
+                    <option value="lowercase">abc</option>
                 </select>
             </div>
         </div>
@@ -197,14 +186,13 @@ const BoardGenerator = ({ onGenerate }) => {
             <label>Fonte:</label>
             <select value={config.fontFamily} onChange={(e) => handleChange('fontFamily', e.target.value)}>
                 <option value="Arial">Arial</option>
-                <option value="Times New Roman">Times New Roman</option>
+                <option value="Times New Roman">Times</option>
                 <option value="Verdana">Verdana</option>
                 <option value="Comic Sans MS">Comic Sans</option>
             </select>
         </div>
 
-        {/* 5. PAPEL */}
-        <h3>📄 Papel e Margens</h3>
+        <h3>📄 Papel</h3>
         <div className="config-group">
             <label>Formato:</label>
             <div style={{display:'flex', gap:'5px'}}>
@@ -220,7 +208,7 @@ const BoardGenerator = ({ onGenerate }) => {
         </div>
 
         <div className="config-group">
-            <label>Margens (cm) [Cima-Dir-Baixo-Esq]:</label>
+            <label>Margens (cm):</label>
             <div className="margins-grid">
                 <input title="Cima" type="number" step="0.5" value={config.marginTop} onChange={(e) => handleChange('marginTop', e.target.value)} />
                 <input title="Direita" type="number" step="0.5" value={config.marginRight} onChange={(e) => handleChange('marginRight', e.target.value)} />
@@ -228,7 +216,6 @@ const BoardGenerator = ({ onGenerate }) => {
                 <input title="Esquerda" type="number" step="0.5" value={config.marginLeft} onChange={(e) => handleChange('marginLeft', e.target.value)} />
             </div>
         </div>
-
       </div>
 
       {/* --- ÁREA DE VISUALIZAÇÃO --- */}
@@ -236,35 +223,40 @@ const BoardGenerator = ({ onGenerate }) => {
         <div className="preview-toolbar">
             <div className="input-area-mini">
                 <textarea 
-                    placeholder="Cole sua lista de palavras ou texto longo aqui..." 
+                    placeholder="Cole seu texto aqui..." 
                     value={text} 
                     onChange={(e) => setText(e.target.value)} 
                 />
                 <button onClick={handlePreview} disabled={isGenerating}>
-                    {isGenerating ? '⏳ Gerando...' : '🔄 Atualizar'}
+                    {isGenerating ? '⏳...' : '🔄 Atualizar'}
                 </button>
             </div>
+            
             <div className="zoom-controls">
                 <label>🔍 Zoom: {Math.round(zoomLevel * 100)}%</label>
-                <input type="range" min="0.1" max="1.0" step="0.05" value={zoomLevel} onChange={(e) => setZoomLevel(parseFloat(e.target.value))} />
+                <input type="range" min="0.2" max="1.5" step="0.05" value={zoomLevel} onChange={(e) => setZoomLevel(parseFloat(e.target.value))} />
             </div>
         </div>
 
         <div className="paper-preview-container">
-            <div className="pages-stack" style={{ transform: `scale(${zoomLevel})` }}>
+            
+            {/* RENDERIZAÇÃO DAS PÁGINAS */}
+            <div className="book-viewer">
                 {pages.length > 0 ? pages.map((pageCards, pageIdx) => (
+                    // O segredo está aqui: Se não for a página atual, aplicamos a classe 'hidden-page'
+                    // Mas na impressão, o CSS vai ignorar essa classe e mostrar tudo!
                     <div 
                         key={pageIdx}
-                        className={`paper-sheet ${config.paperSize} ${config.orientation}`}
+                        className={`paper-sheet ${config.paperSize} ${config.orientation} ${pageIdx !== currentPage ? 'hidden-page' : ''}`}
                         style={{
                             padding: `${config.marginTop}cm ${config.marginRight}cm ${config.marginBottom}cm ${config.marginLeft}cm`,
-                            marginBottom: '50px'
+                            transform: `scale(${zoomLevel})`
                         }}
                     >
                         <div className="paper-content-wrapper" style={{ border: `${config.borderWidth}px ${config.borderStyle} ${config.boardBorderColor}` }}>
                             {config.header && (
                                 <div className="paper-header" style={{ backgroundColor: config.headerBgColor, borderBottom: `${config.borderWidth}px ${config.borderStyle} ${config.cellBorderColor}` }}>
-                                    {config.headerText} {pages.length > 1 ? `- Pág ${pageIdx + 1}` : ''}
+                                    {config.headerText}
                                 </div>
                             )}
                             <div className="paper-grid" style={{ gridTemplateColumns: `repeat(${config.cols}, 1fr)`, gridTemplateRows: `repeat(${config.rows}, 1fr)`, gap: `${config.gap}px` }}>
@@ -283,15 +275,27 @@ const BoardGenerator = ({ onGenerate }) => {
                                     );
                                 })}
                             </div>
+                            {/* Número da Página no Rodapé (Opcional, bom para livro) */}
+                            <div className="page-number-footer">Página {pageIdx + 1} de {pages.length}</div>
                         </div>
                     </div>
                 )) : <div className="no-pages-msg">Digite palavras e clique em Atualizar</div>}
             </div>
+
+            {/* CONTROLES DE NAVEGAÇÃO FLUTUANTES (SÓ APARECEM SE TIVER PÁGINAS) */}
+            {pages.length > 0 && (
+                <div className="pagination-controls">
+                    <button onClick={prevPage} disabled={currentPage === 0} title="Página Anterior">⬅</button>
+                    <span className="page-indicator">Pág {currentPage + 1} / {pages.length}</span>
+                    <button onClick={nextPage} disabled={currentPage === pages.length - 1} title="Próxima Página">➡</button>
+                </div>
+            )}
+
         </div>
 
         <div className="action-buttons-row">
-            <button className="btn-print" onClick={() => window.print()}>🖨️ Imprimir Tudo / PDF</button>
-            <button className="btn-finalize" onClick={handleFinalize} disabled={pages.length === 0}>✅ Salvar no App</button>
+            <button className="btn-print" onClick={() => window.print()}>🖨️ Imprimir / PDF (Todas)</button>
+            <button className="btn-finalize" onClick={handleFinalize} disabled={pages.length === 0}>✅ Salvar</button>
         </div>
       </div>
     </div>
