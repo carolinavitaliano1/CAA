@@ -152,7 +152,7 @@
   
   /* 1. CONFIGURAÇÃO DA FOLHA FÍSICA */
   @page {
-    margin: 1cm; /* Margem de segurança para a impressora não cortar */
+    margin: 1cm; /* Margem de segurança */
     size: auto;  /* Respeita o tamanho do conteúdo */
   }
 
@@ -172,8 +172,8 @@
   .action-buttons-row, 
   .pagination-controls,
   .zoom-controls,
-  .sidebar, /* Caso tenha sidebar no seu app principal */
-  header {  /* Caso tenha header no seu app principal */
+  .sidebar,
+  header {
     display: none !important;
   }
 
@@ -210,7 +210,7 @@
     /* Remove o Zoom da tela */
     transform: none !important; 
     
-    /* LARGURA: Ocupa 100% da área de impressão (não pixels fixos) */
+    /* LARGURA: Ocupa 100% da área de impressão */
     width: 100% !important;
     max-width: 100% !important;
     height: auto !important;
@@ -230,6 +230,8 @@
   /* 6. FORÇA AS PÁGINAS OCULTAS A APARECEREM */
   .hidden-page {
     display: flex !important;
+    /* IMPORTANTE: Volta a ser visível no fluxo */
+    position: relative !important; 
   }
   
   /* Garante que o conteúdo interno da prancha apareça */
@@ -238,49 +240,6 @@
   }
 
   /* Ajustes finais para economizar tinta e limpar visual */
-  .empty-slot { border: 1px solid #ddd; background: none !important; }
-  .paper-footer { color: black !important; }
-  .paper-footer a { color: #0044CC !important; text-decoration: none !important; }
-}
-
-  /* 5. ESTILO DA FOLHA DE PAPEL NA IMPRESSÃO */
-  .paper-sheet {
-    visibility: visible !important;
-    position: relative !important;
-    display: flex !important;
-    flex-direction: column !important;
-    
-    /* Zera transformações da tela */
-    transform: none !important;
-    box-shadow: none !important;
-    border: none !important;
-    background: white !important;
-    
-    /* Garante que ocupe a largura da impressão */
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important; /* Altura se ajusta ao conteúdo */
-    
-    margin: 0 !important;
-    padding: 0 !important;
-    
-    /* Força quebra de página */
-    break-after: page;
-    page-break-after: always;
-  }
-  
-  /* Revela o conteúdo interno */
-  .paper-sheet * {
-    visibility: visible !important;
-  }
-
-  /* REVELA AS PÁGINAS OCULTAS */
-  .hidden-page {
-    display: flex !important;
-    break-before: page; /* Garante que comece em nova folha */
-  }
-  
-  /* Ajustes finais de estilo para tinta */
   .empty-slot { border: 1px solid #ddd; background: none !important; }
   .paper-footer { color: black !important; }
   .paper-footer a { color: #0044CC !important; text-decoration: none !important; }
