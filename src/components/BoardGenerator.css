@@ -1,5 +1,5 @@
 /* =========================================
-   ESTILO DO GERADOR DE PRANCHAS (Fit to Screen)
+   ESTILO DO GERADOR DE PRANCHAS (Zoom Automático)
    ========================================= */
 
 .board-generator-wrapper {
@@ -22,7 +22,7 @@
   background: white;
   padding: 20px;
   border-radius: 12px;
-  overflow-y: auto; /* Permite rolar as opções se não couberem */
+  overflow-y: auto;
   box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
   border: 1px solid #e2e8f0;
   display: flex;
@@ -83,7 +83,8 @@
   flex-direction: column;
   gap: 15px;
   height: 100%;
-  min-width: 0; /* Evita que o flex quebre o layout */
+  min-width: 0;
+  position: relative;
 }
 
 .input-area {
@@ -94,11 +95,12 @@
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   flex-shrink: 0;
+  z-index: 10;
 }
 
 .input-area textarea {
   flex: 1;
-  height: 50px;
+  height: 40px;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
   padding: 10px;
@@ -114,81 +116,73 @@
   padding: 0 20px;
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.2s;
   white-space: nowrap;
 }
-.input-area button:hover { background: #1d4ed8; }
 
 /* ÁREA CINZA (O Palco) */
 .paper-preview-container {
   flex: 1;
-  background: #cbd5e1; /* Cinza escuro para contraste */
+  background: #94a3b8; /* Cinza escuro para contraste */
   border-radius: 12px;
-  padding: 0; 
-  overflow: hidden; /* Esconde barras de rolagem, pois vamos usar Zoom */
-  
-  /* Centraliza o papel no meio do palco */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: inset 0 0 20px rgba(0,0,0,0.15);
-  position: relative;
+  overflow: hidden; /* Corta qualquer coisa que saia para fora */
+  position: relative; /* Necessário para centralizar o papel */
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
 }
 
 /* A FOLHA DE PAPEL */
 .paper-sheet {
   background: white;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  transition: all 0.3s ease;
+  transition: width 0.3s, height 0.3s; /* Animação suave ao virar */
   
-  /* PONTO CHAVE: Transformação para caber na tela */
+  /* CENTRALIZAÇÃO ABSOLUTA E ZOOM */
+  position: absolute;
+  top: 50%;
+  left: 50%;
   transform-origin: center center;
-  transform: scale(var(--preview-scale, 0.55)); /* Escala padrão para Laptop */
+  /* O scale(0.55) reduz a folha para caber na tela mantendo a qualidade */
+  transform: translate(-50%, -50%) scale(0.55); 
 }
 
-/* DIMENSÕES REAIS (Aproximadas para 96dpi) 
-   Isso garante que a proporção Fonte vs Papel seja realista.
-   Depois usamos o 'scale' acima para visualizar tudo de uma vez.
-*/
-
-/* A4: 210mm x 297mm -> aprox 794px x 1123px */
+/* DIMENSÕES REAIS (Pixels) */
+/* A4 */
 .paper-sheet.A4.portrait { width: 794px; height: 1123px; }
 .paper-sheet.A4.landscape { width: 1123px; height: 794px; }
 
-/* A3: 297mm x 420mm -> aprox 1123px x 1587px */
+/* A3 */
 .paper-sheet.A3.portrait { width: 1123px; height: 1587px; }
 .paper-sheet.A3.landscape { width: 1587px; height: 1123px; }
 
-/* A5: 148mm x 210mm -> aprox 559px x 794px */
+/* A5 */
 .paper-sheet.A5.portrait { width: 559px; height: 794px; }
 .paper-sheet.A5.landscape { width: 794px; height: 559px; }
 
 
-/* AJUSTES DE ZOOM AUTOMÁTICO POR TAMANHO DE TELA */
+/* AJUSTE DE ZOOM PARA TELAS DIFERENTES */
 @media (min-width: 1600px) {
-  /* Monitor Grande: Vê quase tamanho real */
-  .paper-sheet { --preview-scale: 0.85; }
+  /* Monitor Grande: Aumenta um pouco */
+  .paper-sheet { transform: translate(-50%, -50%) scale(0.75); }
 }
 
-@media (max-width: 1400px) {
-  /* Laptop Comum */
-  .paper-sheet { --preview-scale: 0.6; }
+@media (max-width: 1366px) {
+  /* Laptop Padrão: Reduz para caber */
+  .paper-sheet { transform: translate(-50%, -50%) scale(0.5); }
 }
 
 @media (max-width: 1000px) {
-  /* Tablet/Laptop Pequeno */
-  .paper-sheet { --preview-scale: 0.45; }
+  /* Tela Pequena: Reduz mais */
+  .paper-sheet { transform: translate(-50%, -50%) scale(0.4); }
 }
 
 @media (max-width: 768px) {
-  /* Celular */
+  /* Celular: Layout vertical */
   .board-generator-wrapper { flex-direction: column; height: auto; }
   .config-panel { width: 100%; height: auto; flex: none; }
   .paper-preview-container { height: 400px; }
-  .paper-sheet { --preview-scale: 0.35; }
+  .paper-sheet { transform: translate(-50%, -50%) scale(0.35); }
 }
 
 
@@ -196,8 +190,8 @@
 .paper-header {
   text-align: center;
   font-weight: bold;
-  font-size: 2rem; /* Fonte maior pois o papel é grande */
-  margin-bottom: 10px;
+  font-size: 24pt; /* Usando PT para ficar proporcional ao papel */
+  margin-bottom: 15px;
   border: 1px dashed #94a3b8;
   padding: 10px;
   background: #f8fafc;
