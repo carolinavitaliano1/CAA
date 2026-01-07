@@ -90,35 +90,82 @@
   overflow: hidden; /* Se der muito zoom, corta aqui e não empurra os botões */
 }
 
-/* PAGINAÇÃO (Agora é um bloco estático embaixo, não flutuante) */
+/* ... (mantenha o código anterior até chegar aqui) ... */
+
+/* --- PAGINAÇÃO (Compacta e Elegante) --- */
 .pagination-controls {
-    /* Removemos position absolute */
     position: relative;
     transform: none;
     left: auto;
     bottom: auto;
     
+    /* Tamanho mais compacto */
     background: rgba(255, 255, 255, 0.95);
-    padding: 8px 25px;
-    border-radius: 30px;
+    padding: 5px 15px; /* Menos preenchimento interno */
+    border-radius: 50px; /* Borda bem redonda */
+    
     display: flex;
     align-items: center;
-    gap: 20px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    justify-content: center;
+    gap: 10px; /* Menos espaço entre os itens */
+    
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* Sombra mais suave */
     z-index: 10;
     
-    margin-top: 10px; /* Margem para separar da folha */
+    margin-top: 10px;
+    
+    /* Garante que não fique larga demais */
+    width: fit-content; 
+    min-width: auto;
 }
 
 .pagination-controls button {
-    background: #2563EB; color: white; border: none; width: 40px; height: 40px; border-radius: 50%;
-    font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: transform 0.2s;
+    background: #2563EB; 
+    color: white; 
+    border: none; 
+    
+    /* Botões menores */
+    width: 30px; 
+    height: 30px; 
+    border-radius: 50%;
+    
+    font-size: 0.9rem; /* Seta menor */
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    transition: transform 0.2s, background 0.2s;
 }
-.pagination-controls button:hover:not(:disabled) { transform: scale(1.1); background: #1d4ed8; }
-.pagination-controls button:disabled { background: #cbd5e1; cursor: not-allowed; opacity: 0.7; }
-.page-indicator { font-weight: 800; color: #1e3a8a; font-size: 1rem; min-width: 80px; text-align: center; }
 
+.pagination-controls button:hover:not(:disabled) {
+    transform: scale(1.1); 
+    background: #1d4ed8; 
+}
+
+.pagination-controls button:disabled {
+    background: #cbd5e1; 
+    cursor: not-allowed; 
+    opacity: 0.7; 
+}
+
+.page-indicator {
+    font-weight: 700; 
+    color: #1e3a8a; 
+    font-size: 0.85rem; /* Fonte do texto menor */
+    min-width: 60px; 
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* Ajuste Fino para Mobile */
+@media (max-width: 850px) {
+  .pagination-controls { 
+    width: auto; /* Não estica 100% */
+    margin-top: auto; 
+    margin-bottom: 5px;
+    padding: 5px 20px; /* Um pouco mais largo no dedo para facilitar */
+  }
+}
 
 /* --- FOLHA DE PAPEL --- */
 .paper-sheet {
