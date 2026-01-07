@@ -1,181 +1,306 @@
-/* =========================================
-   ESTILO DO GERADOR (Centralização e Correções)
-   ========================================= */
+import React, { useState, useEffect } from 'react';
+import './BoardGenerator.css';
 
-.board-generator-wrapper {
-  display: flex;
-  gap: 15px;
-  height: calc(100vh - 100px); 
-  background: #f8fafc;
-  padding: 10px;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  max-width: 1600px;
-  margin: 0 auto;
-  box-sizing: border-box;
-}
+const CAA_COLORS = [
+  { color: '#FFFFFF', label: 'Branco – Artigos / Neutro' },
+  { color: '#FDE047', label: 'Amarelo – Pessoas / Pronomes' },
+  { color: '#86EFAC', label: 'Verde – Verbos / Ações' },
+  { color: '#93C5FD', label: 'Azul – Adjetivos' },
+  { color: '#FDBA74', label: 'Laranja – Substantivos' },
+  { color: '#F9A8D4', label: 'Rosa – Expressões sociais' },
+  { color: '#C4B5FD', label: 'Roxo – Preposições' },
+  { color: '#D6B28A', label: 'Marrom – Advérbios' },
+  { color: '#000000', label: 'Preto (Apenas Borda)' }
+];
 
-/* MENU LATERAL */
-.config-panel {
-  flex: 0 0 300px; 
-  background: white;
-  padding: 15px;
-  border-radius: 10px;
-  overflow-y: auto;
-  border: 1px solid #e2e8f0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.config-panel h3 { font-size: 0.9rem; color: #1e3a8a; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin: 0; text-transform: uppercase; font-weight: 800; }
-.config-group { display: flex; flex-direction: column; gap: 6px; background: #f1f5f9; padding: 10px; border-radius: 8px; }
-.config-group label { font-size: 0.7rem; font-weight: 700; color: #475569; text-transform: uppercase; }
-.config-group input, .config-group select { padding: 8px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 0.85rem; background: white; width: 100%; box-sizing: border-box; }
-.margins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+const BoardGenerator = ({ onGenerate }) => {
+  const [text, setText] = useState("");
+  const [pages, setPages] = useState([]); 
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(0.35); // AJUSTADO: Zoom ideal para caber na tela
+  const [currentPage, setCurrentPage] = useState(0);
 
-/* PREVIEW PANEL */
-.preview-panel {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  height: 100%;
-  min-width: 0;
-}
+  const [config, setConfig] = useState({
+    rows: 4,
+    cols: 5,
+    gap: 2,
+    header: true,
+    headerText: 'Minha Prancha',
+    headerBgColor: '#FFFFFF',
+    cellBgColor: '#FFFFFF',
+    cellBorderColor: '#000000',
+    borderWidth: 1,
+    borderStyle: 'solid',
+    boardBorderColor: '#000000',
+    paperSize: 'A4',
+    orientation: 'landscape',
+    marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1,
+    textPosition: 'bottom',
+    fontFamily: 'Arial',
+    fontSize: 12,
+    textCase: 'uppercase',
+  });
 
-.preview-toolbar {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    background: white;
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid #e2e8f0;
-    flex-shrink: 0;
-    flex-wrap: wrap;
-}
+  const handlePreview = async (e) => {
+    e.preventDefault();
+    if (!text.trim()) return;
 
-.input-area-mini { display: flex; gap: 10px; flex: 1; min-width: 200px; }
-.input-area-mini textarea { flex: 1; height: 35px; padding: 5px; border: 1px solid #cbd5e1; border-radius: 4px; resize: none; }
-.input-area-mini button { background: #2563EB; color: white; border: none; border-radius: 4px; padding: 0 15px; font-weight: bold; cursor: pointer; }
-.zoom-controls { display: flex; align-items: center; gap: 10px; background: #f1f5f9; padding: 5px 10px; border-radius: 20px; }
-.zoom-controls label { font-size: 0.8rem; font-weight: bold; color: #475569; white-space: nowrap; }
-.zoom-controls input[type="range"] { cursor: pointer; width: 100px; }
+    setIsGenerating(true);
+    setCurrentPage(0);
 
-/* ÁREA DE VISUALIZAÇÃO */
-.paper-preview-container {
-  flex: 1;
-  background: #94a3b8;
-  border-radius: 10px;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column; 
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
-  padding-bottom: 10px;
-}
+    const words = text.trim().split(/[\n\s]+/);
+    const cardsPerPage = config.rows * config.cols;
+    
+    const allCardsPromises = words.map(async (word) => {
+      try {
+        const res = await fetch(`https://api.arasaac.org/api/pictograms/pt/search/${encodeURIComponent(word)}`);
+        const json = await res.json();
+        const img = (json && json.length > 0) ? `https://static.arasaac.org/pictograms/${json[0]._id}/${json[0]._id}_500.png` : 'https://static.arasaac.org/pictograms/2475/2475_500.png';
+        return { id: `gen_${Math.random()}`, text: word, image: img };
+      } catch (err) {
+        return { id: `err`, text: word, image: 'https://static.arasaac.org/pictograms/2475/2475_500.png' };
+      }
+    });
 
-.book-viewer {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center; /* CENTRALIZAÇÃO VERTICAL */
-  width: 100%;
-  overflow: hidden;
-  padding: 20px; /* Garante que as bordas não toquem na tela */
-}
+    const allCards = await Promise.all(allCardsPromises);
 
-/* PAGINAÇÃO COMPACTA */
-.pagination-controls {
-    position: relative;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 2px 10px;
-    border-radius: 50px;
-    display: flex; align-items: center; justify-content: center;
-    gap: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    z-index: 10;
-    margin-top: 10px;
-    width: fit-content; min-width: auto;
-}
+    const newPages = [];
+    for (let i = 0; i < allCards.length; i += cardsPerPage) {
+      newPages.push(allCards.slice(i, i + cardsPerPage));
+    }
+    
+    setPages(newPages);
+    setIsGenerating(false);
+  };
 
-.pagination-controls button {
-    background: #2563EB; color: white; border: none;
-    width: 24px; height: 24px; border-radius: 50%;
-    font-size: 0.7rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: transform 0.2s, background 0.2s;
-}
-.pagination-controls button:hover:not(:disabled) { transform: scale(1.1); background: #1d4ed8; }
-.pagination-controls button:disabled { background: #cbd5e1; cursor: not-allowed; opacity: 0.7; }
-.page-indicator { font-weight: 700; color: #1e3a8a; font-size: 0.8rem; min-width: 50px; text-align: center; white-space: nowrap; }
+  const handleChange = (field, value) => {
+    setConfig(prev => ({ ...prev, [field]: value }));
+  };
 
-/* FOLHA DE PAPEL */
-.paper-sheet {
-  background: white;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-  box-sizing: border-box;
-  flex-shrink: 0;
-  transition: transform 0.2s ease;
-  display: flex; flex-direction: column;
-  
-  /* PONTO CHAVE: Origem do Zoom no Centro */
-  transform-origin: center center;
-}
+  const handleFinalize = () => {
+    const allFlattenedCards = pages.flat().map(c => ({
+      ...c,
+      type: 'speak',
+      bgColor: config.cellBgColor,
+      borderColor: config.cellBorderColor
+    }));
+    onGenerate(allFlattenedCards);
+  };
 
-.hidden-page { display: none !important; }
+  const nextPage = () => {
+    if (currentPage < pages.length - 1) setCurrentPage(prev => prev + 1);
+  };
 
-.paper-content-wrapper { flex: 1; width: 100%; display: flex; flex-direction: column; box-sizing: border-box; background: white; position: relative; }
+  const prevPage = () => {
+    if (currentPage > 0) setCurrentPage(prev => prev - 1);
+  };
 
-/* Dimensões */
-.paper-sheet.A4.portrait { width: 794px; height: 1123px; }
-.paper-sheet.A4.landscape { width: 1123px; height: 794px; }
-.paper-sheet.A3.portrait { width: 1123px; height: 1587px; }
-.paper-sheet.A3.landscape { width: 1587px; height: 1123px; }
-.paper-sheet.A5.portrait { width: 559px; height: 794px; }
-.paper-sheet.A5.landscape { width: 794px; height: 559px; }
+  return (
+    <div className="board-generator-wrapper">
+      
+      <div className="config-panel">
+        <h3>🛠️ Estrutura</h3>
+        <div className="config-group">
+          <label>Linhas X Colunas (p/ pág):</label>
+          <div style={{display:'flex', gap:'5px', width:'100%'}}>
+             <input type="number" value={config.rows} onChange={(e) => handleChange('rows', parseInt(e.target.value))} />
+             <span style={{alignSelf:'center', fontWeight:'bold'}}>X</span>
+             <input type="number" value={config.cols} onChange={(e) => handleChange('cols', parseInt(e.target.value))} />
+          </div>
+        </div>
 
-/* Conteúdo */
-.paper-header { text-align: center; font-weight: bold; font-size: 24pt; padding: 10px; margin-bottom: 5px; flex-shrink: 0; }
-.page-number-footer { position: absolute; bottom: 5px; right: 10px; font-size: 10pt; color: #94a3b8; }
-.paper-grid { display: grid; width: 100%; flex: 1; min-height: 0; }
-.paper-cell { display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; min-width: 0; min-height: 0; }
-.cell-content { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; padding: 2px; text-align: center; }
-.cell-content img { object-fit: contain; max-width: 95%; max-height: 80%; flex-shrink: 1; }
-.cell-content span { line-height: 1; word-break: break-word; flex-shrink: 0; }
-.empty-slot { width: 100%; height: 100%; background: radial-gradient(#cbd5e1 2px, transparent 2px); background-size: 15px 15px; }
-.no-pages-msg { color: white; font-weight: bold; }
+        <h3>🏷️ Cabeçalho</h3>
+        <div className="config-group">
+            <label>Mostrar Cabeçalho:</label>
+            <select value={config.header} onChange={(e) => handleChange('header', e.target.value === 'true')}>
+                <option value="true">Sim, mostrar</option>
+                <option value="false">Não, esconder</option>
+            </select>
+        </div>
+        
+        {config.header && (
+            <>
+                <div className="config-group">
+                    <label>Texto do Título:</label>
+                    <input type="text" value={config.headerText} onChange={(e) => handleChange('headerText', e.target.value)} />
+                </div>
+                <div className="config-group">
+                    <label>Cor de Fundo (Título):</label>
+                    <select value={config.headerBgColor} onChange={(e) => handleChange('headerBgColor', e.target.value)}>
+                        {CAA_COLORS.map(c => <option key={c.color} value={c.color} style={{backgroundColor: c.color}}>{c.label}</option>)}
+                    </select>
+                </div>
+            </>
+        )}
 
-/* Rodapé */
-.paper-footer {
-    font-size: 8pt; color: #64748b; text-align: center; margin-top: 5px; width: 100%; font-family: Arial, sans-serif; padding-bottom: 2px;
-}
-.paper-footer a { color: #0044CC; text-decoration: underline; font-weight: 900; cursor: pointer; }
+        <h3>🎨 Células e Bordas</h3>
+        <div className="config-group">
+            <label>Fundo da Célula:</label>
+            <select value={config.cellBgColor} onChange={(e) => handleChange('cellBgColor', e.target.value)}>
+                {CAA_COLORS.map(c => <option key={c.color} value={c.color} style={{backgroundColor: c.color}}>{c.label}</option>)}
+            </select>
+        </div>
+        <div className="config-group">
+            <label>Cor da Borda:</label>
+            <select value={config.cellBorderColor} onChange={(e) => handleChange('cellBorderColor', e.target.value)}>
+                {CAA_COLORS.map(c => <option key={c.color} value={c.color} style={{backgroundColor: c.color}}>{c.label}</option>)}
+            </select>
+        </div>
+        <div className="config-group">
+            <label>Cor da Borda da Prancha:</label>
+            <select value={config.boardBorderColor} onChange={(e) => handleChange('boardBorderColor', e.target.value)}>
+                {CAA_COLORS.map(c => <option key={c.color} value={c.color} style={{backgroundColor: c.color}}>{c.label}</option>)}
+            </select>
+        </div>
+        <div className="config-group">
+            <label>Espessura / Estilo:</label>
+            <div style={{display:'flex', gap:'5px'}}>
+                <input type="number" value={config.borderWidth} onChange={(e) => handleChange('borderWidth', e.target.value)} placeholder="px" />
+                <select value={config.borderStyle} onChange={(e) => handleChange('borderStyle', e.target.value)}>
+                    <option value="solid">Sólida</option>
+                    <option value="dashed">Tracejada</option>
+                    <option value="dotted">Pontilhada</option>
+                </select>
+            </div>
+        </div>
 
-/* Botões Finais */
-.action-buttons-row { display: flex; gap: 10px; margin-top: auto; }
-.btn-finalize, .btn-print { padding: 12px; font-weight: bold; border: none; border-radius: 8px; flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
-.btn-finalize { background: #16a34a; color: white; }
-.btn-print { background: #3b82f6; color: white; }
+        <h3>🔤 Texto</h3>
+        <div className="config-group">
+            <label>Posição:</label>
+            <select value={config.textPosition} onChange={(e) => handleChange('textPosition', e.target.value)}>
+                <option value="bottom">Embaixo</option>
+                <option value="top">Em cima</option>
+                <option value="none">Ocultar</option>
+            </select>
+        </div>
+        <div className="config-group">
+            <label>Tamanho e Caixa:</label>
+            <div style={{display:'flex', gap:'5px'}}>
+                <input type="number" value={config.fontSize} onChange={(e) => handleChange('fontSize', e.target.value)} />
+                <select value={config.textCase} onChange={(e) => handleChange('textCase', e.target.value)}>
+                    <option value="uppercase">ABC</option>
+                    <option value="lowercase">abc</option>
+                </select>
+            </div>
+        </div>
+        <div className="config-group">
+            <label>Fonte:</label>
+            <select value={config.fontFamily} onChange={(e) => handleChange('fontFamily', e.target.value)}>
+                <option value="Arial">Arial</option>
+                <option value="Times New Roman">Times</option>
+                <option value="Verdana">Verdana</option>
+                <option value="Comic Sans MS">Comic Sans</option>
+            </select>
+        </div>
 
-/* Mobile */
-@media (max-width: 850px) {
-  .board-generator-wrapper { flex-direction: column; height: auto !important; padding-bottom: 80px; }
-  .config-panel, .preview-panel { width: 100%; flex: none; }
-  .paper-preview-container { height: 50vh; min-height: 350px; width: 100%; }
-  .pagination-controls { width: auto; margin-top: auto; margin-bottom: 5px; padding: 5px 20px; }
-}
+        <h3>📄 Papel</h3>
+        <div className="config-group">
+            <label>Formato:</label>
+            <div style={{display:'flex', gap:'5px'}}>
+                <select value={config.paperSize} onChange={(e) => handleChange('paperSize', e.target.value)}>
+                    <option value="A4">A4</option>
+                    <option value="A3">A3</option>
+                </select>
+                <select value={config.orientation} onChange={(e) => handleChange('orientation', e.target.value)}>
+                    <option value="landscape">Deitado</option>
+                    <option value="portrait">Em Pé</option>
+                </select>
+            </div>
+        </div>
 
-/* Print */
-@media print {
-  @page { margin: 0; size: auto; }
-  body { background: white; margin: 0; padding: 0; overflow: visible !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .admin-bar, .sidebar, .sidebar-overlay, .config-panel, .preview-toolbar, .action-buttons-row, .pagination-controls { display: none !important; }
-  .board-generator-wrapper, .preview-panel, .paper-preview-container, .book-viewer { display: block !important; height: auto !important; border: none !important; margin: 0 !important; padding: 0 !important; max-width: none !important; background: white !important; overflow: visible !important; }
-  .hidden-page { display: block !important; }
-  .paper-sheet { transform: none !important; box-shadow: none !important; margin: 0 auto !important; page-break-after: always !important; display: block !important; position: relative !important; }
-  .empty-slot { background: none !important; border: 1px solid #eee; }
-  .paper-footer { display: block !important; color: #000; }
-  .paper-footer a { color: #0044CC !important; text-decoration: underline !important; font-weight: bold !important; }
-}
+        <div className="config-group">
+            <label>Margens (cm):</label>
+            <div className="margins-grid">
+                <input title="Cima" type="number" step="0.5" value={config.marginTop} onChange={(e) => handleChange('marginTop', e.target.value)} />
+                <input title="Direita" type="number" step="0.5" value={config.marginRight} onChange={(e) => handleChange('marginRight', e.target.value)} />
+                <input title="Baixo" type="number" step="0.5" value={config.marginBottom} onChange={(e) => handleChange('marginBottom', e.target.value)} />
+                <input title="Esquerda" type="number" step="0.5" value={config.marginLeft} onChange={(e) => handleChange('marginLeft', e.target.value)} />
+            </div>
+        </div>
+      </div>
+
+      <div className="preview-panel">
+        <div className="preview-toolbar">
+            <div className="input-area-mini">
+                <textarea 
+                    placeholder="Cole seu texto aqui..." 
+                    value={text} 
+                    onChange={(e) => setText(e.target.value)} 
+                />
+                <button onClick={handlePreview} disabled={isGenerating}>
+                    {isGenerating ? '⏳...' : '🔄 Atualizar'}
+                </button>
+            </div>
+            
+            <div className="zoom-controls">
+                <label>🔍 Zoom: {Math.round(zoomLevel * 100)}%</label>
+                <input type="range" min="0.2" max="1.5" step="0.05" value={zoomLevel} onChange={(e) => setZoomLevel(parseFloat(e.target.value))} />
+            </div>
+        </div>
+
+        <div className="paper-preview-container">
+            
+            <div className="book-viewer">
+                {pages.length > 0 ? pages.map((pageCards, pageIdx) => (
+                    <div 
+                        key={pageIdx}
+                        className={`paper-sheet ${config.paperSize} ${config.orientation} ${pageIdx !== currentPage ? 'hidden-page' : ''}`}
+                        style={{
+                            padding: `${config.marginTop}cm ${config.marginRight}cm ${config.marginBottom}cm ${config.marginLeft}cm`,
+                            transform: `scale(${zoomLevel})`
+                        }}
+                    >
+                        <div className="paper-content-wrapper" style={{ border: `${config.borderWidth}px ${config.borderStyle} ${config.boardBorderColor}` }}>
+                            {config.header && (
+                                <div className="paper-header" style={{ backgroundColor: config.headerBgColor, borderBottom: `${config.borderWidth}px ${config.borderStyle} ${config.cellBorderColor}` }}>
+                                    {config.headerText}
+                                </div>
+                            )}
+                            <div className="paper-grid" style={{ gridTemplateColumns: `repeat(${config.cols}, 1fr)`, gridTemplateRows: `repeat(${config.rows}, 1fr)`, gap: `${config.gap}px` }}>
+                                {Array.from({ length: config.rows * config.cols }).map((_, i) => {
+                                    const card = pageCards[i];
+                                    return (
+                                        <div key={i} className="paper-cell" style={{ borderWidth: `${config.borderWidth}px`, borderStyle: config.borderStyle, borderColor: config.cellBorderColor, backgroundColor: config.cellBgColor }}>
+                                            {card ? (
+                                                <div className={`cell-content ${config.textPosition}`}>
+                                                    {config.textPosition === 'top' && <span style={{ fontFamily: config.fontFamily, fontSize: `${config.fontSize}pt`, textTransform: config.textCase }}>{card.text}</span>}
+                                                    {/* Imagem com controle estrito de tamanho */}
+                                                    <img src={card.image} alt="" style={{ maxWidth: '100%', maxHeight: config.textPosition === 'none' ? '100%' : '75%', objectFit: 'contain' }} />
+                                                    {config.textPosition === 'bottom' && <span style={{ fontFamily: config.fontFamily, fontSize: `${config.fontSize}pt`, textTransform: config.textCase }}>{card.text}</span>}
+                                                </div>
+                                            ) : <div className="empty-slot"></div>}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* RODAPÉ CORRIGIDO (Sem © extra) */}
+                        <div className="paper-footer">
+                            Gerado via NeuroCAA - Sistema protegido por direitos autorais - Pictogramas utilizados sob licença ARASAAC (CC BY-NC-SA 4.0) - <a href="https://neurocaa.com" target="_blank" rel="noreferrer">Conheça a plataforma</a>
+                        </div>
+
+                    </div>
+                )) : <div className="no-pages-msg">Digite palavras e clique em Atualizar</div>}
+            </div>
+
+            {pages.length > 0 && (
+                <div className="pagination-controls">
+                    <button onClick={prevPage} disabled={currentPage === 0} title="Anterior">⬅</button>
+                    <span className="page-indicator">Pág {currentPage + 1} / {pages.length}</span>
+                    <button onClick={nextPage} disabled={currentPage === pages.length - 1} title="Próxima">➡</button>
+                </div>
+            )}
+
+        </div>
+
+        <div className="action-buttons-row">
+            <button className="btn-print" onClick={() => window.print()}>🖨️ Imprimir / PDF (Todas)</button>
+            <button className="btn-finalize" onClick={handleFinalize} disabled={pages.length === 0}>✅ Salvar</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default BoardGenerator;
