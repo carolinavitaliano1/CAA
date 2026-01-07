@@ -231,3 +231,67 @@
   .paper-sheet { transform: none !important; box-shadow: none !important; margin: 0 auto !important; page-break-after: always !important; display: block !important; position: relative !important; }
   .empty-slot { background: none !important; border: 1px solid #eee; }
 }
+
+/* ... (Mantenha o código anterior, só mude/adicione o seguinte) ... */
+
+/* --- FOLHA DE PAPEL --- */
+.paper-sheet {
+  background: white;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  box-sizing: border-box;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+  
+  /* IMPORTANTE: Flexbox vertical para o rodapé funcionar */
+  display: flex;
+  flex-direction: column;
+}
+
+/* O Wrapper agora expande (flex: 1) para empurrar o rodapé para baixo se sobrar espaço,
+   ou apenas ocupa o espaço necessário */
+.paper-content-wrapper {
+  flex: 1; /* Ocupa o espaço principal */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  background: white;
+  position: relative;
+  /* A borda da prancha está sendo aplicada aqui via JS */
+}
+
+/* --- ESTILO DO RODAPÉ --- */
+.paper-footer {
+    font-size: 8pt; /* Fonte pequena */
+    color: #64748b;
+    text-align: center;
+    margin-top: 5px; /* Espaço entre a borda da prancha e o texto */
+    width: 100%;
+    font-family: Arial, sans-serif;
+}
+
+.paper-footer a {
+    color: #2563EB;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* Garante que o link funcione no PDF e tela */
+.paper-footer a:hover {
+    text-decoration: underline;
+}
+
+/* No Mobile e Print */
+@media print {
+    /* ... (restante do print css) ... */
+    
+    /* Garante que o rodapé apareça na impressão */
+    .paper-footer {
+        display: block !important;
+        color: #000; /* Preto na impressão para legibilidade */
+    }
+    .paper-footer a {
+        color: #000;
+        text-decoration: none; /* Remove sublinhado na impressão se quiser */
+    }
+}
