@@ -1,29 +1,55 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './BoardGenerator.css';
+
+// CORES OFICIAIS CAA (Com as legendas solicitadas)
+const CAA_COLORS = [
+  { color: '#FFFFFF', label: 'Branco – Artigos / Neutro' },
+  { color: '#FDE047', label: 'Amarelo – Pessoas / Pronomes' },
+  { color: '#86EFAC', label: 'Verde – Verbos / Ações' },
+  { color: '#93C5FD', label: 'Azul – Adjetivos' },
+  { color: '#FDBA74', label: 'Laranja – Substantivos' },
+  { color: '#F9A8D4', label: 'Rosa – Expressões sociais' },
+  { color: '#C4B5FD', label: 'Roxo – Preposições' },
+  { color: '#D6B28A', label: 'Marrom – Advérbios' },
+  { color: '#000000', label: 'Preto (Apenas Borda)' }
+];
 
 const BoardGenerator = ({ onGenerate }) => {
   const [text, setText] = useState("");
   const [cards, setCards] = useState([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState(0.35); // Zoom inicial
+  const [zoomLevel, setZoomLevel] = useState(0.35);
 
   const [config, setConfig] = useState({
+    // Estrutura
     rows: 4,
     cols: 5,
+    gap: 2,
+    
+    // Cabeçalho
     header: true,
     headerText: 'Minha Prancha',
+    headerBgColor: '#FFFFFF', // NOVO
+    
+    // Bordas e Estilo
     borderWidth: 1,
     borderStyle: 'solid',
-    borderColor: '#000000',
+    
+    // CORES NOVAS
+    cellBgColor: '#FFFFFF',     // Fundo das células
+    cellBorderColor: '#000000', // Borda das células
+    boardBorderColor: '#FFFFFF',// Borda da prancha
+    
+    // Papel
     paperSize: 'A4',
     orientation: 'landscape',
     marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1,
-    cellHeight: 'auto',
+    
+    // Texto
     textPosition: 'bottom',
     fontFamily: 'Arial',
     fontSize: 12,
     textCase: 'uppercase',
-    gap: 2
   });
 
   const handlePreview = async (e) => {
@@ -55,18 +81,16 @@ const BoardGenerator = ({ onGenerate }) => {
     setConfig(prev => ({ ...prev, [field]: value }));
   };
 
-  // Salva no App (Grid Digital)
   const handleFinalize = () => {
     const finalCards = cards.map(c => ({
       ...c,
       type: 'speak',
-      bgColor: '#FFFFFF',
-      borderColor: config.borderColor
+      bgColor: config.cellBgColor, // Usa a cor configurada
+      borderColor: config.cellBorderColor
     }));
     onGenerate(finalCards);
   };
 
-  // Imprime ou Salva PDF
   const handlePrint = () => {
     window.print();
   };
@@ -76,8 +100,7 @@ const BoardGenerator = ({ onGenerate }) => {
       
       {/* PAINEL DE CONFIGURAÇÕES */}
       <div className="config-panel">
-        <h3>🛠️ Configuração</h3>
-        
+        <h3>🛠️ Estrutura</h3>
         <div className="config-group">
           <label>Linhas X Colunas:</label>
           <div style={{display:'flex', gap:'5px', width:'100%'}}>
@@ -87,6 +110,41 @@ const BoardGenerator = ({ onGenerate }) => {
           </div>
         </div>
 
+        <h3>🎨 Cores (CAA)</h3>
+        
+        {/* COR DO CABEÇALHO */}
+        <div className="config-group">
+            <label>Cor do Cabeçalho (CAA):</label>
+            <select value={config.headerBgColor} onChange={(e) => handleChange('headerBgColor', e.target.value)}>
+                {CAA_COLORS.map(c => <option key={c.color} value={c.color} style={{backgroundColor: c.color}}>{c.label}</option>)}
+            </select>
+        </div>
+
+        {/* COR DO FUNDO DAS CÉLULAS */}
+        <div className="config-group">
+            <label>Cor de Fundo das Células (CAA):</label>
+            <select value={config.cellBgColor} onChange={(e) => handleChange('cellBgColor', e.target.value)}>
+                {CAA_COLORS.map(c => <option key={c.color} value={c.color} style={{backgroundColor: c.color}}>{c.label}</option>)}
+            </select>
+        </div>
+
+        {/* COR DA BORDA DAS CÉLULAS */}
+        <div className="config-group">
+            <label>Cor da Borda das Células (CAA):</label>
+            <select value={config.cellBorderColor} onChange={(e) => handleChange('cellBorderColor', e.target.value)}>
+                {CAA_COLORS.map(c => <option key={c.color} value={c.color} style={{backgroundColor: c.color}}>{c.label}</option>)}
+            </select>
+        </div>
+
+        {/* COR DA BORDA DA PRANCHA */}
+        <div className="config-group">
+            <label>Cor da Borda da Prancha (CAA):</label>
+            <select value={config.boardBorderColor} onChange={(e) => handleChange('boardBorderColor', e.target.value)}>
+                {CAA_COLORS.map(c => <option key={c.color} value={c.color} style={{backgroundColor: c.color}}>{c.label}</option>)}
+            </select>
+        </div>
+
+        <h3>⚙️ Detalhes</h3>
         <div className="config-group">
             <label>Cabeçalho:</label>
             <select value={config.header} onChange={(e) => handleChange('header', e.target.value === 'true')}>
@@ -99,15 +157,14 @@ const BoardGenerator = ({ onGenerate }) => {
         </div>
 
         <div className="config-group">
-            <label>Bordas:</label>
+            <label>Espessura Borda:</label>
             <div style={{display:'flex', gap:'5px', width:'100%'}}>
-                <input type="number" value={config.borderWidth} onChange={(e) => handleChange('borderWidth', e.target.value)} />
+                <input type="number" value={config.borderWidth} onChange={(e) => handleChange('borderWidth', e.target.value)} placeholder="px" />
                 <select value={config.borderStyle} onChange={(e) => handleChange('borderStyle', e.target.value)}>
                     <option value="solid">Sólida</option>
                     <option value="dashed">Tracejada</option>
                     <option value="dotted">Pontilhada</option>
                 </select>
-                <input type="color" value={config.borderColor} onChange={(e) => handleChange('borderColor', e.target.value)} style={{width:'40px', padding:'0', height:'38px'}} />
             </div>
         </div>
 
@@ -156,11 +213,10 @@ const BoardGenerator = ({ onGenerate }) => {
       {/* ÁREA DE PRÉVIA */}
       <div className="preview-panel">
         
-        {/* BARRA DE FERRAMENTAS */}
         <div className="preview-toolbar">
             <div className="input-area-mini">
                 <textarea 
-                placeholder="Digite palavras..." 
+                placeholder="Digite palavras (uma por linha)..." 
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 />
@@ -191,11 +247,30 @@ const BoardGenerator = ({ onGenerate }) => {
                     paddingBottom: `${config.marginBottom}cm`,
                     paddingLeft: `${config.marginLeft}cm`,
                     paddingRight: `${config.marginRight}cm`,
+                    // Aqui aplicamos a Borda da Prancha escolhida:
+                    border: `1px solid #ddd`, // Borda suave para visualização do papel
                     transform: `translate(-50%, -50%) scale(${zoomLevel})`
                 }}
             >
-                <div className="paper-content-wrapper">
-                    {config.header && <div className="paper-header">{config.headerText}</div>}
+                {/* O CONTEÚDO AGORA TEM A BORDA DA PRANCHA APLICADA NELE */}
+                <div 
+                    className="paper-content-wrapper"
+                    style={{
+                        // Aplica a COR DA BORDA DA PRANCHA escolhida aqui:
+                        border: `${config.borderWidth}px ${config.borderStyle} ${config.boardBorderColor}`
+                    }}
+                >
+                    {config.header && (
+                        <div 
+                            className="paper-header" 
+                            style={{ 
+                                backgroundColor: config.headerBgColor,
+                                borderBottom: `${config.borderWidth}px ${config.borderStyle} ${config.cellBorderColor}`
+                            }}
+                        >
+                            {config.headerText}
+                        </div>
+                    )}
                     
                     <div 
                         className="paper-grid"
@@ -214,7 +289,8 @@ const BoardGenerator = ({ onGenerate }) => {
                                     style={{
                                         borderWidth: `${config.borderWidth}px`,
                                         borderStyle: config.borderStyle,
-                                        borderColor: config.borderColor
+                                        borderColor: config.cellBorderColor, // COR BORDA CÉLULA
+                                        backgroundColor: config.cellBgColor  // COR FUNDO CÉLULA
                                     }}
                                 >
                                     {card ? (
@@ -246,7 +322,6 @@ const BoardGenerator = ({ onGenerate }) => {
             </div>
         </div>
 
-        {/* ÁREA DE BOTÕES FINAIS */}
         <div className="action-buttons-row">
             <button className="btn-print" onClick={handlePrint}>
                 🖨️ Imprimir / PDF
