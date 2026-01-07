@@ -15,25 +15,34 @@ const CAA_COLORS = [
 
 const BoardGenerator = ({ onGenerate }) => {
   const [text, setText] = useState("");
-  const [pages, setPages] = useState([]); // Agora armazenamos páginas de cartões
+  const [pages, setPages] = useState([]); 
   const [isGenerating, setIsGenerating] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(0.35);
 
   const [config, setConfig] = useState({
+    // Estrutura
     rows: 4,
     cols: 5,
     gap: 2,
+    
+    // Cabeçalho
     header: true,
     headerText: 'Minha Prancha',
     headerBgColor: '#FFFFFF',
-    borderWidth: 1,
-    borderStyle: 'solid',
+    
+    // Estilo Célula
     cellBgColor: '#FFFFFF',
     cellBorderColor: '#000000',
-    boardBorderColor: '#FFFFFF',
+    borderWidth: 1,
+    borderStyle: 'solid',
+    boardBorderColor: '#000000',
+    
+    // Papel
     paperSize: 'A4',
     orientation: 'landscape',
     marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1,
+    
+    // Texto
     textPosition: 'bottom',
     fontFamily: 'Arial',
     fontSize: 12,
@@ -48,7 +57,6 @@ const BoardGenerator = ({ onGenerate }) => {
     const words = text.trim().split(/[\n\s]+/);
     const cardsPerPage = config.rows * config.cols;
     
-    // Busca todas as imagens primeiro
     const allCardsPromises = words.map(async (word) => {
       try {
         const res = await fetch(`https://api.arasaac.org/api/pictograms/pt/search/${encodeURIComponent(word)}`);
@@ -62,7 +70,7 @@ const BoardGenerator = ({ onGenerate }) => {
 
     const allCards = await Promise.all(allCardsPromises);
 
-    // Divisão em Páginas
+    // Paginação
     const newPages = [];
     for (let i = 0; i < allCards.length; i += cardsPerPage) {
       newPages.push(allCards.slice(i, i + cardsPerPage));
@@ -88,65 +96,153 @@ const BoardGenerator = ({ onGenerate }) => {
 
   return (
     <div className="board-generator-wrapper">
+      
+      {/* --- MENU DE CONFIGURAÇÃO --- */}
       <div className="config-panel">
+        
+        {/* 1. ESTRUTURA */}
         <h3>🛠️ Estrutura</h3>
         <div className="config-group">
-          <label>Linhas X Colunas (Por Página):</label>
+          <label>Linhas X Colunas (p/ pág):</label>
           <div style={{display:'flex', gap:'5px', width:'100%'}}>
              <input type="number" value={config.rows} onChange={(e) => handleChange('rows', parseInt(e.target.value))} />
-             <span>X</span>
+             <span style={{alignSelf:'center', fontWeight:'bold'}}>X</span>
              <input type="number" value={config.cols} onChange={(e) => handleChange('cols', parseInt(e.target.value))} />
           </div>
         </div>
 
-        <h3>🎨 Cores (CAA)</h3>
+        {/* 2. CABEÇALHO (Aqui estão as opções que sumiram!) */}
+        <h3>🏷️ Cabeçalho</h3>
         <div className="config-group">
-            <label>Cabeçalho:</label>
-            <select value={config.headerBgColor} onChange={(e) => handleChange('headerBgColor', e.target.value)}>
-                {CAA_COLORS.map(c => <option key={c.color} value={c.color} style={{backgroundColor: c.color}}>{c.label}</option>)}
+            <label>Mostrar Cabeçalho:</label>
+            <select value={config.header} onChange={(e) => handleChange('header', e.target.value === 'true')}>
+                <option value="true">Sim, mostrar</option>
+                <option value="false">Não, esconder</option>
             </select>
         </div>
+        
+        {config.header && (
+            <>
+                <div className="config-group">
+                    <label>Texto do Título:</label>
+                    <input 
+                        type="text" 
+                        value={config.headerText} 
+                        onChange={(e) => handleChange('headerText', e.target.value)} 
+                        placeholder="Ex: Rotina da Manhã"
+                    />
+                </div>
+                <div className="config-group">
+                    <label>Cor de Fundo (Título):</label>
+                    <select value={config.headerBgColor} onChange={(e) => handleChange('headerBgColor', e.target.value)}>
+                        {CAA_COLORS.map(c => <option key={c.color} value={c.color} style={{backgroundColor: c.color}}>{c.label}</option>)}
+                    </select>
+                </div>
+            </>
+        )}
+
+        {/* 3. CORES E ESTILO */}
+        <h3>🎨 Células e Bordas</h3>
         <div className="config-group">
-            <label>Fundo Células:</label>
+            <label>Fundo da Célula:</label>
             <select value={config.cellBgColor} onChange={(e) => handleChange('cellBgColor', e.target.value)}>
                 {CAA_COLORS.map(c => <option key={c.color} value={c.color} style={{backgroundColor: c.color}}>{c.label}</option>)}
             </select>
         </div>
         <div className="config-group">
-            <label>Borda Células:</label>
+            <label>Cor da Borda:</label>
             <select value={config.cellBorderColor} onChange={(e) => handleChange('cellBorderColor', e.target.value)}>
                 {CAA_COLORS.map(c => <option key={c.color} value={c.color} style={{backgroundColor: c.color}}>{c.label}</option>)}
             </select>
         </div>
-
-        <h3>⚙️ Detalhes</h3>
         <div className="config-group">
-            <label>Papel e Orientação:</label>
-            <select value={config.paperSize} onChange={(e) => handleChange('paperSize', e.target.value)}>
-                <option value="A4">A4</option>
-                <option value="A3">A3</option>
-            </select>
-            <select value={config.orientation} onChange={(e) => handleChange('orientation', e.target.value)}>
-                <option value="landscape">Horizontal</option>
-                <option value="portrait">Vertical</option>
-            </select>
+            <label>Espessura / Estilo:</label>
+            <div style={{display:'flex', gap:'5px'}}>
+                <input type="number" value={config.borderWidth} onChange={(e) => handleChange('borderWidth', e.target.value)} placeholder="px" />
+                <select value={config.borderStyle} onChange={(e) => handleChange('borderStyle', e.target.value)}>
+                    <option value="solid">Sólida</option>
+                    <option value="dashed">Tracejada</option>
+                    <option value="dotted">Pontilhada</option>
+                </select>
+            </div>
         </div>
 
+        {/* 4. TEXTO (Opções recuperadas!) */}
+        <h3>🔤 Texto dos Cartões</h3>
         <div className="config-group">
-            <label>Posição Texto:</label>
+            <label>Posição:</label>
             <select value={config.textPosition} onChange={(e) => handleChange('textPosition', e.target.value)}>
-                <option value="bottom">Abaixo</option>
-                <option value="top">Acima</option>
-                <option value="none">Ocultar</option>
+                <option value="bottom">Embaixo da Imagem</option>
+                <option value="top">Em cima da Imagem</option>
+                <option value="none">Sem texto (Só imagem)</option>
             </select>
         </div>
+        <div className="config-group">
+            <label>Tamanho e Caixa:</label>
+            <div style={{display:'flex', gap:'5px'}}>
+                <input 
+                    type="number" 
+                    value={config.fontSize} 
+                    onChange={(e) => handleChange('fontSize', e.target.value)} 
+                    placeholder="Tam"
+                    title="Tamanho da fonte"
+                />
+                <select value={config.textCase} onChange={(e) => handleChange('textCase', e.target.value)}>
+                    <option value="uppercase">ABC (Maiúsculas)</option>
+                    <option value="lowercase">abc (Minúsculas)</option>
+                </select>
+            </div>
+        </div>
+        <div className="config-group">
+            <label>Fonte:</label>
+            <select value={config.fontFamily} onChange={(e) => handleChange('fontFamily', e.target.value)}>
+                <option value="Arial">Arial</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Verdana">Verdana</option>
+                <option value="Comic Sans MS">Comic Sans</option>
+            </select>
+        </div>
+
+        {/* 5. PAPEL */}
+        <h3>📄 Papel e Margens</h3>
+        <div className="config-group">
+            <label>Formato:</label>
+            <div style={{display:'flex', gap:'5px'}}>
+                <select value={config.paperSize} onChange={(e) => handleChange('paperSize', e.target.value)}>
+                    <option value="A4">A4</option>
+                    <option value="A3">A3</option>
+                </select>
+                <select value={config.orientation} onChange={(e) => handleChange('orientation', e.target.value)}>
+                    <option value="landscape">Deitado</option>
+                    <option value="portrait">Em Pé</option>
+                </select>
+            </div>
+        </div>
+
+        <div className="config-group">
+            <label>Margens (cm) [Cima-Dir-Baixo-Esq]:</label>
+            <div className="margins-grid">
+                <input title="Cima" type="number" step="0.5" value={config.marginTop} onChange={(e) => handleChange('marginTop', e.target.value)} />
+                <input title="Direita" type="number" step="0.5" value={config.marginRight} onChange={(e) => handleChange('marginRight', e.target.value)} />
+                <input title="Baixo" type="number" step="0.5" value={config.marginBottom} onChange={(e) => handleChange('marginBottom', e.target.value)} />
+                <input title="Esquerda" type="number" step="0.5" value={config.marginLeft} onChange={(e) => handleChange('marginLeft', e.target.value)} />
+            </div>
+        </div>
+
       </div>
 
+      {/* --- ÁREA DE VISUALIZAÇÃO --- */}
       <div className="preview-panel">
         <div className="preview-toolbar">
             <div className="input-area-mini">
-                <textarea placeholder="Cole sua música ou texto aqui..." value={text} onChange={(e) => setText(e.target.value)} />
-                <button onClick={handlePreview} disabled={isGenerating}>{isGenerating ? '⏳' : 'Atualizar'}</button>
+                <textarea 
+                    placeholder="Cole sua lista de palavras ou texto longo aqui..." 
+                    value={text} 
+                    onChange={(e) => setText(e.target.value)} 
+                />
+                <button onClick={handlePreview} disabled={isGenerating}>
+                    {isGenerating ? '⏳ Gerando...' : '🔄 Atualizar'}
+                </button>
             </div>
             <div className="zoom-controls">
                 <label>🔍 Zoom: {Math.round(zoomLevel * 100)}%</label>
@@ -162,7 +258,7 @@ const BoardGenerator = ({ onGenerate }) => {
                         className={`paper-sheet ${config.paperSize} ${config.orientation}`}
                         style={{
                             padding: `${config.marginTop}cm ${config.marginRight}cm ${config.marginBottom}cm ${config.marginLeft}cm`,
-                            marginBottom: '50px' // Espaço entre páginas na tela
+                            marginBottom: '50px'
                         }}
                     >
                         <div className="paper-content-wrapper" style={{ border: `${config.borderWidth}px ${config.borderStyle} ${config.boardBorderColor}` }}>
@@ -178,9 +274,9 @@ const BoardGenerator = ({ onGenerate }) => {
                                         <div key={i} className="paper-cell" style={{ borderWidth: `${config.borderWidth}px`, borderStyle: config.borderStyle, borderColor: config.cellBorderColor, backgroundColor: config.cellBgColor }}>
                                             {card ? (
                                                 <div className={`cell-content ${config.textPosition}`}>
-                                                    {config.textPosition === 'top' && <span style={{ fontSize: `${config.fontSize}pt`, textTransform: config.textCase }}>{card.text}</span>}
+                                                    {config.textPosition === 'top' && <span style={{ fontFamily: config.fontFamily, fontSize: `${config.fontSize}pt`, textTransform: config.textCase }}>{card.text}</span>}
                                                     <img src={card.image} alt="" />
-                                                    {config.textPosition === 'bottom' && <span style={{ fontSize: `${config.fontSize}pt`, textTransform: config.textCase }}>{card.text}</span>}
+                                                    {config.textPosition === 'bottom' && <span style={{ fontFamily: config.fontFamily, fontSize: `${config.fontSize}pt`, textTransform: config.textCase }}>{card.text}</span>}
                                                 </div>
                                             ) : <div className="empty-slot"></div>}
                                         </div>
@@ -189,12 +285,12 @@ const BoardGenerator = ({ onGenerate }) => {
                             </div>
                         </div>
                     </div>
-                )) : <div className="no-pages-msg">Digite um texto e clique em Atualizar para ver as páginas.</div>}
+                )) : <div className="no-pages-msg">Digite palavras e clique em Atualizar</div>}
             </div>
         </div>
 
         <div className="action-buttons-row">
-            <button className="btn-print" onClick={() => window.print()}>🖨️ Imprimir Tudo (PDF)</button>
+            <button className="btn-print" onClick={() => window.print()}>🖨️ Imprimir Tudo / PDF</button>
             <button className="btn-finalize" onClick={handleFinalize} disabled={pages.length === 0}>✅ Salvar no App</button>
         </div>
       </div>
