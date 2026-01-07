@@ -1,5 +1,5 @@
 /* =========================================
-   ESTILO DO GERADOR (Cores CAA + Impressão)
+   ESTILO DO GERADOR (Visualizador Centralizado)
    ========================================= */
 
 .board-generator-wrapper {
@@ -70,7 +70,7 @@
   gap: 5px;
 }
 
-/* --- PREVIEW --- */
+/* --- PREVIEW PANEL --- */
 .preview-panel {
   flex: 1;
   display: flex;
@@ -130,29 +130,43 @@
 .zoom-controls input[type="range"] { cursor: pointer; width: 100px; }
 
 
-/* --- PALCO CINZA --- */
+/* --- PALCO CINZA (CORRIGIDO PARA CENTRALIZAR) --- */
 .paper-preview-container {
   flex: 1;
   background: #94a3b8;
   border-radius: 10px;
   position: relative;
-  overflow: hidden; 
+  
+  /* Habilita rolagem mas centraliza o conteúdo */
+  overflow: auto;
+  display: flex; /* Flexbox é o segredo */
+  
   box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+}
+
+/* --- PILHA DE PÁGINAS --- */
+.pages-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 50px; /* Espaço entre páginas */
+  
+  /* CENTRALIZAÇÃO MÁGICA: */
+  margin: auto; /* Centraliza vertical e horizontalmente se sobrar espaço */
+  padding: 50px; /* Respiro para não colar nas bordas ao rolar */
+  
+  transform-origin: top center; /* Zoom a partir do topo para não cortar cabeçalho */
+  transition: transform 0.1s ease-out;
 }
 
 /* --- FOLHA DE PAPEL --- */
 .paper-sheet {
   background: white;
   box-shadow: 0 15px 50px rgba(0,0,0,0.5);
-  box-sizing: border-box; 
-  transition: width 0.3s, height 0.3s, transform 0.1s;
-  
-  /* Centralização Absoluta */
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform-origin: center center;
-  /* Scale é controlado pelo JS */
+  box-sizing: border-box;
+  flex-shrink: 0;
+  position: relative;
+  /* Removemos position absolute aqui para permitir pilha */
 }
 
 /* Wrapper interno que recebe a BORDA DA PRANCHA */
@@ -161,7 +175,8 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box; /* Garante que a borda fique dentro */
+  box-sizing: border-box;
+  background: white; /* Garante fundo branco dentro da borda */
 }
 
 /* Dimensões em Pixels (Aproximado 96DPI) */
@@ -181,7 +196,7 @@
   padding: 10px;
   margin-bottom: 5px;
   flex-shrink: 0;
-  /* Background Color vem inline do React */
+  /* Cores vêm inline */
 }
 
 .paper-grid {
@@ -199,7 +214,7 @@
   position: relative;
   min-width: 0; 
   min-height: 0;
-  /* Cores vêm inline do React */
+  /* Cores vêm inline */
 }
 
 .cell-content {
@@ -216,7 +231,7 @@
 .cell-content img { object-fit: contain; max-width: 95%; max-height: 80%; flex-shrink: 1; }
 .cell-content span { line-height: 1; word-break: break-word; flex-shrink: 0; }
 .empty-slot { width: 100%; height: 100%; background: radial-gradient(#cbd5e1 2px, transparent 2px); background-size: 15px 15px; }
-
+.no-pages-msg { color: white; font-weight: bold; margin: auto; } /* Centraliza msg vazia */
 
 /* --- BOTÕES FINAIS --- */
 .action-buttons-row {
@@ -255,95 +270,26 @@
 }
 
 /* =========================================
-   CSS DE IMPRESSÃO
+   CSS DE IMPRESSÃO (Mantendo a lógica intacta)
    ========================================= */
 @media print {
   @page { margin: 0; size: auto; }
   body { background: white; margin: 0; padding: 0; overflow: visible !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 
-  /* Esconde tudo que não é a prancha */
   .admin-bar, .sidebar, .sidebar-overlay, .config-panel, .preview-toolbar, .action-buttons-row { display: none !important; }
 
   .board-generator-wrapper {
-    height: auto !important;
-    border: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    max-width: none !important;
-    display: block !important;
-    background: white !important;
+    height: auto !important; border: none !important; margin: 0 !important; padding: 0 !important; max-width: none !important; display: block !important; background: white !important;
   }
-
   .preview-panel { display: block !important; height: auto !important; }
-
   .paper-preview-container {
-    background: white !important;
-    box-shadow: none !important;
-    overflow: visible !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    height: auto !important;
-    display: block !important;
+    background: white !important; box-shadow: none !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; height: auto !important; display: block !important;
   }
-
-  .paper-sheet {
-    position: relative !important;
-    top: 0 !important; left: 0 !important;
-    transform: none !important; /* REMOVE ZOOM */
-    box-shadow: none !important;
-    margin: 0 auto !important;
-    page-break-after: always;
-  }
-  
-  .empty-slot { background: none !important; border: 1px solid #eee; }
-}
-
-
-/* ... (Mantenha as partes anteriores e adicione/ajuste estas) ... */
-
-.paper-preview-container {
-  flex: 1;
-  background: #94a3b8;
-  border-radius: 10px;
-  position: relative;
-  overflow-y: auto; /* Permite rolar entre as páginas */
-  box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
-  display: flex;
-  justify-content: center;
-  padding: 50px 0;
-}
-
-.pages-stack {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transform-origin: top center; /* Garante que o zoom comece do topo */
-}
-
-.paper-sheet {
-  background: white;
-  box-shadow: 0 15px 50px rgba(0,0,0,0.5);
-  box-sizing: border-box;
-  flex-shrink: 0;
-  position: relative;
-  /* Removido position absolute, top e left para as páginas empilharem */
-}
-
-/* Na Impressão */
-@media print {
   .pages-stack {
-    transform: none !important;
-    display: block !important;
+    transform: none !important; display: block !important; margin: 0 !important; padding: 0 !important;
   }
   .paper-sheet {
-    margin-bottom: 0 !important;
-    page-break-after: always !important; /* Força cada folha em uma página de papel real */
-    box-shadow: none !important;
+    position: relative !important; top: 0 !important; left: 0 !important; transform: none !important; box-shadow: none !important; margin: 0 auto !important; page-break-after: always;
   }
-}
-
-.no-pages-msg {
-    color: white;
-    font-weight: bold;
-    margin-top: 100px;
+  .empty-slot { background: none !important; border: 1px solid #eee; }
 }
