@@ -5,8 +5,10 @@ const BoardGenerator = ({ onGenerate }) => {
   const [text, setText] = useState("");
   const [cards, setCards] = useState([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  
+  // NOVO ESTADO: Controle de Zoom (Padrão 35%)
+  const [zoomLevel, setZoomLevel] = useState(0.35);
 
-  // CONFIGURAÇÕES PADRÃO
   const [config, setConfig] = useState({
     rows: 4,
     cols: 5,
@@ -70,7 +72,7 @@ const BoardGenerator = ({ onGenerate }) => {
       
       {/* PAINEL DE CONFIGURAÇÕES */}
       <div className="config-panel">
-        <h3>🛠️ Configuração da Planilha</h3>
+        <h3>🛠️ Configuração</h3>
         
         <div className="config-group">
           <label>Linhas X Colunas:</label>
@@ -88,12 +90,12 @@ const BoardGenerator = ({ onGenerate }) => {
                 <option value="true">Sim</option>
             </select>
             {config.header && (
-              <input type="text" value={config.headerText} onChange={(e) => handleChange('headerText', e.target.value)} placeholder="Texto do Título" />
+              <input type="text" value={config.headerText} onChange={(e) => handleChange('headerText', e.target.value)} placeholder="Título" />
             )}
         </div>
 
         <div className="config-group">
-            <label>Bordas (px / estilo / cor):</label>
+            <label>Bordas:</label>
             <div style={{display:'flex', gap:'5px', width:'100%'}}>
                 <input type="number" value={config.borderWidth} onChange={(e) => handleChange('borderWidth', e.target.value)} />
                 <select value={config.borderStyle} onChange={(e) => handleChange('borderStyle', e.target.value)}>
@@ -105,9 +107,9 @@ const BoardGenerator = ({ onGenerate }) => {
             </div>
         </div>
 
-        <h3>📄 Papel e Margens</h3>
+        <h3>📄 Papel</h3>
         <div className="config-group">
-            <label>Papel:</label>
+            <label>Formato:</label>
             <select value={config.paperSize} onChange={(e) => handleChange('paperSize', e.target.value)}>
                 <option value="A4">A4</option>
                 <option value="A3">A3</option>
@@ -129,22 +131,16 @@ const BoardGenerator = ({ onGenerate }) => {
             </div>
         </div>
 
-        <h3>🔤 Texto e Fonte</h3>
+        <h3>🔤 Texto</h3>
         <div className="config-group">
-            <label>Posição / Fonte / Tam / Caixa:</label>
+            <label>Estilo:</label>
             <select value={config.textPosition} onChange={(e) => handleChange('textPosition', e.target.value)} style={{marginBottom: '5px'}}>
                 <option value="bottom">Abaixo</option>
                 <option value="top">Acima</option>
                 <option value="none">Ocultar</option>
             </select>
-            <select value={config.fontFamily} onChange={(e) => handleChange('fontFamily', e.target.value)} style={{marginBottom: '5px'}}>
-                <option value="Arial">Arial</option>
-                <option value="Times New Roman">Times</option>
-                <option value="Verdana">Verdana</option>
-                <option value="Comic Sans MS">Comic Sans</option>
-            </select>
             <div style={{display:'flex', gap:'5px'}}>
-                <input type="number" value={config.fontSize} onChange={(e) => handleChange('fontSize', e.target.value)} placeholder="Px" />
+                <input type="number" value={config.fontSize} onChange={(e) => handleChange('fontSize', e.target.value)} placeholder="Tam" />
                 <select value={config.textCase} onChange={(e) => handleChange('textCase', e.target.value)}>
                     <option value="uppercase">ABC</option>
                     <option value="lowercase">abc</option>
@@ -155,19 +151,36 @@ const BoardGenerator = ({ onGenerate }) => {
 
       {/* ÁREA DE PRÉVIA */}
       <div className="preview-panel">
-        <div className="input-area">
-            <textarea 
-            placeholder="Digite aqui (uma palavra por linha)..." 
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            />
-            <button onClick={handlePreview} disabled={isGenerating}>
-                {isGenerating ? '⏳...' : 'ATUALIZAR'}
-            </button>
+        
+        {/* BARRA DE FERRAMENTAS DO PREVIEW */}
+        <div className="preview-toolbar">
+            <div className="input-area-mini">
+                <textarea 
+                placeholder="Digite palavras..." 
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                />
+                <button onClick={handlePreview} disabled={isGenerating}>
+                    {isGenerating ? '⏳' : 'Atualizar'}
+                </button>
+            </div>
+            
+            {/* CONTROLE DE ZOOM MANUAL */}
+            <div className="zoom-controls">
+                <label>🔍 Zoom: {Math.round(zoomLevel * 100)}%</label>
+                <input 
+                    type="range" 
+                    min="0.1" 
+                    max="1.0" 
+                    step="0.05" 
+                    value={zoomLevel} 
+                    onChange={(e) => setZoomLevel(parseFloat(e.target.value))} 
+                />
+            </div>
         </div>
 
         <div className="paper-preview-container">
-            {/* A FOLHA DE PAPEL */}
+            {/* A FOLHA DE PAPEL - Agora usa o zoomLevel dinâmico */}
             <div 
                 className={`paper-sheet ${config.paperSize} ${config.orientation}`}
                 style={{
@@ -175,9 +188,9 @@ const BoardGenerator = ({ onGenerate }) => {
                     paddingBottom: `${config.marginBottom}cm`,
                     paddingLeft: `${config.marginLeft}cm`,
                     paddingRight: `${config.marginRight}cm`,
+                    transform: `translate(-50%, -50%) scale(${zoomLevel})` // <--- AQUI ESTÁ O SEGREDO
                 }}
             >
-                {/* O FLEXBOX AQUI GARANTE QUE O HEADER EMPURRE O GRID PARA BAIXO */}
                 <div className="paper-content-wrapper">
                     {config.header && <div className="paper-header">{config.headerText}</div>}
                     
