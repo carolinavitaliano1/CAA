@@ -1,5 +1,5 @@
 /* =========================================
-   ESTILO DO GERADOR (Ajuste Final de Layout)
+   ESTILO DO GERADOR (Visualização Perfeita)
    ========================================= */
 
 .board-generator-wrapper {
@@ -62,59 +62,59 @@
 .zoom-controls label { font-size: 0.8rem; font-weight: bold; color: #475569; white-space: nowrap; }
 .zoom-controls input[type="range"] { cursor: pointer; width: 100px; }
 
-/* --- ÁREA DE VISUALIZAÇÃO --- */
+
+/* --- ÁREA CINZA (CONTAINER PRINCIPAL) --- */
 .paper-preview-container {
   flex: 1;
   background: #94a3b8;
   border-radius: 10px;
   position: relative;
-  
-  /* Permite rolagem se o zoom for muito grande */
-  overflow: auto; 
-  
+  overflow: hidden; /* Corta o excesso geral */
   display: flex;
   flex-direction: column; 
-  align-items: center;
-  /* Espalha: Livro no meio, Controles embaixo */
-  justify-content: space-between;
-  
   box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
-  padding-bottom: 10px;
 }
 
+/* --- ÁREA DE ROLAGEM (ONDE FICA O PAPEL) --- */
 .book-viewer {
-  flex: 1;
+  flex: 1; /* Ocupa todo o espaço disponível acima dos botões */
+  overflow: auto; /* IMPORTANTE: Permite rolar se o zoom for grande */
   display: flex;
+  
+  /* Isso garante que se o papel for pequeno, ele centraliza. 
+     Se for grande, ele começa do topo e permite scroll. */
+  align-items: flex-start; 
   justify-content: center;
-  align-items: center;
-  width: 100%;
-  padding: 20px; /* Margem de segurança */
-  box-sizing: border-box;
+  
+  padding: 30px; /* Margem interna para o papel não colar nas bordas */
 }
 
-/* PAGINAÇÃO COMPACTA */
+/* PAGINAÇÃO (Fixa na parte de baixo da área cinza) */
 .pagination-controls {
-    position: relative;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 2px 10px; /* Compacto */
+    background: white;
+    padding: 5px 15px;
     border-radius: 50px;
     display: flex; align-items: center; justify-content: center;
-    gap: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    gap: 10px;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
     z-index: 10;
-    margin-top: 10px;
-    width: fit-content; min-width: auto;
+    
+    /* Centraliza na parte inferior */
+    align-self: center; 
+    margin-bottom: 10px;
+    width: fit-content;
 }
 
 .pagination-controls button {
     background: #2563EB; color: white; border: none;
-    width: 24px; height: 24px; border-radius: 50%;
-    font-size: 0.7rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: transform 0.2s, background 0.2s;
+    width: 26px; height: 26px; border-radius: 50%;
+    font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: transform 0.2s;
 }
 .pagination-controls button:hover:not(:disabled) { transform: scale(1.1); background: #1d4ed8; }
 .pagination-controls button:disabled { background: #cbd5e1; cursor: not-allowed; opacity: 0.7; }
-.page-indicator { font-weight: 700; color: #1e3a8a; font-size: 0.8rem; min-width: 50px; text-align: center; white-space: nowrap; }
+.page-indicator { font-weight: 700; color: #1e3a8a; font-size: 0.85rem; min-width: 60px; text-align: center; white-space: nowrap; }
+
 
 /* --- FOLHA DE PAPEL --- */
 .paper-sheet {
@@ -122,26 +122,29 @@
   box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   box-sizing: border-box;
   flex-shrink: 0;
-  transition: transform 0.2s ease;
-  display: flex; flex-direction: column;
   
-  /* Garante centralização perfeita do Zoom */
-  transform-origin: center center;
+  /* Centralização Flexbox dentro do book-viewer */
+  margin: auto; 
+  
+  display: flex; flex-direction: column;
+  transition: transform 0.2s ease;
+  transform-origin: top center; /* Zoom a partir do topo para facilitar leitura */
 }
 
 .hidden-page { display: none !important; }
 
+/* Wrapper interno */
 .paper-content-wrapper { 
     flex: 1; width: 100%; display: flex; flex-direction: column; box-sizing: border-box; background: white; position: relative; 
 }
 
-/* Dimensões em Pixels Fixos */
+/* Dimensões Fixas (Pixels) */
 .paper-sheet.A4.portrait { width: 794px; height: 1123px; }
 .paper-sheet.A4.landscape { width: 1123px; height: 794px; }
 .paper-sheet.A3.portrait { width: 1123px; height: 1587px; }
 .paper-sheet.A3.landscape { width: 1587px; height: 1123px; }
 
-/* CONTEÚDO */
+/* Conteúdo */
 .paper-header { text-align: center; font-weight: bold; font-size: 24pt; padding: 10px; margin-bottom: 5px; flex-shrink: 0; }
 .paper-grid { display: grid; width: 100%; flex: 1; min-height: 0; }
 .paper-cell { display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; min-width: 0; min-height: 0; }
@@ -149,29 +152,27 @@
 .cell-content img { object-fit: contain; max-width: 95%; max-height: 80%; flex-shrink: 1; }
 .cell-content span { line-height: 1; word-break: break-word; flex-shrink: 0; }
 .empty-slot { width: 100%; height: 100%; background: radial-gradient(#cbd5e1 2px, transparent 2px); background-size: 15px 15px; }
-.no-pages-msg { color: white; font-weight: bold; }
 
-/* RODAPÉ (Corrigido) */
+/* Rodapé */
 .paper-footer {
     font-size: 8pt; color: #64748b; text-align: center; margin-top: 5px; width: 100%; font-family: Arial, sans-serif; padding-bottom: 2px;
 }
 .paper-footer a { color: #0044CC; text-decoration: underline; font-weight: 900; cursor: pointer; }
 
-/* BOTÕES FINAIS */
+/* Botões Finais */
 .action-buttons-row { display: flex; gap: 10px; margin-top: auto; }
 .btn-finalize, .btn-print { padding: 12px; font-weight: bold; border: none; border-radius: 8px; flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
 .btn-finalize { background: #16a34a; color: white; }
 .btn-print { background: #3b82f6; color: white; }
 
-/* MOBILE FIX */
+/* Mobile */
 @media (max-width: 850px) {
   .board-generator-wrapper { flex-direction: column; height: auto !important; padding-bottom: 80px; }
   .config-panel, .preview-panel { width: 100%; flex: none; }
   .paper-preview-container { height: 50vh; min-height: 350px; width: 100%; }
-  .pagination-controls { width: auto; margin-top: auto; margin-bottom: 5px; padding: 5px 20px; }
 }
 
-/* IMPRESSÃO (Oculta botões, mostra todas as páginas) */
+/* Print */
 @media print {
   @page { margin: 0; size: auto; }
   body { background: white; margin: 0; padding: 0; overflow: visible !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
