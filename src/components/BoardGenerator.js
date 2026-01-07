@@ -201,8 +201,8 @@ const BoardGenerator = ({ onGenerate }) => {
                     <option value="A3">A3</option>
                 </select>
                 <select value={config.orientation} onChange={(e) => handleChange('orientation', e.target.value)}>
-                    <option value="landscape">Deitado</option>
-                    <option value="portrait">Em Pé</option>
+                    <option value="landscape">Horizontal</option>
+                    <option value="portrait">Vertical</option>
                 </select>
             </div>
         </div>
