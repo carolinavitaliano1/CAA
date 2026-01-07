@@ -2,41 +2,38 @@ import React, { useState, useEffect } from 'react';
 import './BoardGenerator.css';
 
 const BoardGenerator = ({ onGenerate }) => {
-  // --- ESTADOS DE CONFIGURAÇÃO ---
+  // --- ESTADOS ---
   const [text, setText] = useState("");
   const [cards, setCards] = useState([]);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Configurações inspiradas no ARASAAC
+  // CONFIGURAÇÕES COMPLETAS
   const [config, setConfig] = useState({
     rows: 3,
     cols: 4,
-    header: false,
-    borderWidth: 1,
-    borderStyle: 'solid', // solid, dotted, dashed
-    paperSize: 'A4', // A4, A3, A5
-    orientation: 'landscape', // portrait, landscape
+    header: true,
+    headerText: 'Minha Prancha',
+    borderWidth: 2,
+    borderStyle: 'solid',
+    borderColor: '#000000',
+    paperSize: 'A4',
+    orientation: 'landscape',
     marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1,
     cellHeight: 'auto',
-    textPosition: 'bottom', // top, bottom, none
+    textPosition: 'bottom',
     fontFamily: 'Arial',
-    fontStyle: 'normal', // normal, bold, italic
     fontSize: 12,
-    textCase: 'uppercase', // uppercase, lowercase
-    imageSize: 100, // %
+    textCase: 'uppercase',
     gap: 2
   });
 
-  // Gera os cartões (busca imagens) mas NÃO envia pro App principal ainda
-  // Envia apenas para o Preview interno deste componente
+  // GERAÇÃO DA PRÉVIA (Busca imagens)
   const handlePreview = async (e) => {
     e.preventDefault();
     if (!text.trim()) return;
 
     setIsGenerating(true);
-    const words = text.trim().split(/[\n\s]+/);
-    
-    // Limita a quantidade de cartões baseado nas Linhas x Colunas
+    const words = text.trim().split(/[\n\s]+/); // Separa por linha ou espaço
     const maxCards = config.rows * config.cols;
     const wordsToProcess = words.slice(0, maxCards);
 
@@ -45,12 +42,7 @@ const BoardGenerator = ({ onGenerate }) => {
         const res = await fetch(`https://api.arasaac.org/api/pictograms/pt/search/${encodeURIComponent(word)}`);
         const json = await res.json();
         const img = (json && json.length > 0) ? `https://static.arasaac.org/pictograms/${json[0]._id}/${json[0]._id}_500.png` : 'https://static.arasaac.org/pictograms/2475/2475_500.png';
-        
-        return {
-          id: `gen_${Date.now()}_${Math.random()}`,
-          text: word,
-          image: img
-        };
+        return { id: `gen_${Date.now()}_${Math.random()}`, text: word, image: img };
       } catch (err) {
         return { id: `err`, text: word, image: 'https://static.arasaac.org/pictograms/2475/2475_500.png' };
       }
@@ -61,36 +53,34 @@ const BoardGenerator = ({ onGenerate }) => {
     setIsGenerating(false);
   };
 
-  // Envia para o App principal (Salvar Definitivo)
+  const handleChange = (field, value) => {
+    setConfig(prev => ({ ...prev, [field]: value }));
+  };
+
   const handleFinalize = () => {
-    // Adiciona as configurações de estilo a cada cartão para manter o padrão
     const finalCards = cards.map(c => ({
       ...c,
       type: 'speak',
       bgColor: '#FFFFFF',
-      borderColor: '#000000',
-      // Você pode salvar as configs extras no objeto se quiser usar depois
+      borderColor: config.borderColor
     }));
     onGenerate(finalCards);
-  };
-
-  const handleChange = (field, value) => {
-    setConfig(prev => ({ ...prev, [field]: value }));
   };
 
   return (
     <div className="board-generator-wrapper">
       
-      {/* --- COLUNA DA ESQUERDA: CONFIGURAÇÕES --- */}
+      {/* --- PAINEL DE CONFIGURAÇÕES (ESQUERDA) --- */}
       <div className="config-panel">
-        <h3>🛠️ Configuração de Planilha</h3>
+        <h3>🛠️ Configuração da Planilha</h3>
         
-        {/* Seção 1: Estrutura */}
         <div className="config-group">
-          <label>Linhas:</label>
-          <input type="number" min="1" max="10" value={config.rows} onChange={(e) => handleChange('rows', e.target.value)} />
-          <label>Colunas:</label>
-          <input type="number" min="1" max="10" value={config.cols} onChange={(e) => handleChange('cols', e.target.value)} />
+          <label>Estrutura (Linhas x Colunas):</label>
+          <div style={{display:'flex', gap:'5px', width:'100%'}}>
+             <input type="number" min="1" value={config.rows} onChange={(e) => handleChange('rows', e.target.value)} placeholder="Linhas" />
+             <span style={{alignSelf:'center'}}>X</span>
+             <input type="number" min="1" value={config.cols} onChange={(e) => handleChange('cols', e.target.value)} placeholder="Colunas" />
+          </div>
         </div>
 
         <div className="config-group">
@@ -99,21 +89,27 @@ const BoardGenerator = ({ onGenerate }) => {
                 <option value="false">Sem cabeçalho</option>
                 <option value="true">Com cabeçalho</option>
             </select>
+            {config.header && (
+              <input type="text" value={config.headerText} onChange={(e) => handleChange('headerText', e.target.value)} placeholder="Texto do Título" />
+            )}
         </div>
 
         <div className="config-group">
-            <label>Borda:</label>
-            <input type="number" value={config.borderWidth} onChange={(e) => handleChange('borderWidth', e.target.value)} /> px
-            <select value={config.borderStyle} onChange={(e) => handleChange('borderStyle', e.target.value)}>
-                <option value="solid">Simples (Sólida)</option>
-                <option value="dashed">Linha descontínua</option>
-                <option value="dotted">Pontilhado</option>
-            </select>
+            <label>Bordas:</label>
+            <div style={{display:'flex', gap:'5px', width:'100%'}}>
+                <input type="number" value={config.borderWidth} onChange={(e) => handleChange('borderWidth', e.target.value)} placeholder="px" />
+                <select value={config.borderStyle} onChange={(e) => handleChange('borderStyle', e.target.value)}>
+                    <option value="solid">Sólida</option>
+                    <option value="dashed">Tracejada</option>
+                    <option value="dotted">Pontilhada</option>
+                </select>
+                <input type="color" value={config.borderColor} onChange={(e) => handleChange('borderColor', e.target.value)} style={{width:'40px', padding:'0'}} />
+            </div>
         </div>
 
-        <h3>📄 Configuração Geral</h3>
+        <h3>📄 Papel e Margens</h3>
         <div className="config-group">
-            <label>Papel:</label>
+            <label>Formato:</label>
             <select value={config.paperSize} onChange={(e) => handleChange('paperSize', e.target.value)}>
                 <option value="A4">A4</option>
                 <option value="A3">A3</option>
@@ -135,51 +131,45 @@ const BoardGenerator = ({ onGenerate }) => {
             </div>
         </div>
 
-        <h3>🔤 Texto e Imagem</h3>
+        <h3>🔤 Texto</h3>
         <div className="config-group">
-            <label>Posição Texto:</label>
+            <label>Fonte e Posição:</label>
             <select value={config.textPosition} onChange={(e) => handleChange('textPosition', e.target.value)}>
-                <option value="top">Superior</option>
-                <option value="bottom">Inferior</option>
+                <option value="bottom">Abaixo</option>
+                <option value="top">Acima</option>
                 <option value="none">Sem texto</option>
             </select>
-        </div>
-
-        <div className="config-group">
-            <label>Fonte:</label>
             <select value={config.fontFamily} onChange={(e) => handleChange('fontFamily', e.target.value)}>
                 <option value="Arial">Arial</option>
                 <option value="Times New Roman">Times</option>
                 <option value="Verdana">Verdana</option>
                 <option value="Comic Sans MS">Comic Sans</option>
             </select>
-            <select value={config.textCase} onChange={(e) => handleChange('textCase', e.target.value)}>
-                <option value="uppercase">MAIÚSCULAS</option>
-                <option value="lowercase">minúsculas</option>
-            </select>
-        </div>
-
-        <div className="config-group">
-             <label>Tamanho Fonte:</label>
-             <input type="number" value={config.fontSize} onChange={(e) => handleChange('fontSize', e.target.value)} />
+            <div style={{display:'flex', gap:'5px', width:'100%', marginTop:'5px'}}>
+                <input type="number" value={config.fontSize} onChange={(e) => handleChange('fontSize', e.target.value)} placeholder="Tam." />
+                <select value={config.textCase} onChange={(e) => handleChange('textCase', e.target.value)}>
+                    <option value="uppercase">MAIÚSCULA</option>
+                    <option value="lowercase">minúscula</option>
+                </select>
+            </div>
         </div>
       </div>
 
-      {/* --- COLUNA DA DIREITA: PREVIEW --- */}
+      {/* --- ÁREA DE PRÉVIA (DIREITA) --- */}
       <div className="preview-panel">
         <div className="input-area">
             <textarea 
-            placeholder="Digite as palavras aqui (uma por linha)..." 
+            placeholder="Digite palavras (uma por linha)..." 
             value={text}
             onChange={(e) => setText(e.target.value)}
             />
             <button onClick={handlePreview} disabled={isGenerating}>
-                {isGenerating ? '🔄 Buscando...' : '👁️ Atualizar Prévia'}
+                {isGenerating ? '🔄...' : 'ATUALIZAR'}
             </button>
         </div>
 
         <div className="paper-preview-container">
-            {/* SIMULAÇÃO DA FOLHA DE PAPEL */}
+            {/* A FOLHA DE PAPEL SIMULADA */}
             <div 
                 className={`paper-sheet ${config.paperSize} ${config.orientation}`}
                 style={{
@@ -189,7 +179,7 @@ const BoardGenerator = ({ onGenerate }) => {
                     paddingRight: `${config.marginRight}cm`,
                 }}
             >
-                {config.header && <div className="paper-header">Título da Prancha</div>}
+                {config.header && <div className="paper-header">{config.headerText}</div>}
                 
                 <div 
                     className="paper-grid"
@@ -199,7 +189,6 @@ const BoardGenerator = ({ onGenerate }) => {
                         gap: `${config.gap}px`
                     }}
                 >
-                    {/* Renderiza os cartões ou espaços vazios */}
                     {Array.from({ length: config.rows * config.cols }).map((_, i) => {
                         const card = cards[i];
                         return (
@@ -209,6 +198,7 @@ const BoardGenerator = ({ onGenerate }) => {
                                 style={{
                                     borderWidth: `${config.borderWidth}px`,
                                     borderStyle: config.borderStyle,
+                                    borderColor: config.borderColor
                                 }}
                             >
                                 {card ? (
@@ -221,7 +211,7 @@ const BoardGenerator = ({ onGenerate }) => {
                                             }}>{card.text}</span>
                                         )}
                                         
-                                        <img src={card.image} alt={card.text} style={{width: `${config.imageSize}%`}} />
+                                        <img src={card.image} alt={card.text} />
 
                                         {config.textPosition === 'bottom' && (
                                             <span style={{
@@ -231,7 +221,7 @@ const BoardGenerator = ({ onGenerate }) => {
                                             }}>{card.text}</span>
                                         )}
                                     </div>
-                                ) : <span className="empty-slot"></span>}
+                                ) : <div className="empty-slot"></div>}
                             </div>
                         );
                     })}
@@ -240,7 +230,7 @@ const BoardGenerator = ({ onGenerate }) => {
         </div>
 
         <button className="btn-finalize" onClick={handleFinalize} disabled={cards.length === 0}>
-            ✅ Usar esta Prancha no App
+            ✅ Gerar Prancha
         </button>
       </div>
     </div>
