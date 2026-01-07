@@ -1,67 +1,88 @@
+/* =========================================
+   ESTILO DO GERADOR DE PRANCHAS (Centralizado)
+   ========================================= */
+
 .board-generator-wrapper {
   display: flex;
   gap: 20px;
-  height: calc(100vh - 100px); /* Ocupa a tela toda */
-  background: #f1f5f9;
+  /* Altura calculada para caber na tela sem rolar a página inteira */
+  height: calc(100vh - 140px); 
+  background: #f8fafc;
   padding: 10px;
-  border-radius: 12px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  max-width: 1200px;
+  margin: 0 auto; /* Centraliza o gerador na tela se o monitor for muito grande */
 }
 
-/* Painel Esquerdo (Config) */
+/* --- PAINEL ESQUERDO (Configurações) --- */
 .config-panel {
-  flex: 0 0 300px; /* Largura fixa */
+  flex: 0 0 320px; /* Largura fixa um pouco maior */
   background: white;
   padding: 20px;
   border-radius: 12px;
-  overflow-y: auto;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  border-right: 1px solid #e2e8f0;
+  overflow-y: auto; /* Permite rolar só as configurações */
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .config-panel h3 {
   font-size: 1rem;
   color: #1e3a8a;
   border-bottom: 2px solid #e2e8f0;
-  padding-bottom: 5px;
-  margin-top: 20px;
+  padding-bottom: 8px;
+  margin: 0 0 5px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
-.config-panel h3:first-child { margin-top: 0; }
 
 .config-group {
-  margin-bottom: 15px;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   align-items: center;
+  background: #f8fafc;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #f1f5f9;
 }
 
 .config-group label {
-  font-size: 0.8rem;
-  font-weight: bold;
-  color: #475569;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #64748b;
   width: 100%;
+  text-transform: uppercase;
 }
 
-.config-group input, .config-group select {
+.config-group input, 
+.config-group select {
   padding: 8px;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
   flex: 1;
+  font-size: 0.9rem;
+  background: white;
 }
 
 .margins-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 5px;
+  gap: 8px;
   width: 100%;
 }
 
-/* Painel Direito (Preview) */
+/* --- PAINEL DIREITO (Preview) --- */
 .preview-panel {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
+  height: 100%;
+  overflow: hidden; /* Garante que nada saia do painel */
 }
 
 .input-area {
@@ -70,15 +91,18 @@
   background: white;
   padding: 10px;
   border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  flex-shrink: 0; /* Impede que essa área encolha */
 }
 
 .input-area textarea {
   flex: 1;
-  height: 60px;
+  height: 50px;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
   padding: 10px;
   resize: none;
+  font-family: inherit;
 }
 
 .input-area button {
@@ -89,47 +113,59 @@
   padding: 0 20px;
   font-weight: bold;
   cursor: pointer;
+  transition: background 0.2s;
 }
+.input-area button:hover { background: #1d4ed8; }
 
-/* Área do Papel */
+/* ÁREA CINZA (Onde fica o papel) */
 .paper-preview-container {
   flex: 1;
-  background: #94a3b8; /* Fundo cinza escuro para destacar o papel */
+  background: #cbd5e1; /* Cinza mais escuro para contraste */
   border-radius: 12px;
-  padding: 20px;
-  overflow: auto;
+  padding: 40px; /* Espaço ao redor do papel */
+  overflow: auto; /* Permite rolar se o papel for gigante */
+  
+  /* CENTRALIZAÇÃO MÁGICA DO PAPEL */
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  justify-content: center; /* Centraliza Horizontalmente */
+  align-items: center;     /* Centraliza Verticalmente */
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
 }
 
-/* A Folha de Papel */
+/* A FOLHA DE PAPEL */
 .paper-sheet {
   background: white;
-  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3); /* Sombra realista */
   display: flex;
   flex-direction: column;
-  box-sizing: border-box; /* Importante para margens */
-  transition: all 0.3s;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  position: relative;
+  
+  /* Garante que o papel não encolha */
+  flex-shrink: 0; 
 }
 
-/* Tamanhos de Papel (Aproximados para tela) */
-.paper-sheet.A4.portrait { width: 595px; height: 842px; }
-.paper-sheet.A4.landscape { width: 842px; height: 595px; }
-
-.paper-sheet.A3.portrait { width: 842px; height: 1190px; }
-.paper-sheet.A3.landscape { width: 1190px; height: 842px; }
-
-.paper-sheet.A5.portrait { width: 420px; height: 595px; }
-.paper-sheet.A5.landscape { width: 595px; height: 420px; }
+/* TAMANHOS DE PAPEL (Escala visual para caber na tela) */
+/* A4 */
+.paper-sheet.A4.portrait { width: 500px; height: 707px; }
+.paper-sheet.A4.landscape { width: 707px; height: 500px; }
+/* A3 (Reduzido para visualização) */
+.paper-sheet.A3.portrait { width: 707px; height: 1000px; }
+.paper-sheet.A3.landscape { width: 1000px; height: 707px; }
+/* A5 */
+.paper-sheet.A5.portrait { width: 350px; height: 500px; }
+.paper-sheet.A5.landscape { width: 500px; height: 350px; }
 
 .paper-header {
   text-align: center;
   font-weight: bold;
-  font-size: 1.5rem;
-  margin-bottom: 10px;
-  border: 1px dashed #ccc;
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+  border: 1px dashed #94a3b8;
   padding: 5px;
+  background: #f8fafc;
+  color: #334155;
 }
 
 .paper-grid {
@@ -155,49 +191,49 @@
   width: 100%;
   height: 100%;
   text-align: center;
+  padding: 2px;
 }
 
 .cell-content img {
   object-fit: contain;
+  max-width: 90%;
   max-height: 80%;
 }
 
 .cell-content.top { flex-direction: column-reverse; justify-content: flex-end; }
 .cell-content.bottom { justify-content: flex-end; }
 .cell-content span {
-  padding: 2px;
-  line-height: 1.1;
-  width: 100%;
+  line-height: 1.2;
   word-break: break-word;
 }
 
 .empty-slot {
   width: 100%;
   height: 100%;
-  background: repeating-linear-gradient(
-    45deg,
-    #f8fafc,
-    #f8fafc 10px,
-    #f1f5f9 10px,
-    #f1f5f9 20px
-  );
+  background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+  background-size: 10px 10px;
 }
 
 .btn-finalize {
   padding: 15px;
   background: #16a34a;
   color: white;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: bold;
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  box-shadow: 0 4px 6px rgba(22, 163, 74, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
-.btn-finalize:disabled { background: #cbd5e1; cursor: not-allowed; }
+.btn-finalize:disabled { background: #cbd5e1; box-shadow: none; cursor: not-allowed; }
+.btn-finalize:hover:not(:disabled) { background: #15803d; transform: translateY(-2px); }
 
-/* Responsividade do Gerador */
+/* CELULAR */
 @media (max-width: 900px) {
   .board-generator-wrapper { flex-direction: column; height: auto; }
-  .config-panel { flex: none; width: 100%; border-right: none; border-bottom: 1px solid #e2e8f0; }
-  .paper-sheet { transform: scale(0.6); transform-origin: top center; margin-bottom: -30%; }
+  .config-panel { flex: none; width: 100%; height: auto; }
+  .paper-preview-container { min-height: 400px; padding: 20px; }
+  .paper-sheet { transform: scale(0.6); margin: 0; } /* Reduz papel no celular */
 }
