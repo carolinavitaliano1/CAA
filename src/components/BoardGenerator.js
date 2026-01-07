@@ -17,7 +17,7 @@ const BoardGenerator = ({ onGenerate }) => {
   const [text, setText] = useState("");
   const [pages, setPages] = useState([]); 
   const [isGenerating, setIsGenerating] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState(0.45);
+  const [zoomLevel, setZoomLevel] = useState(0.35); // AJUSTADO: Zoom ideal para caber na tela
   const [currentPage, setCurrentPage] = useState(0);
 
   const [config, setConfig] = useState({
@@ -250,7 +250,6 @@ const BoardGenerator = ({ onGenerate }) => {
                             transform: `scale(${zoomLevel})`
                         }}
                     >
-                        {/* WRAPPER COM A BORDA DA PRANCHA */}
                         <div className="paper-content-wrapper" style={{ border: `${config.borderWidth}px ${config.borderStyle} ${config.boardBorderColor}` }}>
                             {config.header && (
                                 <div className="paper-header" style={{ backgroundColor: config.headerBgColor, borderBottom: `${config.borderWidth}px ${config.borderStyle} ${config.cellBorderColor}` }}>
@@ -265,7 +264,8 @@ const BoardGenerator = ({ onGenerate }) => {
                                             {card ? (
                                                 <div className={`cell-content ${config.textPosition}`}>
                                                     {config.textPosition === 'top' && <span style={{ fontFamily: config.fontFamily, fontSize: `${config.fontSize}pt`, textTransform: config.textCase }}>{card.text}</span>}
-                                                    <img src={card.image} alt="" />
+                                                    {/* Imagem com controle estrito de tamanho */}
+                                                    <img src={card.image} alt="" style={{ maxWidth: '100%', maxHeight: config.textPosition === 'none' ? '100%' : '75%', objectFit: 'contain' }} />
                                                     {config.textPosition === 'bottom' && <span style={{ fontFamily: config.fontFamily, fontSize: `${config.fontSize}pt`, textTransform: config.textCase }}>{card.text}</span>}
                                                 </div>
                                             ) : <div className="empty-slot"></div>}
@@ -275,9 +275,9 @@ const BoardGenerator = ({ onGenerate }) => {
                             </div>
                         </div>
 
-                        {/* --- RODAPÉ COM CRÉDITOS (Abaixo da borda, mas no papel) --- */}
+                        {/* RODAPÉ CORRIGIDO (Sem © extra) */}
                         <div className="paper-footer">
-                            © Gerado via © NeuroCAA - Sistema protegido por direitos autorais - Pictogramas utilizados sob licença ARASAAC (CC BY-NC-SA 4.0) - <a href="https://neurocaa.com" target="_blank" rel="noreferrer">Conheça a plataforma</a>
+                            Gerado via NeuroCAA - Sistema protegido por direitos autorais - Pictogramas utilizados sob licença ARASAAC (CC BY-NC-SA 4.0) - <a href="https://neurocaa.com" target="_blank" rel="noreferrer">Conheça a plataforma</a>
                         </div>
 
                     </div>
