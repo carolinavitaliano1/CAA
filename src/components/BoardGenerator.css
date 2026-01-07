@@ -1,5 +1,5 @@
 /* =========================================
-   ESTILO DO GERADOR (Com Link Azul Destacado)
+   ESTILO DO GERADOR (Centralização e Correções)
    ========================================= */
 
 .board-generator-wrapper {
@@ -15,7 +15,7 @@
   box-sizing: border-box;
 }
 
-/* --- MENU LATERAL --- */
+/* MENU LATERAL */
 .config-panel {
   flex: 0 0 300px; 
   background: white;
@@ -33,7 +33,7 @@
 .config-group input, .config-group select { padding: 8px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 0.85rem; background: white; width: 100%; box-sizing: border-box; }
 .margins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
 
-/* --- PREVIEW PANEL --- */
+/* PREVIEW PANEL */
 .preview-panel {
   flex: 1;
   display: flex;
@@ -62,7 +62,7 @@
 .zoom-controls label { font-size: 0.8rem; font-weight: bold; color: #475569; white-space: nowrap; }
 .zoom-controls input[type="range"] { cursor: pointer; width: 100px; }
 
-/* --- ÁREA DE VISUALIZAÇÃO --- */
+/* ÁREA DE VISUALIZAÇÃO */
 .paper-preview-container {
   flex: 1;
   background: #94a3b8;
@@ -81,17 +81,17 @@
   flex: 1;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: center; /* CENTRALIZAÇÃO VERTICAL */
   width: 100%;
   overflow: hidden;
+  padding: 20px; /* Garante que as bordas não toquem na tela */
 }
 
 /* PAGINAÇÃO COMPACTA */
 .pagination-controls {
     position: relative;
-    transform: none; left: auto; bottom: auto;
     background: rgba(255, 255, 255, 0.95);
-    padding: 2px 10px; /* Mais fino */
+    padding: 2px 10px;
     border-radius: 50px;
     display: flex; align-items: center; justify-content: center;
     gap: 8px;
@@ -103,7 +103,7 @@
 
 .pagination-controls button {
     background: #2563EB; color: white; border: none;
-    width: 24px; height: 24px; border-radius: 50%; /* Menor */
+    width: 24px; height: 24px; border-radius: 50%;
     font-size: 0.7rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
     transition: transform 0.2s, background 0.2s;
 }
@@ -111,7 +111,7 @@
 .pagination-controls button:disabled { background: #cbd5e1; cursor: not-allowed; opacity: 0.7; }
 .page-indicator { font-weight: 700; color: #1e3a8a; font-size: 0.8rem; min-width: 50px; text-align: center; white-space: nowrap; }
 
-/* --- FOLHA DE PAPEL --- */
+/* FOLHA DE PAPEL */
 .paper-sheet {
   background: white;
   box-shadow: 0 20px 60px rgba(0,0,0,0.5);
@@ -119,15 +119,16 @@
   flex-shrink: 0;
   transition: transform 0.2s ease;
   display: flex; flex-direction: column;
+  
+  /* PONTO CHAVE: Origem do Zoom no Centro */
+  transform-origin: center center;
 }
 
 .hidden-page { display: none !important; }
 
-.paper-content-wrapper { 
-    flex: 1; width: 100%; display: flex; flex-direction: column; box-sizing: border-box; background: white; position: relative; 
-}
+.paper-content-wrapper { flex: 1; width: 100%; display: flex; flex-direction: column; box-sizing: border-box; background: white; position: relative; }
 
-/* Dimensões em Pixels */
+/* Dimensões */
 .paper-sheet.A4.portrait { width: 794px; height: 1123px; }
 .paper-sheet.A4.landscape { width: 1123px; height: 794px; }
 .paper-sheet.A3.portrait { width: 1123px; height: 1587px; }
@@ -135,7 +136,7 @@
 .paper-sheet.A5.portrait { width: 559px; height: 794px; }
 .paper-sheet.A5.landscape { width: 794px; height: 559px; }
 
-/* CONTEÚDO */
+/* Conteúdo */
 .paper-header { text-align: center; font-weight: bold; font-size: 24pt; padding: 10px; margin-bottom: 5px; flex-shrink: 0; }
 .page-number-footer { position: absolute; bottom: 5px; right: 10px; font-size: 10pt; color: #94a3b8; }
 .paper-grid { display: grid; width: 100%; flex: 1; min-height: 0; }
@@ -146,59 +147,35 @@
 .empty-slot { width: 100%; height: 100%; background: radial-gradient(#cbd5e1 2px, transparent 2px); background-size: 15px 15px; }
 .no-pages-msg { color: white; font-weight: bold; }
 
-/* --- RODAPÉ COM LINK AZUL --- */
+/* Rodapé */
 .paper-footer {
-    font-size: 8pt;
-    color: #64748b; /* Cinza para o texto normal */
-    text-align: center;
-    margin-top: 5px;
-    width: 100%;
-    font-family: Arial, sans-serif;
-    padding-bottom: 2px;
+    font-size: 8pt; color: #64748b; text-align: center; margin-top: 5px; width: 100%; font-family: Arial, sans-serif; padding-bottom: 2px;
 }
+.paper-footer a { color: #0044CC; text-decoration: underline; font-weight: 900; cursor: pointer; }
 
-/* O LINK AZUL DESTACADO */
-.paper-footer a {
-    color: #0044CC; /* Azul forte e visível */
-    text-decoration: underline; /* Sublinhado para destacar que é link */
-    font-weight: 900; /* Negrito extra */
-    cursor: pointer;
-}
-
-/* BOTÕES FINAIS */
+/* Botões Finais */
 .action-buttons-row { display: flex; gap: 10px; margin-top: auto; }
 .btn-finalize, .btn-print { padding: 12px; font-weight: bold; border: none; border-radius: 8px; flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
 .btn-finalize { background: #16a34a; color: white; }
 .btn-print { background: #3b82f6; color: white; }
 
-/* MOBILE FIX */
+/* Mobile */
 @media (max-width: 850px) {
   .board-generator-wrapper { flex-direction: column; height: auto !important; padding-bottom: 80px; }
-  .config-panel { width: 100%; flex: none; }
-  .preview-panel { width: 100%; flex: none; }
+  .config-panel, .preview-panel { width: 100%; flex: none; }
   .paper-preview-container { height: 50vh; min-height: 350px; width: 100%; }
   .pagination-controls { width: auto; margin-top: auto; margin-bottom: 5px; padding: 5px 20px; }
 }
 
-/* =========================================
-   CSS DE IMPRESSÃO
-   ========================================= */
+/* Print */
 @media print {
   @page { margin: 0; size: auto; }
   body { background: white; margin: 0; padding: 0; overflow: visible !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  
   .admin-bar, .sidebar, .sidebar-overlay, .config-panel, .preview-toolbar, .action-buttons-row, .pagination-controls { display: none !important; }
-  
   .board-generator-wrapper, .preview-panel, .paper-preview-container, .book-viewer { display: block !important; height: auto !important; border: none !important; margin: 0 !important; padding: 0 !important; max-width: none !important; background: white !important; overflow: visible !important; }
   .hidden-page { display: block !important; }
   .paper-sheet { transform: none !important; box-shadow: none !important; margin: 0 auto !important; page-break-after: always !important; display: block !important; position: relative !important; }
   .empty-slot { background: none !important; border: 1px solid #eee; }
-
-  /* FORÇA O AZUL NA IMPRESSÃO */
   .paper-footer { display: block !important; color: #000; }
-  .paper-footer a {
-      color: #0044CC !important; /* Força o azul mesmo se a impressora quiser preto */
-      text-decoration: underline !important;
-      font-weight: bold !important;
-  }
+  .paper-footer a { color: #0044CC !important; text-decoration: underline !important; font-weight: bold !important; }
 }
