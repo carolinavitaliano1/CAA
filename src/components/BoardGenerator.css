@@ -1,5 +1,5 @@
 /* =========================================
-   ESTILO DO GERADOR (Limpo e Rígido)
+   ESTILO DO GERADOR (Visualização e Impressão)
    ========================================= */
 
 .board-generator-wrapper {
@@ -15,7 +15,7 @@
   box-sizing: border-box;
 }
 
-/* --- MENU LATERAL (Mantido igual) --- */
+/* --- MENU LATERAL --- */
 .config-panel {
   flex: 0 0 300px; 
   background: white;
@@ -62,167 +62,74 @@
 .zoom-controls label { font-size: 0.8rem; font-weight: bold; color: #475569; white-space: nowrap; }
 .zoom-controls input[type="range"] { cursor: pointer; width: 100px; }
 
-
-/* --- ÁREA CINZA LIMPA --- */
+/* --- ÁREA CINZA (VISUALIZADOR) --- */
 .paper-preview-container {
   flex: 1;
   background: #94a3b8;
   border-radius: 10px;
   position: relative;
-  overflow: hidden; /* Corta o que estiver fora, sem barras de rolagem feias */
-  
-  /* Centraliza a folha no meio */
+  overflow: hidden; 
   display: flex;
-  flex-direction: column;
+  flex-direction: column; 
   align-items: center;
   justify-content: center; 
-  
   box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
 }
 
-/* Container do Visualizador */
 .book-viewer {
-  /* Não tem mais overflow auto aqui para não criar barras duplas */
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
   height: 100%;
+  overflow: hidden; /* Na tela, corta o excesso */
 }
 
-/* --- FOLHA DE PAPEL (RÍGIDA) --- */
+/* --- FOLHA DE PAPEL --- */
 .paper-sheet {
   background: white;
   box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-  box-sizing: border-box; /* Garante que Padding (Margem) conte no tamanho total */
+  box-sizing: border-box; 
   flex-shrink: 0;
-  
-  /* Layout Flex Vertical para organizar Header, Grid e Footer */
   display: flex; 
   flex-direction: column;
-  
   transform-origin: center center;
   transition: transform 0.2s ease;
 }
 
+/* Esconde páginas não ativas NA TELA */
 .hidden-page { display: none !important; }
 
-/* Wrapper Interno (Onde fica a borda da prancha) */
+/* Conteúdo Interno */
 .paper-content-wrapper { 
-    /* IMPORTANTE: Ocupa 100% da altura disponível dentro das margens */
-    flex: 1; 
-    height: 100%; 
-    width: 100%; 
-    
-    display: flex; 
-    flex-direction: column; 
-    box-sizing: border-box; 
-    background: white; 
-    position: relative; 
-    
-    /* Garante que o conteúdo não vaze deste wrapper */
-    overflow: hidden; 
+    flex: 1; width: 100%; display: flex; flex-direction: column; box-sizing: border-box; background: white; position: relative; overflow: hidden; 
 }
 
-/* Dimensões em Pixels Fixos */
+/* Dimensões da Tela (Pixels Fixos) */
 .paper-sheet.A4.portrait { width: 794px; height: 1123px; }
 .paper-sheet.A4.landscape { width: 1123px; height: 794px; }
 .paper-sheet.A3.portrait { width: 1123px; height: 1587px; }
 .paper-sheet.A3.landscape { width: 1587px; height: 1123px; }
 
-
-/* --- CONTEÚDO --- */
-.paper-header { 
-    text-align: center; 
-    font-weight: bold; 
-    font-size: 24pt; 
-    padding: 10px; 
-    margin-bottom: 5px; 
-    flex-shrink: 0; /* Cabeçalho nunca encolhe */
-}
-
-/* GRID QUE NÃO VAZA */
-.paper-grid { 
-    display: grid; 
-    width: 100%; 
-    
-    /* IMPORTANTE: */
-    flex: 1;      /* Ocupa todo o espaço restante */
-    min-height: 0; /* Permite que o grid encolha se precisar */
-    height: 100%;  /* Força altura */
-}
-
-.paper-cell { 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    overflow: hidden; 
-    position: relative; 
-    
-    /* Permite encolher */
-    min-width: 0; 
-    min-height: 0; 
-}
-
-.cell-content { 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center; 
-    width: 100%; 
-    height: 100%; 
-    padding: 2px; 
-    text-align: center; 
-    overflow: hidden;
-}
-
-/* IMAGEM RESPONSIVA DENTRO DA CÉLULA */
-.cell-content img { 
-    object-fit: contain; 
-    /* Limites máximos para não empurrar a célula */
-    max-width: 95%; 
-    max-height: 80%; 
-    flex-shrink: 1; 
-}
-
-.cell-content span { 
-    line-height: 1; 
-    word-break: break-word; 
-    flex-shrink: 0;
-    /* Evita que texto gigante quebre o layout */
-    max-height: 20%;
-    overflow: hidden;
-}
-
+/* Elementos da Prancha */
+.paper-header { text-align: center; font-weight: bold; font-size: 24pt; padding: 10px; margin-bottom: 5px; flex-shrink: 0; }
+.paper-grid { display: grid; width: 100%; flex: 1; min-height: 0; height: 100%; }
+.paper-cell { display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; min-width: 0; min-height: 0; }
+.cell-content { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; padding: 2px; text-align: center; overflow: hidden; }
+.cell-content img { object-fit: contain; max-width: 95%; max-height: 80%; flex-shrink: 1; }
+.cell-content span { line-height: 1; word-break: break-word; flex-shrink: 0; max-height: 20%; overflow: hidden; }
 .empty-slot { width: 100%; height: 100%; background: radial-gradient(#cbd5e1 2px, transparent 2px); background-size: 15px 15px; }
 
-/* RODAPÉ LIMPO */
-.paper-footer {
-    font-size: 8pt; color: #64748b; text-align: center; margin-top: 5px; width: 100%; font-family: Arial, sans-serif; padding-bottom: 2px; flex-shrink: 0;
-}
+/* Rodapé */
+.paper-footer { font-size: 8pt; color: #64748b; text-align: center; margin-top: 5px; width: 100%; font-family: Arial, sans-serif; padding-bottom: 2px; flex-shrink: 0; }
 .paper-footer a { color: #0044CC; text-decoration: underline; font-weight: 900; cursor: pointer; }
 
-
-/* PAGINAÇÃO LIMPA */
+/* Paginação */
 .pagination-controls {
-    position: absolute; /* Flutua sobre a parte inferior da área cinza, discreto */
-    bottom: 15px;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 4px 12px;
-    border-radius: 50px;
-    display: flex; align-items: center; justify-content: center;
-    gap: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    z-index: 100;
+    position: absolute; bottom: 15px; background: rgba(255, 255, 255, 0.9); padding: 4px 12px; border-radius: 50px; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 100;
 }
-
-.pagination-controls button {
-    background: #2563EB; color: white; border: none;
-    width: 24px; height: 24px; border-radius: 50%;
-    font-size: 0.7rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
-}
+.pagination-controls button { background: #2563EB; color: white; border: none; width: 24px; height: 24px; border-radius: 50%; font-size: 0.7rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .page-indicator { font-weight: 700; color: #1e3a8a; font-size: 0.8rem; min-width: 50px; text-align: center; }
-
 
 /* Botões Finais */
 .action-buttons-row { display: flex; gap: 10px; margin-top: auto; }
@@ -230,22 +137,100 @@
 .btn-finalize { background: #16a34a; color: white; }
 .btn-print { background: #3b82f6; color: white; }
 
-/* MOBILE */
+/* Mobile */
 @media (max-width: 850px) {
   .board-generator-wrapper { flex-direction: column; height: auto !important; padding-bottom: 80px; }
   .config-panel, .preview-panel { width: 100%; flex: none; }
   .paper-preview-container { height: 50vh; min-height: 350px; width: 100%; }
 }
 
-/* PRINT */
+
+/* ==========================================================================
+   CSS DE IMPRESSÃO - A MÁGICA ACONTECE AQUI
+   ========================================================================== */
 @media print {
-  @page { margin: 0; size: auto; }
-  body { background: white; margin: 0; padding: 0; overflow: visible !important; }
-  .admin-bar, .sidebar, .sidebar-overlay, .config-panel, .preview-toolbar, .action-buttons-row, .pagination-controls { display: none !important; }
-  .board-generator-wrapper, .preview-panel, .paper-preview-container, .book-viewer { display: block !important; height: auto !important; border: none !important; margin: 0 !important; padding: 0 !important; max-width: none !important; background: white !important; overflow: visible !important; }
-  .hidden-page { display: block !important; }
-  .paper-sheet { transform: none !important; box-shadow: none !important; margin: 0 auto !important; page-break-after: always !important; display: block !important; position: relative !important; }
+  /* 1. Configura a página física */
+  @page {
+    margin: 0mm; /* Remove margens da impressora */
+    size: auto;  /* Usa o tamanho do conteúdo */
+  }
+
+  /* 2. Reseta o corpo da página */
+  body, html {
+    background: white;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible !important;
+  }
+
+  /* 3. ESCONDE TUDO O QUE NÃO É PAPEL */
+  .board-generator-wrapper * {
+    visibility: hidden; /* Esconde tudo dentro do gerador... */
+  }
+  
+  .admin-bar, .sidebar, .sidebar-overlay, .config-panel, .preview-toolbar, .action-buttons-row, .pagination-controls {
+    display: none !important; /* Remove do fluxo completamente */
+  }
+
+  /* 4. REVELA APENAS AS FOLHAS DE PAPEL */
+  .paper-preview-container, .book-viewer {
+    visibility: visible !important;
+    position: static !important;
+    display: block !important;
+    background: none !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* 5. ESTILO DA FOLHA NA IMPRESSÃO */
+  .paper-sheet {
+    visibility: visible !important; /* Traz de volta a visibilidade */
+    
+    /* Remove o Zoom da tela */
+    transform: none !important; 
+    
+    /* Remove sombras e fundos de tela */
+    box-shadow: none !important;
+    background: white !important;
+    
+    /* Posicionamento para impressão */
+    position: relative !important;
+    display: flex !important;
+    margin: 0 !important;
+    left: 0 !important;
+    top: 0 !important;
+    
+    /* QUEBRA DE PÁGINA: Força cada folha em uma nova página */
+    break-after: page;
+    page-break-after: always;
+  }
+  
+  /* Revela todas as páginas (mesmo as ocultas na navegação) */
+  .hidden-page {
+    display: flex !important;
+  }
+  
+  /* Garante que o conteúdo interno seja visível */
+  .paper-sheet * {
+    visibility: visible !important;
+  }
+
+  /* Ajuste Fino para A4/A3 na Impressão (Remove pixels, usa 100%) */
+  .paper-sheet.A4.portrait { width: 210mm !important; height: 297mm !important; }
+  .paper-sheet.A4.landscape { width: 297mm !important; height: 210mm !important; }
+  .paper-sheet.A3.portrait { width: 297mm !important; height: 420mm !important; }
+  .paper-sheet.A3.landscape { width: 420mm !important; height: 297mm !important; }
+
+  /* Limpa slots vazios para economizar tinta */
   .empty-slot { background: none !important; border: 1px solid #eee; }
-  .paper-footer { display: block !important; color: #000; }
-  .paper-footer a { color: #0044CC !important; text-decoration: underline !important; font-weight: bold !important; }
+  
+  /* Rodapé Preto na impressão */
+  .paper-footer { color: black !important; }
+  .paper-footer a { color: #0044CC !important; text-decoration: underline !important; }
 }
