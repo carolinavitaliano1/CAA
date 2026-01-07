@@ -17,7 +17,8 @@ const BoardGenerator = ({ onGenerate }) => {
   const [text, setText] = useState("");
   const [pages, setPages] = useState([]); 
   const [isGenerating, setIsGenerating] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState(0.35); // AJUSTADO: Zoom ideal para caber na tela
+  // ZOOM INICIAL AJUSTADO PARA 32% (Caber na tela)
+  const [zoomLevel, setZoomLevel] = useState(0.32); 
   const [currentPage, setCurrentPage] = useState(0);
 
   const [config, setConfig] = useState({
@@ -264,8 +265,18 @@ const BoardGenerator = ({ onGenerate }) => {
                                             {card ? (
                                                 <div className={`cell-content ${config.textPosition}`}>
                                                     {config.textPosition === 'top' && <span style={{ fontFamily: config.fontFamily, fontSize: `${config.fontSize}pt`, textTransform: config.textCase }}>{card.text}</span>}
-                                                    {/* Imagem com controle estrito de tamanho */}
-                                                    <img src={card.image} alt="" style={{ maxWidth: '100%', maxHeight: config.textPosition === 'none' ? '100%' : '75%', objectFit: 'contain' }} />
+                                                    
+                                                    {/* IMAGEM AJUSTÁVEL: Max Height de 70% garante espaço para o texto */}
+                                                    <img 
+                                                        src={card.image} 
+                                                        alt="" 
+                                                        style={{ 
+                                                            maxWidth: '100%', 
+                                                            maxHeight: config.textPosition === 'none' ? '100%' : '70%', 
+                                                            objectFit: 'contain' 
+                                                        }} 
+                                                    />
+                                                    
                                                     {config.textPosition === 'bottom' && <span style={{ fontFamily: config.fontFamily, fontSize: `${config.fontSize}pt`, textTransform: config.textCase }}>{card.text}</span>}
                                                 </div>
                                             ) : <div className="empty-slot"></div>}
@@ -275,7 +286,7 @@ const BoardGenerator = ({ onGenerate }) => {
                             </div>
                         </div>
 
-                        {/* RODAPÉ CORRIGIDO (Sem © extra) */}
+                        {/* RODAPÉ (Corrigido) */}
                         <div className="paper-footer">
                             Gerado via NeuroCAA - Sistema protegido por direitos autorais - Pictogramas utilizados sob licença ARASAAC (CC BY-NC-SA 4.0) - <a href="https://neurocaa.com" target="_blank" rel="noreferrer">Conheça a plataforma</a>
                         </div>
