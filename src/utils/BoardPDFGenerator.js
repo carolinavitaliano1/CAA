@@ -1,10 +1,10 @@
 // src/utils/BoardPDFGenerator.js
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import './BoardPDF.css'; // Importa o CSS que acabamos de criar
+import './BoardPDF.css';
 
 export const generateBoardPDF = async (pages, config) => {
-    // 1. Cria um container temporário fora da tela
+    // 1. Cria container temporário
     const container = document.createElement('div');
     container.id = 'pdf-generator-container';
     document.body.appendChild(container);
@@ -15,22 +15,31 @@ export const generateBoardPDF = async (pages, config) => {
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
 
-        // 2. Loop para criar cada página HTML "limpa"
         for (let i = 0; i < pages.length; i++) {
             const pageCards = pages[i];
             
-            // Cria o elemento da folha
+            // Cria a folha
             const sheet = document.createElement('div');
             sheet.className = `pdf-sheet ${config.paperSize} ${config.orientation}`;
             
-            // Aplica margens do usuário (convertendo cm para padding style)
-            sheet.style.padding = `${config.marginTop}cm ${config.marginRight}cm ${config.marginBottom}cm ${config.marginLeft}cm`;
+            // APLICA AS MARGENS CONFIGURADAS PELO USUÁRIO
+            sheet.style.paddingTop = `${config.marginTop}cm`;
+            sheet.style.paddingRight = `${config.marginRight}cm`;
+            sheet.style.paddingBottom = `${config.marginBottom}cm`;
+            sheet.style.paddingLeft = `${config.marginLeft}cm`;
 
-            // HTML Interno (Estrutura idêntica à visualização, mas com classes do PDF CSS)
+            // HTML Interno
             sheet.innerHTML = `
-                <div class="pdf-content" style="border: ${config.borderWidth}px ${config.borderStyle} ${config.boardBorderColor}">
+                <div class="pdf-content" style="
+                    border: ${config.borderWidth}px ${config.borderStyle} ${config.boardBorderColor};
+                    background-color: white; 
+                ">
                     ${config.header ? `
-                        <div class="pdf-header" style="background-color: ${config.headerBgColor}; border-bottom: ${config.borderWidth}px ${config.borderStyle} ${config.cellBorderColor}">
+                        <div class="pdf-header" style="
+                            background-color: ${config.headerBgColor}; 
+                            border-bottom: ${config.borderWidth}px ${config.borderStyle} ${config.cellBorderColor};
+                            -webkit-print-color-adjust: exact;
+                        ">
                             ${config.headerText}
                         </div>
                     ` : ''}
@@ -48,56 +57,54 @@ export const generateBoardPDF = async (pages, config) => {
                 </div>
             `;
 
-            // Adiciona ao container temporário para renderizar
             container.appendChild(sheet);
 
-            // 3. Tira a "foto" (Screenshot) em alta resolução
+            // Tira a foto (Com configurações para forçar cor e qualidade)
             const canvas = await html2canvas(sheet, {
-                scale: 2, // Melhora a qualidade
-                useCORS: true, // Permite baixar imagens do Arasaac
+                scale: 2, // Alta resolução (evita borrões)
+                useCORS: true, // Carrega imagens externas
                 logging: false,
-                backgroundColor: '#ffffff'
+                backgroundColor: '#ffffff', // Garante fundo branco e não transparente
+                imageTimeout: 0 // Espera carregar tudo
             });
 
-            const imgData = canvas.toDataURL('image/png');
+            const imgData = canvas.toDataURL('image/jpeg', 1.0); // JPEG é mais rápido e compatível
 
-            // 4. Adiciona ao PDF
             if (i > 0) pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
             
-            // Remove a folha do DOM para economizar memória
             container.removeChild(sheet);
         }
 
-        // 5. Salva o Arquivo
         pdf.save(`Prancha_NeuroCAA_${new Date().toISOString().slice(0,10)}.pdf`);
 
     } catch (error) {
         console.error("Erro ao gerar PDF:", error);
-        alert("Ocorreu um erro ao gerar o PDF. Verifique o console.");
+        alert("Erro ao gerar PDF. Tente novamente.");
     } finally {
-        // 6. Limpeza final
         if (document.body.contains(container)) {
             document.body.removeChild(container);
         }
     }
 };
 
-// Função auxiliar para gerar o HTML das células
 function generateGridHTML(cards, config) {
-    // Cria array vazio do tamanho total para preencher espaços
     const totalSlots = config.rows * config.cols;
     let html = '';
 
     for (let k = 0; k < totalSlots; k++) {
         const card = cards[k];
         
+        // Aplica a cor de fundo DIRETAMENTE no estilo inline (html2canvas prefere assim)
+        const cellStyle = `
+            background-color: ${config.cellBgColor};
+            border: ${config.borderWidth}px ${config.borderStyle} ${config.cellBorderColor};
+            -webkit-print-color-adjust: exact;
+        `;
+
         if (card) {
             html += `
-            <div class="pdf-cell" style="
-                background-color: ${config.cellBgColor};
-                border: ${config.borderWidth}px ${config.borderStyle} ${config.cellBorderColor};
-            ">
+            <div class="pdf-cell" style="${cellStyle}">
                 <div class="pdf-cell-inner ${config.textPosition}">
                     ${config.textPosition === 'top' ? `<span style="font-family:${config.fontFamily}; font-size:${config.fontSize}pt; text-transform:${config.textCase}">${card.text}</span>` : ''}
                     
@@ -109,10 +116,7 @@ function generateGridHTML(cards, config) {
             `;
         } else {
             html += `
-            <div class="pdf-cell" style="
-                background-color: ${config.cellBgColor};
-                border: ${config.borderWidth}px ${config.borderStyle} ${config.cellBorderColor};
-            ">
+            <div class="pdf-cell" style="${cellStyle}">
                 </div>
             `;
         }
