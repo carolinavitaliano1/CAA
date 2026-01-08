@@ -67,12 +67,40 @@ const BoardGenerator = ({ onGenerate }) => {
   const prevPage = () => { if (currentPage > 0) setCurrentPage(prev => prev - 1); };
 
 
-  // --- AQUI A NOVA CHAMADA SIMPLIFICADA ---
-  const handleDownloadClick = async () => {
-      setIsDownloading(true);
-      // Chama a função externa passando os dados e configurações
-      await generateBoardPDF(pages, config);
-      setIsDownloading(false);
+// Localize essa parte no seu BoardGenerator.js
+
+const handleDownloadClick = async (e) => {
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    if (pages.length === 0) {
+        alert("Gere uma prancha antes de baixar.");
+        return;
+    }
+
+    setIsDownloading(true);
+    
+    // Chama o gerador externo que criamos na pasta utils
+    try {
+        await generateBoardPDF(pages, config);
+    } catch (error) {
+        console.error("Erro no download:", error);
+    } finally {
+        setIsDownloading(false);
+    }
+};
+
+// No seu JSX (o botão lá embaixo), garanta que ele esteja assim:
+<button 
+    className="btn-print" 
+    type="button" // Força o botão a não ser um 'submit'
+    onClick={handleDownloadClick} 
+    disabled={pages.length === 0 || isDownloading}
+>
+    {isDownloading ? '⏳ Gerando Arquivo...' : '📥 Baixar PDF'}
+</button>
   };
 
   return (
