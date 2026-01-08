@@ -59,14 +59,20 @@ export const generateBoardPDF = async (pages, config) => {
 
             container.appendChild(sheet);
 
-            // Tira a foto (Com configurações para forçar cor e qualidade)
-            const canvas = await html2canvas(sheet, {
-                scale: 2, // Alta resolução (evita borrões)
-                useCORS: true, // Carrega imagens externas
-                logging: false,
-                backgroundColor: '#ffffff', // Garante fundo branco e não transparente
-                imageTimeout: 0 // Espera carregar tudo
-            });
+           // Dentro do loop de páginas no seu BoardPDFGenerator.js
+
+const canvas = await html2canvas(sheet, {
+    scale: 3, // Aumentamos para 3 para ficar super nítido
+    useCORS: true, 
+    allowTaint: true,
+    backgroundColor: null, // Deixa o CSS da folha mandar no fundo
+    logging: false,
+    onclone: (clonedDoc) => {
+        // Força as cores a aparecerem no clone que será fotografado
+        const el = clonedDoc.getElementById('pdf-generator-container');
+        if (el) el.style.visibility = 'visible';
+    }
+});
 
             const imgData = canvas.toDataURL('image/jpeg', 1.0); // JPEG é mais rápido e compatível
 
