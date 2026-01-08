@@ -1,3 +1,5 @@
+/* src/components/BoardGenerator.css */
+
 /* =========================================
    ESTILO GERAL (TELA)
    ========================================= */
@@ -144,46 +146,39 @@
   .paper-preview-container { height: 50vh; min-height: 350px; width: 100%; }
 }
 
+/* IMPORTANTE: REMOVI A MAIORIA DAS REGRAS DE PRINT DAQUI.
+   O USUÁRIO DEVE USAR O BOTÃO "BAIXAR PDF" QUE USA O BoardPDFGenerator.js
+*/
 
-  /* 4. A FOLHA DE PAPEL (TAMANHO RÍGIDO) */
+/* FALLBACK: Se o usuário teimar em usar Ctrl+P do navegador, isso esconde a interface */
+@media print {
+  @page { margin: 0; size: auto; }
+  body * { visibility: hidden; }
+  
+  /* Esconde tudo, exceto a folha */
+  .paper-sheet, .paper-sheet * {
+     visibility: visible !important;
+  }
+  
+  .board-generator-wrapper, .preview-panel, .paper-preview-container, .book-viewer {
+      visibility: visible !important;
+      position: absolute !important;
+      top: 0 !important; left: 0 !important;
+      margin: 0 !important; padding: 0 !important;
+      background: none !important;
+      width: 100% !important;
+      height: auto !important;
+      display: block !important;
+      overflow: visible !important;
+  }
+  
   .paper-sheet {
-    visibility: visible !important;
-    display: flex !important;
-    flex-direction: column !important;
-    position: relative !important;
-    
-    /* Reseta estilos de tela */
-    transform: none !important;
-    background: white !important;
-    box-shadow: none !important;
-    border: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    
-    /* Quebra de página */
-    break-after: page;
-    page-break-after: always;
+      position: relative !important;
+      width: 100% !important;
+      margin: 0 auto !important;
+      page-break-after: always;
   }
   
-  /* FORÇA O TAMANHO EXATO CONFIGURADO (Em milímetros) */
-  /* Isso garante que a prancha A4 Paisagem saia A4 Paisagem */
-  
-  .paper-sheet.A4.portrait { width: 210mm !important; height: 297mm !important; }
-  .paper-sheet.A4.landscape { width: 297mm !important; height: 210mm !important; }
-  .paper-sheet.A3.portrait { width: 297mm !important; height: 420mm !important; }
-  .paper-sheet.A3.landscape { width: 420mm !important; height: 297mm !important; }
-
-  /* 5. MOSTRA PÁGINAS OCULTAS */
-  .hidden-page {
-    display: flex !important;
-  }
-
-  /* Garante visibilidade interna */
-  .paper-sheet * {
-    visibility: visible !important;
-  }
-
-  /* Limpa rodapé */
-  .paper-footer { color: black !important; padding-bottom: 2mm; }
-  .paper-footer a { text-decoration: none !important; color: #0044CC !important; }
+  /* ESCONDE MENUS */
+  .config-panel, .preview-toolbar, .action-buttons-row, .pagination-controls { display: none !important; }
 }
