@@ -3,7 +3,6 @@ import jsPDF from 'jspdf';
 import './BoardPDF.css';
 
 export const generateBoardPDF = async (pages, config) => {
-    // CORREÇÃO DE CORTE: Reseta o scroll para o topo
     window.scrollTo(0, 0);
 
     const container = document.createElement('div');
@@ -45,7 +44,6 @@ export const generateBoardPDF = async (pages, config) => {
                     ` : ''}
                     
                     <div class="pdf-grid" style="
-                        /* CORREÇÃO CRUCIAL: minmax impede que imagens estourem a grade */
                         grid-template-columns: repeat(${config.cols}, minmax(0, 1fr));
                         grid-template-rows: repeat(${config.rows}, minmax(0, 1fr));
                         gap: ${config.gap}px;
@@ -60,7 +58,6 @@ export const generateBoardPDF = async (pages, config) => {
 
             container.appendChild(sheet);
 
-            // PAUSA: Essencial para o navegador montar a página sem pressa
             await new Promise(resolve => setTimeout(resolve, 300));
 
             const canvas = await html2canvas(sheet, {
