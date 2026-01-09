@@ -1,152 +1,94 @@
 /* src/components/BoardGenerator.css */
 
-/* O CONTAINER DO GERADOR AGORA É FIXO (OVERLAY) */
 .board-generator-wrapper {
-  position: fixed; /* Isso faz ele ficar por cima de tudo */
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: #F8FAFC; /* Fundo limpo */
-  z-index: 5000; /* Garante que fique na frente */
   display: flex;
-  overflow: hidden; /* Trava a rolagem DENTRO do gerador */
-  flex-direction: row; /* Desktop: Lado a Lado */
-}
-
-/* --- MENU LATERAL (CONFIG) --- */
-.config-panel {
-  width: 320px;
-  background: white;
-  border-right: 1px solid #E2E8F0;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 4px 0 24px rgba(0,0,0,0.05);
-  z-index: 10;
-  flex-shrink: 0;
-  height: 100%;
-}
-
-.config-panel h3 {
-  padding: 20px; margin: 0; font-size: 1.1rem; 
-  border-bottom: 1px solid #E2E8F0; color: #1E293B; display: flex; align-items: center; gap: 8px;
-}
-
-/* Área de rolagem das configurações */
-.config-scroll-area {
-  padding: 20px;
-  overflow-y: auto;
-  flex: 1;
-}
-
-.config-group { margin-bottom: 20px; }
-.config-group label { display: block; margin-bottom: 8px; font-size: 0.8rem; font-weight: 700; color: #64748B; text-transform: uppercase; }
-.config-group input, .config-group select {
-  width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 8px; font-size: 0.9rem;
-  transition: border-color 0.2s;
-}
-.config-group input:focus, .config-group select:focus { border-color: #2563EB; outline: none; }
-.margins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-/* --- ÁREA DA PRANCHA (PREVIEW) --- */
-.preview-panel {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+  width: 100%;
+  height: 100%; /* Ocupa o espaço abaixo do cabeçalho */
   position: relative;
-  background-color: #E2E8F0; /* Contraste com o papel */
   overflow: hidden;
 }
 
-/* BARRA DE FERRAMENTAS SUPERIOR */
-.preview-toolbar {
-  height: 70px;
+/* --- MENU DESLIZANTE (SIDEBAR) --- */
+.config-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 320px;
   background: white;
+  z-index: 100; /* Fica por cima da prévia */
+  box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  
+  /* A Mágica do Slide */
+  transform: translateX(-100%); /* Esconde para a esquerda */
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.config-panel.open {
+  transform: translateX(0); /* Mostra */
+}
+
+.config-header {
+  padding: 15px 20px;
   border-bottom: 1px solid #E2E8F0;
   display: flex;
-  align-items: center;
-  padding: 0 24px;
-  gap: 15px;
   justify-content: space-between;
-  flex-shrink: 0;
-}
-
-.input-area-mini { display: flex; flex: 1; gap: 10px; max-width: 600px; align-items: center; }
-.input-area-mini textarea { 
-  flex: 1; height: 40px; padding: 10px; border-radius: 20px; border: 1px solid #CBD5E1; resize: none; 
-}
-.input-area-mini button {
-  background: #2563EB; color: white; border: none; padding: 0 20px; height: 40px; border-radius: 20px; font-weight: 600; cursor: pointer;
-}
-
-/* MESA DE VISUALIZAÇÃO (CENTRALIZADA) */
-.paper-preview-container {
-  flex: 1;
-  display: flex;
-  justify-content: center;
   align-items: center;
-  overflow: hidden; /* O zoom cuida do tamanho */
-  background-image: radial-gradient(#94A3B8 1px, transparent 1px); /* PONTINHOS ESTILO ASTERICS */
-  background-size: 20px 20px;
-  padding: 40px;
-  position: relative;
+}
+.config-header h3 { margin: 0; font-size: 1.1rem; color: #1E293B; }
+.btn-close-sidebar { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #94A3B8; }
+
+.config-body { flex: 1; overflow-y: auto; padding: 20px; }
+
+.config-footer { padding: 20px; border-top: 1px solid #E2E8F0; background: #F8FAFC; }
+.btn-print { width: 100%; padding: 12px; background: #2563EB; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+/* Config Inputs */
+.config-group { margin-bottom: 20px; }
+.config-group label { display: block; margin-bottom: 8px; font-weight: 700; color: #64748B; font-size: 0.8rem; text-transform: uppercase; }
+.config-group input, .config-group select { width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 8px; }
+
+/* --- ÁREA DE PRÉVIA (SEMPRE VISÍVEL) --- */
+.preview-panel {
+  flex: 1;
+  width: 100%; /* Ocupa tudo */
+  display: flex;
+  flex-direction: column;
+  background: #E2E8F0;
+  transition: margin-left 0.3s; /* Opcional: se quiser empurrar o conteúdo */
 }
 
-/* O PAPEL */
-.paper-sheet {
-  background: white;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.15); /* Sombra flutuante */
-  transition: transform 0.2s ease;
-  transform-origin: center center;
-  box-sizing: border-box;
-  display: flex; flex-direction: column;
+/* Se quiser que a prévia seja empurrada quando o menu abrir (Estilo Desktop): */
+@media (min-width: 1024px) {
+  .board-generator-wrapper { position: relative; }
+  .config-panel { position: relative; transform: none; width: 0; overflow: hidden; opacity: 0; }
+  .config-panel.open { width: 320px; opacity: 1; }
+  /* Remova o position: absolute da .config-panel acima se usar este bloco */
 }
+/* MANTENHA O MODO ABSOLUTO SE QUISER QUE FIQUE POR CIMA COMO UM APP */
 
-/* TAMANHOS */
-.paper-sheet.A4.portrait { width: 210mm; height: 297mm; }
-.paper-sheet.A4.landscape { width: 297mm; height: 210mm; }
-.paper-sheet.A3.portrait { width: 297mm; height: 420mm; }
-.paper-sheet.A3.landscape { width: 420mm; height: 297mm; }
+/* Toolbar e Papel */
+.preview-toolbar { background: white; padding: 10px 20px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid #E2E8F0; }
+.input-area-mini { flex: 1; display: flex; gap: 10px; }
+.input-area-mini textarea { flex: 1; height: 38px; padding: 8px; border-radius: 20px; border: 1px solid #CBD5E1; resize: none; }
+.input-area-mini button { background: #2563EB; color: white; border: none; padding: 0 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
 
-/* INTERIOR DO PAPEL */
-.paper-content-wrapper { width: 100%; height: 100%; display: flex; flex-direction: column; }
-.paper-header { text-align: center; font-weight: 800; font-size: 24pt; padding: 15px; border-bottom: 3px solid #000; }
+.paper-preview-container {
+  flex: 1; overflow: hidden; display: flex; justify-content: center; align-items: center;
+  background-image: radial-gradient(#94A3B8 1px, transparent 1px); background-size: 24px 24px;
+}
+.paper-sheet { background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; flex-direction: column; }
+/* (Mantenha seus estilos de paper-sheet A4, paper-grid, paper-cell aqui) */
+.paper-sheet.A4.landscape { width: 297mm; height: 210mm; } /* Exemplo */
 .paper-grid { display: grid; flex: 1; width: 100%; height: 100%; }
-.paper-cell { border: 1px solid #E2E8F0; display: flex; justify-content: center; align-items: center; overflow: hidden; background: #FFF; }
-.cell-content { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4px; }
-.cell-content img { max-width: 90%; max-height: 70%; object-fit: contain; flex: 1; }
-.cell-content span { font-weight: 700; line-height: 1.1; margin-top: 4px; }
-.paper-footer { text-align: center; font-size: 10px; color: #94A3B8; margin-top: auto; padding: 8px; }
+.paper-cell { border: 1px solid #000; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+.cell-content img { max-width: 90%; max-height: 70%; object-fit: contain; }
 
-/* PAGINAÇÃO FLUTUANTE */
+/* Paginação */
 .pagination-controls {
-  position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
-  background: white; padding: 8px 20px; border-radius: 50px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15); border: 1px solid #E2E8F0;
-  display: flex; align-items: center; gap: 15px; z-index: 100;
+  position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+  background: white; padding: 8px 20px; border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; gap: 15px; align-items: center;
 }
-.pagination-controls button {
-  width: 40px; height: 40px; border-radius: 50%; border: 1px solid #E2E8F0; background: white; color: #1E293B; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;
-}
-.pagination-controls button:hover:not(:disabled) { background: #2563EB; color: white; border-color: #2563EB; }
-
-/* BOTÕES DE AÇÃO */
-.action-buttons-row { 
-  margin-top: auto; padding: 20px; border-top: 1px solid #E2E8F0; display: flex; flex-direction: column; gap: 10px; 
-}
-.action-buttons-row button { 
-  padding: 14px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; color: white; font-size: 1rem;
-}
-.btn-print { background-color: #10B981; } /* Verde Moderno */
-.btn-finalize { background-color: #0EA5E9; } /* Azul Moderno */
-
-/* RESPONSIVIDADE MOBILE */
-@media (max-width: 768px) {
-  .board-generator-wrapper { flex-direction: column; overflow: auto; }
-  .config-panel { width: 100%; height: auto; order: 2; border-right: none; border-top: 1px solid #E2E8F0; }
-  .preview-panel { height: 60vh; order: 1; }
-  .paper-preview-container { padding: 10px; }
-}
-
-.hidden-page { display: none !important; }
-.no-pages-msg { color: #94A3B8; margin-top: 20%; font-size: 1.2rem; text-align: center; font-weight: 600; }
+.pagination-controls button { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #E2E8F0; background: white; cursor: pointer; }
