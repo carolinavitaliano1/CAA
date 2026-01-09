@@ -58,15 +58,21 @@ export const generateBoardPDF = async (pages, config) => {
 
             container.appendChild(sheet);
 
-            // GERAÇÃO DA IMAGEM
+            // GERAÇÃO DA IMAGEM (CORRIGIDO CORTE E CÉLULAS VAZIAS)
             const canvas = await html2canvas(sheet, {
-                scale: 3, 
+                scale: 3, // Alta qualidade
                 useCORS: true,
                 logging: false,
                 backgroundColor: '#ffffff',
+                // CORREÇÃO DO CORTE LATERAL: Força uma janela larga
+                windowWidth: 3000, 
+                windowHeight: 3000,
+                // Garante renderização correta
                 onclone: (clonedDoc) => {
                     const el = clonedDoc.getElementById('pdf-generator-container');
-                    if (el) el.style.visibility = 'visible';
+                    if (el) {
+                        el.style.visibility = 'visible';
+                    }
                 }
             });
 
@@ -96,13 +102,16 @@ function generateGridHTML(cards, config) {
 
     for (let k = 0; k < totalSlots; k++) {
         const card = cards[k];
-        const cellStyle = `
-            background-color: ${config.cellBgColor};
-            border: ${config.borderWidth}px ${config.borderStyle} ${config.cellBorderColor};
-            -webkit-print-color-adjust: exact;
-        `;
-
+        
+        // CORREÇÃO: Se tiver carta, aplica o estilo. Se não, estilo vazio.
         if (card) {
+            // Estilo NORMAL (com cor e borda)
+            const cellStyle = `
+                background-color: ${config.cellBgColor};
+                border: ${config.borderWidth}px ${config.borderStyle} ${config.cellBorderColor};
+                -webkit-print-color-adjust: exact;
+            `;
+
             html += `
             <div class="pdf-cell" style="${cellStyle}">
                 <div class="pdf-cell-inner ${config.textPosition}">
@@ -113,8 +122,9 @@ function generateGridHTML(cards, config) {
             </div>
             `;
         } else {
+            // CORREÇÃO: SLOT VAZIO = INVISÍVEL (Sem borda, sem fundo)
             html += `
-            <div class="pdf-cell" style="${cellStyle}"></div>
+            <div class="pdf-cell" style="background: transparent; border: none;"></div>
             `;
         }
     }
