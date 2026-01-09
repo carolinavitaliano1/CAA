@@ -1,39 +1,178 @@
 /* src/App.css */
 
 :root {
-  --primary-color: #2563EB; /* Azul Moderno */
-  --secondary-color: #3B82F6;
-  --bg-color: #F8FAFC; /* Cinza Gelo (Muito Clean) */
+  --primary-color: #2563EB; /* Azul Institucional */
+  --bg-color: #F1F5F9; /* Cinza muito suave para o fundo */
   --surface-color: #FFFFFF;
-  --text-primary: #1E293B;
-  --text-secondary: #64748B;
-  --border-color: #E2E8F0;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --radius: 12px;
+  --text-main: #1E293B;
+  --text-light: #64748B;
+  --shadow-header: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
 }
 
+/* 1. CORREÇÃO DA ROLAGEM */
 html, body, #root {
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 100%;
-  overflow: hidden; /* Trava a janela geral para parecer um App Nativo */
-  font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+  min-height: 100vh; /* Permite crescer */
+  /* REMOVI O OVERFLOW:HIDDEN DAQUI PARA A PÁGINA PODER DESCER */
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background-color: var(--bg-color);
-  color: var(--text-primary);
-  -webkit-font-smoothing: antialiased;
+  color: var(--text-main);
 }
 
 .App {
   width: 100%;
-  height: 100%;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* Scrollbar Bonita (Estilo Mac/Moderno) */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+.container {
+  max-width: 1200px; /* Limita a largura para não ficar esticado em telas gigantes */
+  margin: 0 auto;
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 2. MENU DE CIMA "HORRÍVEL" -> AGORA MODERNO */
+.admin-bar {
+  background: var(--surface-color);
+  padding: 15px 25px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow-header);
+  margin-bottom: 10px;
+}
+
+.brand {
+  font-weight: 800;
+  font-size: 1.25rem;
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: -0.5px;
+}
+
+.btn-toggle {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-toggle:hover { background: #E2E8F0; }
+.btn-toggle.active {
+  background: #EFF6FF;
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+/* 3. BARRA DA FRASE (SENTENCE STRIP) */
+.sentence-bar {
+  background: var(--surface-color);
+  padding: 12px 20px;
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-height: 80px;
+  border: 1px solid #E2E8F0;
+}
+
+.sentence-display {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 5px;
+  align-items: center;
+  background: #F8FAFC; /* Fundo interno sutil */
+  border-radius: 12px;
+  height: 100%;
+  min-height: 60px;
+  border: 1px dashed #CBD5E1; /* Linha pontilhada estilo caderno */
+}
+
+/* ITENS DA FRASE */
+.sentence-item {
+  background: white;
+  padding: 5px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 60px;
+  border: 1px solid #E2E8F0;
+}
+.mini-img { width: 35px; height: 35px; object-fit: contain; margin-bottom: 2px; }
+.sentence-item span { font-size: 0.7rem; font-weight: 700; text-align: center; width: 100%; }
+
+/* BOTÕES DE CONTROLE */
+.controls { display: flex; gap: 10px; }
+.btn-clear, .btn-play {
+  width: 48px; height: 48px; border-radius: 12px; border: none;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; cursor: pointer; transition: transform 0.1s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.btn-clear:active, .btn-play:active { transform: scale(0.95); }
+.btn-play { background: var(--primary-color); color: white; }
+.btn-clear { background: #FEE2E2; color: #EF4444; }
+
+/* 4. GRID DE CARTÕES */
+.grid-area {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Cartões maiores */
+  gap: 15px;
+  padding-bottom: 40px;
+}
+
+/* CARTÃO */
+.card {
+  aspect-ratio: 1;
+  background: var(--surface-color);
+  border-radius: 16px;
+  border: 2px solid transparent;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 8px;
+  transition: all 0.2s;
+  position: relative;
+}
+.card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+.card:active { transform: scale(0.98); }
+
+.card-img { width: 75%; height: 75%; object-fit: contain; }
+.label {
+  font-weight: 700; font-size: 0.85rem; color: var(--text-main);
+  margin-top: 4px; text-align: center; line-height: 1.1;
+}
+
+/* BOTÃO DE ADICIONAR (+ Lindo) */
+.add-card {
+  background: #F1F5F9 !important;
+  border: 2px dashed #CBD5E1;
+  color: #94A3B8;
+}
+.add-card:hover { border-color: var(--primary-color); color: var(--primary-color); background: #EFF6FF !important; }
+
+/* ... (MANTENHA O CSS DO MODAL E SIDEBAR ABAIXO DESTA LINHA SE JÁ TIVER) ... */
