@@ -1,25 +1,23 @@
 /* src/utils/BoardPDF.css */
 
-/* CONTAINER: Fica na frente de tudo, com fundo BRANCO SÓLIDO */
+/* CONTAINER: Fica na frente de tudo (z-index alto) com fundo BRANCO SÓLIDO */
 #pdf-generator-container {
     position: fixed;
     top: 0;
     left: 0;
-    /* Tamanho gigante para cobrir qualquer monitor */
-    width: 200vw; 
+    width: 200vw; /* Gigante para garantir que nada corte */
     height: 200vh;
-    z-index: 999999; /* Z-index altíssimo para cobrir o site */
-    background-color: #ffffff !important; /* CRUCIAL: Bloqueia a visão do menu atrás */
+    z-index: 9999999; /* ACIMA DE TUDO NO SITE */
+    background-color: #ffffff !important; /* FUNDO BRANCO OBRIGATÓRIO */
     visibility: visible;
-    overflow: hidden; /* Remove barras de rolagem durante a foto */
+    overflow: hidden;
 }
 
 /* A FOLHA DE PAPEL */
 .pdf-sheet {
     background-color: #ffffff !important;
     box-sizing: border-box;
-    /* Divide a folha: Conteúdo (esticável) e Rodapé (fixo) */
-    display: flex;
+    display: flex; /* Flex é mais seguro que Grid para PDF */
     flex-direction: column;
     overflow: hidden;
     position: relative;
@@ -36,7 +34,7 @@
 
 /* ÁREA DO CONTEÚDO */
 .pdf-content {
-    flex: 1; /* Ocupa todo o espaço disponível */
+    flex: 1;
     width: 100%;
     overflow: hidden;
     display: flex;
@@ -49,13 +47,15 @@
     font-size: 24pt;
     padding: 10px;
     flex-shrink: 0;
+    border-bottom-style: solid;
 }
 
+/* GRID DA PRANCHA */
 .pdf-grid {
     display: grid;
     width: 100%;
     height: 100%;
-    /* As colunas/linhas são definidas no JS */
+    /* Colunas e Linhas vêm do JS */
 }
 
 /* CÉLULA */
@@ -67,17 +67,17 @@
     background-clip: padding-box;
 }
 
-/* CONTEÚDO DA CÉLULA (SOLUÇÃO FLEXBOX) */
+/* --- AQUI ESTÁ A CORREÇÃO DO LAYOUT --- */
 .pdf-cell-inner {
     width: 100%;
     height: 100%;
     padding: 4px;
     box-sizing: border-box;
     
-    /* FLEXBOX: Garante que a imagem obedeça o espaço */
+    /* VOLTAMOS PARA FLEXBOX (Isso arruma o layout quebrado) */
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Texto em cima, Imagem no meio, Texto embaixo */
+    justify-content: space-between; 
     align-items: center;
 }
 
@@ -87,15 +87,15 @@
     margin: 2px 0;
     font-weight: bold;
     z-index: 2;
-    flex-shrink: 0; /* O texto nunca encolhe, tem prioridade */
+    flex-shrink: 0; /* O texto nunca diminui */
 }
 
 .pdf-cell-inner img {
-    /* A Mágica: min-height: 0 permite que a imagem encolha se faltar espaço */
+    /* A imagem ocupa o espaço que sobra, sem estourar */
     flex: 1; 
     min-height: 0; 
     width: 100%;
-    object-fit: contain;
+    object-fit: contain; /* Garante a proporção correta */
     display: block;
 }
 
