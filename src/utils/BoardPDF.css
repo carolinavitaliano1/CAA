@@ -1,39 +1,38 @@
 /* src/utils/BoardPDF.css */
 
-/* Container fora da tela, mas VISÍVEL para o script poder "tirar a foto" */
+/* CONTAINER FANTASMA (Essencial para não cortar a imagem) */
 #pdf-generator-container {
-    position: fixed;
+    position: fixed; /* Fixa na tela */
     top: 0;
-    left: -10000px; /* Joga bem longe da tela */
-    z-index: -1000;
+    left: 0;
+    width: 2000px; /* Garante largura suficiente para paisagem */
+    z-index: -9999; /* Fica atrás de tudo */
+    visibility: hidden; /* Invisível a olho nu */
 }
 
 /* A Folha de Papel */
 .pdf-sheet {
     background: white;
-    box-sizing: border-box; /* Garante que a margem não estoure o tamanho */
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     position: relative;
-    
-    /* FORÇA AS CORES A APARECEREM */
+    /* Força impressão de cores */
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
 }
 
-/* Tamanhos em MM (SEM PADDING FIXO AGORA) */
-/* A margem será aplicada via style inline pelo JS */
+/* Tamanhos Físicos (A4/A3) */
 .pdf-sheet.A4.portrait { width: 210mm; height: 297mm; }
 .pdf-sheet.A4.landscape { width: 297mm; height: 210mm; }
 .pdf-sheet.A3.portrait { width: 297mm; height: 420mm; }
 .pdf-sheet.A3.landscape { width: 420mm; height: 297mm; }
 
-/* Conteúdo Interno (Borda da Prancha) */
+/* Conteúdo Interno */
 .pdf-content {
     width: 100%;
     height: 100%;
-    /* A cor de fundo e borda virão via inline style */
     display: flex;
     flex-direction: column;
 }
@@ -61,8 +60,7 @@
     position: relative;
     overflow: hidden;
     box-sizing: border-box;
-    /* Garante que o fundo da célula preencha tudo */
-    background-clip: border-box; 
+    background-clip: border-box;
 }
 
 .pdf-cell-inner {
@@ -74,7 +72,7 @@
     height: 100%;
     padding: 2px;
     text-align: center;
-    z-index: 1; /* Fica acima do fundo */
+    z-index: 1;
 }
 
 .pdf-cell-inner img {
@@ -91,14 +89,13 @@
     font-weight: bold;
 }
 
-/* Rodapé */
 .pdf-footer {
     text-align: center;
     font-size: 9pt;
     color: #555;
     padding-top: 5px;
     font-family: Arial, sans-serif;
-    background: white; /* Fundo branco no rodapé */
+    background: white;
 }
 .pdf-footer span {
     color: #0044CC;
