@@ -1,112 +1,285 @@
-/* src/utils/BoardPDF.css */
+/* src/components/BoardGenerator.css */
 
-/* CONTAINER FORA DA TELA - Com fundo branco e z-index alto para não pegar o site */
-#pdf-generator-container {
-    position: fixed;
-    left: -5000px; /* Esconde na lateral esquerda */
-    top: 0;
-    width: 5000px;
-    height: 5000px;
-    z-index: 99999; /* Garante que fique "acima" do site durante a foto */
-    background: white; /* Garante fundo branco sólido */
-    visibility: visible;
+.board-generator-wrapper {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  height: calc(100vh - 80px); /* Ajuste conforme seu header */
+  box-sizing: border-box;
 }
 
-/* A FOLHA DE PAPEL */
-.pdf-sheet {
-    background: white;
-    box-sizing: border-box;
-    /* Divide em 2 linhas: Conteúdo (esticável) e Rodapé (fixo) */
-    display: grid; 
-    grid-template-rows: 1fr max-content; 
-    overflow: hidden;
-    position: relative;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+/* --- PAINEL ESQUERDO (CONFIGURAÇÃO) --- */
+.config-panel {
+  width: 320px;
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  flex-shrink: 0;
 }
 
-/* Tamanhos Físicos */
-.pdf-sheet.A4.portrait { width: 210mm; height: 297mm; }
-.pdf-sheet.A4.landscape { width: 297mm; height: 210mm; }
-.pdf-sheet.A3.portrait { width: 297mm; height: 420mm; }
-.pdf-sheet.A3.landscape { width: 420mm; height: 297mm; }
-
-/* ÁREA DE CONTEÚDO */
-.pdf-content {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+.config-panel h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 5px;
+  font-size: 1.1rem;
 }
 
-.pdf-header {
-    text-align: center;
-    font-weight: bold;
-    font-size: 24pt;
-    padding: 10px;
-    flex-shrink: 0;
+.config-group {
+  margin-bottom: 15px;
 }
 
-.pdf-grid {
-    display: grid;
-    width: 100%;
-    height: 100%;
-    /* Colunas e Linhas definidas no JS */
+.config-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: #555;
 }
 
-/* CÉLULA */
-.pdf-cell {
-    position: relative;
-    overflow: hidden;
-    box-sizing: border-box;
-    display: flex;
+.config-group input[type="text"],
+.config-group input[type="number"],
+.config-group select,
+.config-group textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box; /* Garante que padding não aumente a largura */
 }
 
-/* CONTEÚDO DA CÉLULA - A CORREÇÃO PRINCIPAL */
-.pdf-cell-inner {
-    width: 100%;
-    height: 100%;
-    padding: 4px;
-    box-sizing: border-box;
-    
-    /* Grid de 3 andares: Texto / Imagem / Texto */
-    /* Imagem (1fr) só pega o espaço que sobrar. Isso evita estouro */
-    display: grid;
-    grid-template-rows: auto 1fr auto; 
-    align-items: center;
-    justify-items: center;
+/* Grid para inputs pequenos (margens) */
+.margins-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
 }
 
-.pdf-cell-inner span {
-    font-family: Arial, sans-serif;
-    line-height: 1.1;
-    margin: 2px 0;
-    font-weight: bold;
-    z-index: 2;
+/* --- PAINEL DIREITO (PREVIEW) --- */
+.preview-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #e9ecef;
+  border-radius: 8px;
+  padding: 20px;
+  overflow: hidden;
+  border: 1px solid #ddd;
 }
 
-.pdf-cell-inner img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain; /* Garante que a imagem nunca corte */
-    display: block;
+.preview-toolbar {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+  background: white;
+  padding: 10px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  align-items: center;
 }
 
-/* RODAPÉ */
-.pdf-footer {
-    text-align: center;
-    font-size: 9pt;
-    color: #555;
-    padding-top: 5px;
-    padding-bottom: 2px;
-    font-family: Arial, sans-serif;
-    background: white;
-    z-index: 20;
-    width: 100%;
+.input-area-mini {
+  flex: 1;
+  display: flex;
+  gap: 10px;
 }
 
-.pdf-footer span {
-    color: #0044CC;
-    font-weight: bold;
+.input-area-mini textarea {
+  flex: 1;
+  height: 40px;
+  padding: 8px;
+  resize: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.input-area-mini button {
+  padding: 0 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.input-area-mini button:hover {
+  background-color: #0056b3;
+}
+
+.zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* --- A FOLHA DE PAPEL (PREVIEW) --- */
+.paper-preview-container {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Alinha ao topo para não cortar */
+  background: #ccc; /* Fundo cinza para destacar o papel */
+  padding: 20px;
+  border-radius: 4px;
+  border: 1px solid #999;
+}
+
+.book-viewer {
+  position: relative;
+  /* Não defina width fixo aqui, deixe o papel definir */
+}
+
+.paper-sheet {
+  background: white;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  margin-bottom: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  transform-origin: top center; /* Zoom a partir do topo */
+  transition: transform 0.2s ease;
+}
+
+/* TAMANHOS DE PAPEL (Visualização) */
+.paper-sheet.A4.portrait { width: 210mm; height: 297mm; }
+.paper-sheet.A4.landscape { width: 297mm; height: 210mm; }
+.paper-sheet.A3.portrait { width: 297mm; height: 420mm; }
+.paper-sheet.A3.landscape { width: 420mm; height: 297mm; }
+
+/* Wrapper interno para borda da prancha */
+.paper-content-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.paper-header {
+  text-align: center;
+  font-weight: bold;
+  font-size: 24pt;
+  padding: 10px;
+  border-bottom: 2px solid #000; /* Fallback */
+}
+
+/* --- GRID DO PAPEL (O SEGREDO DO LAYOUT) --- */
+.paper-grid {
+  display: grid; /* CRUCIAL: Se faltar isso, quebra tudo */
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  /* Columns e Rows são injetados via inline-style no JS, mas o display:grid deve estar aqui */
+}
+
+.paper-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.cell-content {
+  width: 100%;
+  height: 100%;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centraliza verticalmente */
+  align-items: center;     /* Centraliza horizontalmente */
+  text-align: center;
+}
+
+/* Ajustes de posição do texto na célula */
+.cell-content.top { justify-content: flex-start; }
+.cell-content.bottom { justify-content: flex-end; }
+.cell-content.top img { margin-top: auto; }
+.cell-content.bottom img { margin-bottom: auto; }
+
+.cell-content img {
+  max-width: 95%;
+  max-height: 75%;
+  object-fit: contain;
+}
+
+.cell-content span {
+  display: block;
+  line-height: 1.2;
+  font-weight: bold;
+}
+
+.paper-footer {
+  text-align: center;
+  font-size: 10pt;
+  color: #666;
+  padding-top: 5px;
+  margin-top: auto;
+}
+
+.no-pages-msg {
+  color: #666;
+  font-size: 1.2rem;
+  margin-top: 50px;
+}
+
+.hidden-page {
+  display: none;
+}
+
+/* Botões de Ação */
+.action-buttons-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.action-buttons-row button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.btn-print { background-color: #28a745; color: white; }
+.btn-print:hover { background-color: #218838; }
+.btn-print:disabled { background-color: #94d3a2; cursor: not-allowed; }
+
+.btn-finalize { background-color: #17a2b8; color: white; }
+.btn-finalize:hover { background-color: #138496; }
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 10px;
+  position: absolute;
+  bottom: 80px; /* Flutuando sobre o painel */
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255,255,255,0.9);
+  padding: 5px 15px;
+  border-radius: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.pagination-controls button {
+  background: none;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
 }
