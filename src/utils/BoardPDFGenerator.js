@@ -1,4 +1,3 @@
-// src/utils/BoardPDFGenerator.js
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import './BoardPDF.css';
@@ -11,7 +10,9 @@ export const generateBoardPDF = async (pages, config) => {
 
     try {
         const orientation = config.orientation === 'landscape' ? 'l' : 'p';
-        const pdf = new jsPDF(orientation, 'mm', config.paperSize.toLowerCase());
+        const format = config.paperSize.toLowerCase();
+        
+        const pdf = new jsPDF(orientation, 'mm', format);
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
 
@@ -53,33 +54,46 @@ export const generateBoardPDF = async (pages, config) => {
                     </div>
                 </div>
                 <div class="pdf-footer">
-                     Gerado via NeuroCAA - Pictogramas: ARASAAC
+                     Gerado via NeuroCAA - Sistema protegido por direitos autorais - Pictogramas utilizados sob licença ARASAAC (CC BY-NC-SA 4.0) - <span>Conheça a plataforma</span>
                 </div>
             `;
 
             container.appendChild(sheet);
 
+            // PAUSA IMPORTANTE: Espera o navegador arrumar os elementos
+            await new Promise(resolve => setTimeout(resolve, 300));
+
+            // FOTO
             const canvas = await html2canvas(sheet, {
-                scale: 2, // Escala 2 é um bom equilíbrio entre qualidade e peso
-                useCORS: true, 
-                allowTaint: true,
-                backgroundColor: null, 
+                scale: 2.5,
+                useCORS: true,
                 logging: false,
+                backgroundColor: '#ffffff',
+                windowWidth: 5000, 
+                width: sheet.offsetWidth, 
+                scrollX: 0,
+                scrollY: 0,
+                x: 0,
+                y: 0,
                 onclone: (clonedDoc) => {
                     const el = clonedDoc.getElementById('pdf-generator-container');
-                    if (el) el.style.visibility = 'visible';
+                    if (el) {
+                        el.style.visibility = 'visible';
+                    }
                 }
             });
 
-            const imgData = canvas.toDataURL('image/jpeg', 0.9);
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
-            if (i > 0) pdf.addPage();
+            if (i > 0) {
+                pdf.addPage(format, orientation);
+            }
+            
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
             
             container.removeChild(sheet);
         }
 
-        // COMANDO QUE FAZ O DOWNLOAD (NÃO IMPRIME)
         pdf.save(`Prancha_NeuroCAA_${new Date().toISOString().slice(0,10)}.pdf`);
 
     } catch (error) {
@@ -99,27 +113,25 @@ function generateGridHTML(cards, config) {
     for (let k = 0; k < totalSlots; k++) {
         const card = cards[k];
         
-        const cellStyle = `
-            background-color: ${config.cellBgColor};
-            border: ${config.borderWidth}px ${config.borderStyle} ${config.cellBorderColor};
-            -webkit-print-color-adjust: exact;
-        `;
-
         if (card) {
+            const cellStyle = `
+                background-color: ${config.cellBgColor};
+                border: ${config.borderWidth}px ${config.borderStyle} ${config.cellBorderColor};
+                -webkit-print-color-adjust: exact;
+            `;
+
             html += `
             <div class="pdf-cell" style="${cellStyle}">
                 <div class="pdf-cell-inner ${config.textPosition}">
                     ${config.textPosition === 'top' ? `<span style="font-family:${config.fontFamily}; font-size:${config.fontSize}pt; text-transform:${config.textCase}">${card.text}</span>` : ''}
-                    
                     <img src="${card.image}" crossorigin="anonymous" />
-                    
                     ${config.textPosition === 'bottom' ? `<span style="font-family:${config.fontFamily}; font-size:${config.fontSize}pt; text-transform:${config.textCase}">${card.text}</span>` : ''}
                 </div>
             </div>
             `;
         } else {
             html += `
-            <div class="pdf-cell" style="${cellStyle}"></div>
+            <div class="pdf-cell" style="background: transparent; border: none; opacity: 0;"></div>
             `;
         }
     }
