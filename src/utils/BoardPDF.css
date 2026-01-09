@@ -1,42 +1,38 @@
 /* src/utils/BoardPDF.css */
 
-/* CONTAINER FANTASMA */
 #pdf-generator-container {
     position: fixed;
     top: 0;
     left: 0;
-    width: 5000px; /* Garante que cabe folha deitada */
+    width: 5000px;
     height: 5000px;
     z-index: -9999;
     visibility: hidden;
     overflow: visible;
 }
 
-/* A Folha de Papel */
 .pdf-sheet {
     background: white;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* CRUCIAL: Corta qualquer coisa que tente sair da folha */
+    overflow: hidden; /* CORTA TUDO O QUE PASSAR DA BORDA */
     position: relative;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
 }
 
-/* Tamanhos Físicos (A4/A3) */
 .pdf-sheet.A4.portrait { width: 210mm; height: 297mm; }
 .pdf-sheet.A4.landscape { width: 297mm; height: 210mm; }
 .pdf-sheet.A3.portrait { width: 297mm; height: 420mm; }
 .pdf-sheet.A3.landscape { width: 420mm; height: 297mm; }
 
-/* CONTEÚDO (GRID) */
 .pdf-content {
     width: 100%;
-    flex: 1; /* Ocupa todo o espaço disponível entre cabeçalho e rodapé */
+    flex: 1; 
     display: flex;
     flex-direction: column;
-    min-height: 0; /* Permite que o flex encolha se precisar */
+    min-height: 0; 
     overflow: hidden;
 }
 
@@ -45,16 +41,14 @@
     font-weight: bold;
     font-size: 24pt;
     padding: 10px;
-    flex-shrink: 0; /* Não deixa esmagar o cabeçalho */
+    flex-shrink: 0;
 }
 
-/* Grid */
 .pdf-grid {
     display: grid;
     flex: 1;
     width: 100%;
     height: 100%;
-    /* O grid-template será definido no JS com minmax para não estourar */
 }
 
 .pdf-cell {
@@ -67,7 +61,6 @@
     background-clip: border-box;
 }
 
-/* AJUSTE FINO DE DIMENSÃO */
 .pdf-cell-inner {
     display: flex;
     flex-direction: column;
@@ -75,7 +68,7 @@
     justify-content: center;
     width: 100%;
     height: 100%;
-    padding: 8px; /* Mais respiro para a imagem não colar na linha */
+    padding: 8px; /* Espaço para proteger a imagem */
     text-align: center;
     z-index: 1;
     box-sizing: border-box;
@@ -84,10 +77,9 @@
 
 .pdf-cell-inner img {
     object-fit: contain;
-    /* Reduzimos para garantir que texto + imagem caibam sem estourar */
     max-width: 92%; 
-    max-height: 65%; 
-    flex-shrink: 1; /* Permite que a imagem encolha se o texto for grande */
+    max-height: 65%; /* Reduzido para não cobrir texto/borda */
+    flex-shrink: 1;
 }
 
 .pdf-cell-inner span {
@@ -96,10 +88,9 @@
     margin-top: 2px;
     margin-bottom: 2px;
     font-weight: bold;
-    flex-shrink: 0; /* O texto não deve sumir, a imagem que deve diminuir */
+    flex-shrink: 0; 
 }
 
-/* RODAPÉ */
 .pdf-footer {
     text-align: center;
     font-size: 9pt;
@@ -108,10 +99,10 @@
     padding-bottom: 2px;
     font-family: Arial, sans-serif;
     background: white;
-    flex-shrink: 0; /* Garante que o rodapé nunca seja esmagado */
+    flex-shrink: 0;
     margin-top: auto;
     position: relative;
-    z-index: 10; /* Garante que fique acima de qualquer erro de grid */
+    z-index: 10;
 }
 
 .pdf-footer span {
