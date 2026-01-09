@@ -3,10 +3,9 @@ import jsPDF from 'jspdf';
 import './BoardPDF.css';
 
 export const generateBoardPDF = async (pages, config) => {
-    // 1. Rolar para o topo evita falhas de renderização
+    // 1. Reseta o scroll para evitar cortes
     window.scrollTo(0, 0);
 
-    // 2. Criar container
     const container = document.createElement('div');
     container.id = 'pdf-generator-container';
     document.body.appendChild(container);
@@ -32,7 +31,7 @@ export const generateBoardPDF = async (pages, config) => {
             sheet.style.paddingBottom = `${config.marginBottom}cm`;
             sheet.style.paddingLeft = `${config.marginLeft}cm`;
 
-            // HTML Estrutural
+            // HTML Interno
             sheet.innerHTML = `
                 <div class="pdf-content" style="
                     border: ${config.borderWidth}px ${config.borderStyle} ${config.boardBorderColor};
@@ -49,7 +48,7 @@ export const generateBoardPDF = async (pages, config) => {
                     ` : ''}
                     
                     <div class="pdf-grid" style="
-                        /* minmax(0, 1fr) força as células a terem o mesmo tamanho exato */
+                        /* minmax(0, 1fr) impede que as células cresçam demais */
                         grid-template-columns: repeat(${config.cols}, minmax(0, 1fr));
                         grid-template-rows: repeat(${config.rows}, minmax(0, 1fr));
                         gap: ${config.gap}px;
@@ -64,12 +63,12 @@ export const generateBoardPDF = async (pages, config) => {
 
             container.appendChild(sheet);
 
-            // Aumentei a pausa para garantir carregamento das imagens
+            // Pausa técnica para carregar imagens
             await new Promise(resolve => setTimeout(resolve, 500));
 
-            // Captura
+            // Gera a imagem da folha
             const canvas = await html2canvas(sheet, {
-                scale: 2.5, // Qualidade alta
+                scale: 2.5,
                 useCORS: true,
                 logging: false,
                 backgroundColor: '#ffffff',
@@ -79,11 +78,10 @@ export const generateBoardPDF = async (pages, config) => {
                 scrollY: 0,
                 x: 0,
                 y: 0,
+                // Truque para trazer o elemento invisível para a frente da "câmera"
                 onclone: (clonedDoc) => {
-                    // Truque para trazer o elemento para a "vista" da câmera na hora da foto
                     const el = clonedDoc.getElementById('pdf-generator-container');
                     if (el) {
-                        el.style.position = 'fixed';
                         el.style.left = '0';
                         el.style.top = '0';
                         el.style.visibility = 'visible';
@@ -125,10 +123,6 @@ function generateGridHTML(cards, config) {
                 -webkit-print-color-adjust: exact;
             `;
 
-            // AQUI ESTÁ O AJUSTE DE RENDERIZAÇÃO
-            // Note que tirei a lógica de "if top/bottom" complexa e deixei o CSS grid cuidar disso
-            // As spans só aparecem se tiverem que aparecer
-            
             const textTop = config.textPosition === 'top' 
                 ? `<span style="font-family:${config.fontFamily}; font-size:${config.fontSize}pt; text-transform:${config.textCase}">${card.text}</span>` 
                 : '';
@@ -137,7 +131,6 @@ function generateGridHTML(cards, config) {
                 ? `<span style="font-family:${config.fontFamily}; font-size:${config.fontSize}pt; text-transform:${config.textCase}">${card.text}</span>` 
                 : '';
 
-            // Se a posição for 'none', a imagem ocupa tudo (o grid se ajusta)
             const imgTag = `<img src="${card.image}" crossorigin="anonymous" />`;
 
             html += `
@@ -150,7 +143,6 @@ function generateGridHTML(cards, config) {
             </div>
             `;
         } else {
-            // Célula Vazia
             html += `
             <div class="pdf-cell" style="background: transparent; border: none; opacity: 0;"></div>
             `;
