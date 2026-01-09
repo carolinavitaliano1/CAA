@@ -28,7 +28,7 @@ const BoardGenerator = ({ isSidebarOpen, toggleSidebar }) => {
     paperSize: 'A4', orientation: 'landscape',
     marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1,
     textPosition: 'bottom',
-    fontFamily: 'Arial', // Fonte padrão
+    fontFamily: 'Arial',
     fontSize: 12,
     textCase: 'uppercase'
   });
@@ -85,7 +85,6 @@ const BoardGenerator = ({ isSidebarOpen, toggleSidebar }) => {
 
         <div className="config-body">
           
-          {/* GRUPO 1: ESTRUTURA */}
           <div className="config-card">
             <div className="config-card-header">Estrutura (Linhas x Colunas)</div>
             <div className="config-card-content">
@@ -97,13 +96,13 @@ const BoardGenerator = ({ isSidebarOpen, toggleSidebar }) => {
             </div>
           </div>
 
-          {/* GRUPO 2: CABEÇALHO */}
           <div className="config-card">
             <div className="config-card-header">Cabeçalho</div>
             <div className="config-card-content">
-              <label style={{display:'flex', alignItems:'center', gap:'8px', cursor:'pointer'}}>
-                <input type="checkbox" checked={config.header} onChange={e => handleChange('header', e.target.checked)} />
+              {/* CORREÇÃO DO LADO DO TEXTO: Texto antes, Checkbox depois */}
+              <label style={{display:'flex', alignItems:'center', justifyContent: 'space-between', cursor:'pointer'}}>
                 Mostrar Título
+                <input type="checkbox" checked={config.header} onChange={e => handleChange('header', e.target.checked)} />
               </label>
               {config.header && (
                 <input type="text" value={config.headerText} onChange={e => handleChange('headerText', e.target.value)} placeholder="Título..." style={{marginTop: '10px'}} />
@@ -111,7 +110,6 @@ const BoardGenerator = ({ isSidebarOpen, toggleSidebar }) => {
             </div>
           </div>
 
-          {/* GRUPO 3: TEXTO & FONTE (AQUI ESTÁ A CORREÇÃO DA FONTE) */}
           <div className="config-card">
             <div className="config-card-header">Texto e Fonte</div>
             <div className="config-card-content">
@@ -148,7 +146,6 @@ const BoardGenerator = ({ isSidebarOpen, toggleSidebar }) => {
             </div>
           </div>
 
-          {/* GRUPO 4: CORES */}
           <div className="config-card">
             <div className="config-card-header">Cores</div>
             <div className="config-card-content">
@@ -170,7 +167,6 @@ const BoardGenerator = ({ isSidebarOpen, toggleSidebar }) => {
             </div>
           </div>
 
-          {/* GRUPO 5: PAPEL */}
           <div className="config-card">
             <div className="config-card-header">Papel e Margens</div>
             <div className="config-card-content">
@@ -196,7 +192,6 @@ const BoardGenerator = ({ isSidebarOpen, toggleSidebar }) => {
           </div>
         </div>
 
-        {/* RODAPÉ FIXO COM O BOTÃO DE SALVAR */}
         <div className="config-footer">
           <button className="btn-print" onClick={handleDownloadClick}>
             💾 Baixar PDF
@@ -204,7 +199,6 @@ const BoardGenerator = ({ isSidebarOpen, toggleSidebar }) => {
         </div>
       </div>
 
-      {/* ÁREA DE PRÉVIA */}
       <div className="preview-panel">
         <div className="preview-toolbar">
           <div className="input-area-mini">
