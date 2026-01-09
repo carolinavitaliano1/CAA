@@ -1,13 +1,15 @@
 /* src/utils/BoardPDF.css */
 
-/* CONTAINER FANTASMA (Essencial para não cortar a imagem) */
+/* CONTAINER FANTASMA (Ajustado para evitar cortes em sequência) */
 #pdf-generator-container {
-    position: fixed; /* Fixa na tela */
+    position: absolute; /* Mudado de fixed para absolute para evitar conflito de scroll */
     top: 0;
     left: 0;
-    width: 2000px; /* Garante largura suficiente para paisagem */
-    z-index: -9999; /* Fica atrás de tudo */
-    visibility: hidden; /* Invisível a olho nu */
+    width: 5000px; /* Largura gigante para garantir que o Paisagem caiba com folga */
+    height: 5000px;
+    z-index: -9999;
+    visibility: hidden;
+    overflow: visible;
 }
 
 /* A Folha de Papel */
@@ -23,7 +25,7 @@
     print-color-adjust: exact;
 }
 
-/* Tamanhos Físicos (A4/A3) */
+/* Tamanhos Físicos (A4/A3) - Mantidos iguais */
 .pdf-sheet.A4.portrait { width: 210mm; height: 297mm; }
 .pdf-sheet.A4.landscape { width: 297mm; height: 210mm; }
 .pdf-sheet.A3.portrait { width: 297mm; height: 420mm; }
