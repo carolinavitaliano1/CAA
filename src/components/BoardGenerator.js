@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import './BoardGenerator.css';
-// IMPORTA A NOVA FUNÇÃO
 import { generateBoardPDF } from '../utils/BoardPDFGenerator';
 
-// ... (Mantenha a constante CAA_COLORS igual) ...
+// Cores (Mantidas iguais)
 const CAA_COLORS = [
   { color: '#FFFFFF', label: 'Branco – Artigos / Neutro' },
   { color: '#FDE047', label: 'Amarelo – Pessoas / Pronomes' },
@@ -17,7 +16,6 @@ const CAA_COLORS = [
 ];
 
 const BoardGenerator = ({ onGenerate }) => {
-  // ... (Mantenha os states iguais) ...
   const [text, setText] = useState("");
   const [pages, setPages] = useState([]); 
   const [isGenerating, setIsGenerating] = useState(false);
@@ -34,14 +32,15 @@ const BoardGenerator = ({ onGenerate }) => {
     textPosition: 'bottom', fontFamily: 'Arial', fontSize: 12, textCase: 'uppercase',
   });
 
-  // ... (Mantenha handlePreview, handleChange, handleFinalize, next/prevPage iguais) ...
-  const handlePreview = async (e) => { /* ...seu código atual... */
+  const handlePreview = async (e) => {
     e.preventDefault();
     if (!text.trim()) return;
     setIsGenerating(true);
     setCurrentPage(0);
+
     const words = text.trim().split(/[\n\s]+/);
     const cardsPerPage = config.rows * config.cols;
+    
     const allCardsPromises = words.map(async (word) => {
       try {
         const res = await fetch(`https://api.arasaac.org/api/pictograms/pt/search/${encodeURIComponent(word)}`);
@@ -52,6 +51,7 @@ const BoardGenerator = ({ onGenerate }) => {
         return { id: `err`, text: word, image: 'https://static.arasaac.org/pictograms/2475/2475_500.png' };
       }
     });
+
     const allCards = await Promise.all(allCardsPromises);
     const newPages = [];
     for (let i = 0; i < allCards.length; i += cardsPerPage) {
@@ -60,55 +60,40 @@ const BoardGenerator = ({ onGenerate }) => {
     setPages(newPages);
     setIsGenerating(false);
   };
-  
+
   const handleChange = (field, value) => setConfig(prev => ({ ...prev, [field]: value }));
-  const handleFinalize = () => { /* ...seu código atual... */ };
+  const handleFinalize = () => {
+    const allFlattenedCards = pages.flat().map(c => ({
+      ...c, type: 'speak', bgColor: config.cellBgColor, borderColor: config.cellBorderColor
+    }));
+    onGenerate(allFlattenedCards);
+  };
   const nextPage = () => { if (currentPage < pages.length - 1) setCurrentPage(prev => prev + 1); };
   const prevPage = () => { if (currentPage > 0) setCurrentPage(prev => prev - 1); };
 
-
-// Localize essa parte no seu BoardGenerator.js
-
-const handleDownloadClick = async (e) => {
-    if (e) {
+  // --- FUNÇÃO DE DOWNLOAD SEGURA ---
+  const handleDownloadClick = async (e) => {
+      // PREVINE QUALQUER COMPORTAMENTO PADRÃO
+      if(e) {
         e.preventDefault();
         e.stopPropagation();
-    }
-    
-    if (pages.length === 0) {
-        alert("Gere uma prancha antes de baixar.");
-        return;
-    }
+      }
 
-    setIsDownloading(true);
-    
-    // Chama o gerador externo que criamos na pasta utils
-    try {
-        await generateBoardPDF(pages, config);
-    } catch (error) {
-        console.error("Erro no download:", error);
-    } finally {
-        setIsDownloading(false);
-    }
-};
-
-// No seu JSX (o botão lá embaixo), garanta que ele esteja assim:
-<button 
-    className="btn-print" 
-    type="button" // Força o botão a não ser um 'submit'
-    onClick={handleDownloadClick} 
-    disabled={pages.length === 0 || isDownloading}
->
-    {isDownloading ? '⏳ Gerando Arquivo...' : '📥 Baixar PDF'}
-</button>
+      setIsDownloading(true);
+      try {
+          await generateBoardPDF(pages, config);
+      } catch (err) {
+          console.error(err);
+          alert("Erro ao baixar PDF");
+      } finally {
+          setIsDownloading(false);
+      }
   };
 
   return (
     <div className="board-generator-wrapper">
-      {/* ... (Todo o seu JSX do Menu Lateral e Toolbar continua igual) ... */}
+      {/* MENU LATERAL */}
       <div className="config-panel">
-         {/* ...inputs... */}
-         {/* (Vou abreviar aqui para não ficar gigante, mantenha o seu JSX do menu) */}
           <h3>🛠️ Estrutura</h3>
           <div className="config-group">
             <label>Linhas X Colunas:</label>
@@ -118,27 +103,90 @@ const handleDownloadClick = async (e) => {
                 <input type="number" value={config.cols} onChange={(e)=>handleChange('cols', parseInt(e.target.value))} />
             </div>
           </div>
-          {/* ...etc (todas as configs)... */}
+          
+          <h3>🏷️ Cabeçalho</h3>
+          <div className="config-group">
+              <label>Mostrar Cabeçalho:</label>
+              <select value={config.header} onChange={(e) => handleChange('header', e.target.value === 'true')}>
+                  <option value="true">Sim, mostrar</option>
+                  <option value="false">Não, esconder</option>
+              </select>
+          </div>
+          {config.header && (
+            <>
+                <div className="config-group">
+                    <label>Texto do Título:</label>
+                    <input type="text" value={config.headerText} onChange={(e) => handleChange('headerText', e.target.value)} />
+                </div>
+                <div className="config-group">
+                    <label>Cor de Fundo:</label>
+                    <select value={config.headerBgColor} onChange={(e) => handleChange('headerBgColor', e.target.value)}>
+                        {CAA_COLORS.map(c => <option key={c.color} value={c.color} style={{backgroundColor: c.color}}>{c.label}</option>)}
+                    </select>
+                </div>
+            </>
+          )}
+
+          <h3>🎨 Estilo</h3>
+          <div className="config-group">
+              <label>Fundo da Célula:</label>
+              <select value={config.cellBgColor} onChange={(e) => handleChange('cellBgColor', e.target.value)}>
+                  {CAA_COLORS.map(c => <option key={c.color} value={c.color} style={{backgroundColor: c.color}}>{c.label}</option>)}
+              </select>
+          </div>
+          <div className="config-group">
+              <label>Cor da Borda:</label>
+              <select value={config.cellBorderColor} onChange={(e) => handleChange('cellBorderColor', e.target.value)}>
+                  {CAA_COLORS.map(c => <option key={c.color} value={c.color} style={{backgroundColor: c.color}}>{c.label}</option>)}
+              </select>
+          </div>
+          <div className="config-group">
+              <label>Espessura:</label>
+              <input type="number" value={config.borderWidth} onChange={(e) => handleChange('borderWidth', e.target.value)} />
+          </div>
+
+          <h3>📄 Papel</h3>
+          <div className="config-group">
+              <label>Formato:</label>
+              <div style={{display:'flex', gap:'5px'}}>
+                  <select value={config.paperSize} onChange={(e) => handleChange('paperSize', e.target.value)}>
+                      <option value="A4">A4</option>
+                      <option value="A3">A3</option>
+                  </select>
+                  <select value={config.orientation} onChange={(e) => handleChange('orientation', e.target.value)}>
+                      <option value="landscape">Deitado</option>
+                      <option value="portrait">Em Pé</option>
+                  </select>
+              </div>
+          </div>
+          <div className="config-group">
+              <label>Margens (cm):</label>
+              <div className="margins-grid">
+                  <input title="Cima" type="number" step="0.5" value={config.marginTop} onChange={(e) => handleChange('marginTop', e.target.value)} />
+                  <input title="Direita" type="number" step="0.5" value={config.marginRight} onChange={(e) => handleChange('marginRight', e.target.value)} />
+                  <input title="Baixo" type="number" step="0.5" value={config.marginBottom} onChange={(e) => handleChange('marginBottom', e.target.value)} />
+                  <input title="Esquerda" type="number" step="0.5" value={config.marginLeft} onChange={(e) => handleChange('marginLeft', e.target.value)} />
+              </div>
+          </div>
       </div>
 
       <div className="preview-panel">
         <div className="preview-toolbar">
             <div className="input-area-mini">
                 <textarea placeholder="Texto..." value={text} onChange={(e) => setText(e.target.value)} />
-                <button onClick={handlePreview} disabled={isGenerating}>Actualizar</button>
+                <button onClick={handlePreview} disabled={isGenerating}>Atualizar</button>
             </div>
             <div className="zoom-controls">
+                 <label>🔍</label>
                  <input type="range" min="0.2" max="1.5" step="0.05" value={zoomLevel} onChange={(e) => setZoomLevel(parseFloat(e.target.value))} />
             </div>
         </div>
 
-        {/* ÁREA DE VISUALIZAÇÃO (Sem lógica de exportação misturada) */}
         <div className="paper-preview-container">
             <div className="book-viewer">
                 {pages.length > 0 ? pages.map((pageCards, pageIdx) => (
                     <div 
                         key={pageIdx}
-                        // SÓ MOSTRA A PÁGINA ATUAL NA TELA
                         className={`paper-sheet ${config.paperSize} ${config.orientation} ${pageIdx !== currentPage ? 'hidden-page' : ''}`}
                         style={{
                             padding: `${config.marginTop}cm ${config.marginRight}cm ${config.marginBottom}cm ${config.marginLeft}cm`,
@@ -159,7 +207,7 @@ const handleDownloadClick = async (e) => {
                                             {card ? (
                                                 <div className={`cell-content ${config.textPosition}`}>
                                                     {config.textPosition === 'top' && <span style={{ fontFamily: config.fontFamily, fontSize: `${config.fontSize}pt`, textTransform: config.textCase }}>{card.text}</span>}
-                                                    <img src={card.image} alt="" />
+                                                    <img src={card.image} alt="" style={{ maxWidth: '100%', maxHeight: config.textPosition === 'none' ? '100%' : '70%', objectFit: 'contain' }} />
                                                     {config.textPosition === 'bottom' && <span style={{ fontFamily: config.fontFamily, fontSize: `${config.fontSize}pt`, textTransform: config.textCase }}>{card.text}</span>}
                                                 </div>
                                             ) : <div className="empty-slot"></div>}
@@ -175,7 +223,6 @@ const handleDownloadClick = async (e) => {
                 )) : <div className="no-pages-msg">Digite palavras e clique em Atualizar</div>}
             </div>
 
-            {/* Navegação */}
             {pages.length > 0 && (
                 <div className="pagination-controls">
                     <button onClick={prevPage} disabled={currentPage === 0}>⬅</button>
@@ -186,8 +233,13 @@ const handleDownloadClick = async (e) => {
         </div>
 
         <div className="action-buttons-row">
-            {/* O BOTÃO AGORA CHAMA O GERADOR EXTERNO */}
-            <button className="btn-print" onClick={handleDownloadClick} disabled={pages.length === 0 || isDownloading}>
+            {/* BOTÃO CORRIGIDO: type="button" previne submit, onClick seguro */}
+            <button 
+                className="btn-print" 
+                type="button" 
+                onClick={handleDownloadClick} 
+                disabled={pages.length === 0 || isDownloading}
+            >
                 {isDownloading ? '⏳ Gerando...' : '📥 Baixar PDF'}
             </button>
             <button className="btn-finalize" onClick={handleFinalize} disabled={pages.length === 0}>✅ Salvar</button>
