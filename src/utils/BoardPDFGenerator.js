@@ -3,9 +3,10 @@ import jsPDF from 'jspdf';
 import './BoardPDF.css';
 
 export const generateBoardPDF = async (pages, config) => {
-    // 1. Reseta o scroll para evitar cortes
+    // 1. Rolar para o topo (Essencial)
     window.scrollTo(0, 0);
 
+    // 2. Criar container
     const container = document.createElement('div');
     container.id = 'pdf-generator-container';
     document.body.appendChild(container);
@@ -48,7 +49,7 @@ export const generateBoardPDF = async (pages, config) => {
                     ` : ''}
                     
                     <div class="pdf-grid" style="
-                        /* minmax(0, 1fr) impede que as células cresçam demais */
+                        /* minmax(0, 1fr) é vital para o grid não estourar */
                         grid-template-columns: repeat(${config.cols}, minmax(0, 1fr));
                         grid-template-rows: repeat(${config.rows}, minmax(0, 1fr));
                         gap: ${config.gap}px;
@@ -63,30 +64,18 @@ export const generateBoardPDF = async (pages, config) => {
 
             container.appendChild(sheet);
 
-            // Pausa técnica para carregar imagens
+            // Pausa para renderização
             await new Promise(resolve => setTimeout(resolve, 500));
 
-            // Gera a imagem da folha
+            // Captura
             const canvas = await html2canvas(sheet, {
                 scale: 2.5,
                 useCORS: true,
                 logging: false,
-                backgroundColor: '#ffffff',
-                windowWidth: 5000, 
-                width: sheet.offsetWidth, 
+                backgroundColor: '#ffffff', // Reforço do fundo branco
                 scrollX: 0,
                 scrollY: 0,
-                x: 0,
-                y: 0,
-                // Truque para trazer o elemento invisível para a frente da "câmera"
-                onclone: (clonedDoc) => {
-                    const el = clonedDoc.getElementById('pdf-generator-container');
-                    if (el) {
-                        el.style.left = '0';
-                        el.style.top = '0';
-                        el.style.visibility = 'visible';
-                    }
-                }
+                // Removemos o 'onclone' complexo porque o CSS já garante a posição correta
             });
 
             const imgData = canvas.toDataURL('image/jpeg', 0.95);
@@ -94,6 +83,7 @@ export const generateBoardPDF = async (pages, config) => {
             if (i > 0) pdf.addPage(format, orientation);
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
             
+            // Limpa a folha atual
             container.removeChild(sheet);
         }
 
