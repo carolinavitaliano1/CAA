@@ -66,7 +66,7 @@
     background-clip: border-box;
 }
 
-/* AJUSTE DE DIMENSÃO AQUI */
+/* AJUSTE DE DIMENSÃO (Margem de Segurança) */
 .pdf-cell-inner {
     display: flex;
     flex-direction: column;
@@ -74,17 +74,15 @@
     justify-content: center;
     width: 100%;
     height: 100%;
-    /* Aumentei o espaço interno para a imagem não colar na borda */
-    padding: 6px; 
+    padding: 6px; /* Mais espaço para não colar na borda */
     text-align: center;
     z-index: 1;
-    box-sizing: border-box; /* Garante que o padding não estoure o tamanho */
+    box-sizing: border-box;
 }
 
 .pdf-cell-inner img {
     object-fit: contain;
-    /* Reduzi levemente para garantir que caiba inteiro na margem */
-    max-width: 90%; 
+    max-width: 90%; /* Reduzido para garantir que caiba */
     max-height: 70%;
 }
 
