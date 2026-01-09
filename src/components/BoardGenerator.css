@@ -27,7 +27,6 @@
   transform: none !important;
 }
 
-/* CABEÇALHO ESQUERDO */
 .config-header {
   height: 80px; 
   padding: 0 20px;
@@ -50,7 +49,7 @@
   gap: 15px;
 }
 
-/* CARDS DE CONFIGURAÇÃO */
+/* CARDS */
 .config-card {
   background: white;
   border: 1px solid #CBD5E1;
@@ -74,7 +73,7 @@
 .config-card-content input:focus, .config-card-content select:focus { border-color: #2563EB; outline: none; }
 .margins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-/* RODAPÉ DO MENU */
+/* RODAPÉ (BOTÕES) */
 .config-footer {
   padding: 20px;
   background: white;
@@ -174,16 +173,17 @@
 .zoom-controls label { font-size: 1.2rem; cursor: default; }
 .zoom-controls input[type="range"] { width: 100px; cursor: pointer; }
 
-/* MESA DE LUZ */
+/* --- MESA DE LUZ --- */
 .paper-preview-container {
-  flex: 1; /* Ocupa o espaço entre o topo e o rodapé */
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
+  overflow: hidden; /* Se a página for maior, ela corta (use zoom) ou mude para 'auto' se quiser scroll */
   background-image: radial-gradient(#94A3B8 1px, transparent 1px);
   background-size: 24px 24px;
-  padding: 20px; /* Padding reduzido para dar mais espaço */
+  /* Espaço embaixo extra para a paginação não tampar a folha */
+  padding: 40px 40px 80px 40px; 
   position: relative;
   z-index: 1;
 }
@@ -210,32 +210,36 @@
 .cell-content span { font-weight: 700; line-height: 1.1; margin-top: 4px; }
 .paper-footer { text-align: center; font-size: 10px; color: #94A3B8; margin-top: auto; padding: 5px; }
 
-/* --- PAGINAÇÃO (RODAPÉ FIXO EMBAIXO DA PÁGINA) --- */
+/* --- PAGINAÇÃO (PÍLULA FLUTUANTE PEQUENA) --- */
 .pagination-controls {
-  /* Removemos absolute, bottom e left */
-  position: relative; 
-  width: 100%;
-  background: white;
-  border-top: 1px solid #CBD5E1;
-  padding: 15px;
+  position: absolute;
+  bottom: 20px; /* Fica a 20px do fundo */
+  left: 50%;
+  transform: translateX(-50%); /* Centraliza exato */
+  
+  width: auto; /* Tamanho automático (pequeno) */
+  background: rgba(255, 255, 255, 0.95);
+  padding: 6px 15px; /* Bem mais fino */
+  border-radius: 30px; /* Redondinho */
+  border: 1px solid #CBD5E1;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  gap: 15px;
   z-index: 50;
-  box-shadow: 0 -4px 10px rgba(0,0,0,0.05); /* Sombra para cima */
-  flex-shrink: 0; /* Garante que não suma */
-  box-sizing: border-box;
 }
 
 .pagination-controls button { 
-  width: 44px; height: 44px; border-radius: 50%; border: 1px solid #CBD5E1; background: white; cursor: pointer; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+  width: 32px; height: 32px; /* Botões menores */
+  border-radius: 50%; border: 1px solid #CBD5E1; background: white; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s;
 }
-.pagination-controls button:hover:not(:disabled) { background: #EFF6FF; border-color: #2563EB; color: #2563EB; transform: scale(1.05); }
-.pagination-controls button:disabled { opacity: 0.4; cursor: not-allowed; }
+.pagination-controls button:hover:not(:disabled) { background: #EFF6FF; border-color: #2563EB; color: #2563EB; }
+.pagination-controls button:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .pagination-controls span {
-  font-weight: 700; color: #1E293B; font-size: 1rem;
+  font-weight: 700; color: #1E293B; font-size: 0.9rem;
 }
 
 .hidden-page { display: none !important; }
