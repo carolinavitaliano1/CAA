@@ -3,7 +3,7 @@ import jsPDF from 'jspdf';
 import './BoardPDF.css';
 
 export const generateBoardPDF = async (pages, config) => {
-    // 1. Garante que a tela esteja no topo para evitar cortes
+    // CORREÇÃO DE CORTE: Reseta o scroll para o topo
     window.scrollTo(0, 0);
 
     const container = document.createElement('div');
@@ -21,17 +21,14 @@ export const generateBoardPDF = async (pages, config) => {
         for (let i = 0; i < pages.length; i++) {
             const pageCards = pages[i];
             
-            // Cria a folha
             const sheet = document.createElement('div');
             sheet.className = `pdf-sheet ${config.paperSize} ${config.orientation}`;
             
-            // APLICA AS MARGENS
             sheet.style.paddingTop = `${config.marginTop}cm`;
             sheet.style.paddingRight = `${config.marginRight}cm`;
             sheet.style.paddingBottom = `${config.marginBottom}cm`;
             sheet.style.paddingLeft = `${config.marginLeft}cm`;
 
-            // HTML Interno
             sheet.innerHTML = `
                 <div class="pdf-content" style="
                     border: ${config.borderWidth}px ${config.borderStyle} ${config.boardBorderColor};
@@ -48,7 +45,7 @@ export const generateBoardPDF = async (pages, config) => {
                     ` : ''}
                     
                     <div class="pdf-grid" style="
-                        /* CORREÇÃO CRUCIAL: minmax(0, 1fr) impede que o grid estoure a página */
+                        /* CORREÇÃO CRUCIAL: minmax impede que imagens estourem a grade */
                         grid-template-columns: repeat(${config.cols}, minmax(0, 1fr));
                         grid-template-rows: repeat(${config.rows}, minmax(0, 1fr));
                         gap: ${config.gap}px;
@@ -63,16 +60,14 @@ export const generateBoardPDF = async (pages, config) => {
 
             container.appendChild(sheet);
 
-            // PAUSA: Espera imagens e layout carregarem
+            // PAUSA: Essencial para o navegador montar a página sem pressa
             await new Promise(resolve => setTimeout(resolve, 300));
 
-            // FOTO
             const canvas = await html2canvas(sheet, {
-                scale: 2.5, // Qualidade alta
+                scale: 2.5, 
                 useCORS: true,
                 logging: false,
                 backgroundColor: '#ffffff',
-                // PREVINE CORTES
                 windowWidth: 5000, 
                 width: sheet.offsetWidth, 
                 scrollX: 0,
@@ -81,18 +76,13 @@ export const generateBoardPDF = async (pages, config) => {
                 y: 0,
                 onclone: (clonedDoc) => {
                     const el = clonedDoc.getElementById('pdf-generator-container');
-                    if (el) {
-                        el.style.visibility = 'visible';
-                    }
+                    if (el) el.style.visibility = 'visible';
                 }
             });
 
             const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
-            if (i > 0) {
-                pdf.addPage(format, orientation);
-            }
-            
+            if (i > 0) pdf.addPage(format, orientation);
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
             
             container.removeChild(sheet);
@@ -134,7 +124,6 @@ function generateGridHTML(cards, config) {
             </div>
             `;
         } else {
-            // Células vazias invisíveis
             html += `
             <div class="pdf-cell" style="background: transparent; border: none; opacity: 0;"></div>
             `;
