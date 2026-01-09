@@ -3,14 +3,16 @@ import jsPDF from 'jspdf';
 import './BoardPDF.css';
 
 export const generateBoardPDF = async (pages, config) => {
-    // 1. Cria container temporário
+    // 1. Cria container temporário fora da tela
     const container = document.createElement('div');
     container.id = 'pdf-generator-container';
     document.body.appendChild(container);
 
     try {
         const orientation = config.orientation === 'landscape' ? 'l' : 'p';
-        const pdf = new jsPDF(orientation, 'mm', config.paperSize.toLowerCase());
+        const format = config.paperSize.toLowerCase();
+        
+        const pdf = new jsPDF(orientation, 'mm', format);
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
 
@@ -21,7 +23,7 @@ export const generateBoardPDF = async (pages, config) => {
             const sheet = document.createElement('div');
             sheet.className = `pdf-sheet ${config.paperSize} ${config.orientation}`;
             
-            // APLICA AS MARGENS
+            // APLICA AS MARGENS DO USUÁRIO
             sheet.style.paddingTop = `${config.marginTop}cm`;
             sheet.style.paddingRight = `${config.marginRight}cm`;
             sheet.style.paddingBottom = `${config.marginBottom}cm`;
@@ -58,27 +60,27 @@ export const generateBoardPDF = async (pages, config) => {
 
             container.appendChild(sheet);
 
-            // GERAÇÃO DA IMAGEM (CORRIGIDO CORTE E CÉLULAS VAZIAS)
+            // GERAÇÃO DA FOTO
             const canvas = await html2canvas(sheet, {
                 scale: 3, // Alta qualidade
                 useCORS: true,
                 logging: false,
                 backgroundColor: '#ffffff',
-                // CORREÇÃO DO CORTE LATERAL: Força uma janela larga
-                windowWidth: 3000, 
-                windowHeight: 3000,
-                // Garante renderização correta
+                windowWidth: 3000, // Previne corte lateral em monitores pequenos
                 onclone: (clonedDoc) => {
                     const el = clonedDoc.getElementById('pdf-generator-container');
-                    if (el) {
-                        el.style.visibility = 'visible';
-                    }
+                    if (el) el.style.visibility = 'visible';
                 }
             });
 
             const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
-            if (i > 0) pdf.addPage();
+            // CORREÇÃO CRUCIAL AQUI:
+            // Garante que as novas páginas tenham a mesma orientação e tamanho da primeira
+            if (i > 0) {
+                pdf.addPage(format, orientation);
+            }
+            
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
             
             container.removeChild(sheet);
@@ -103,9 +105,8 @@ function generateGridHTML(cards, config) {
     for (let k = 0; k < totalSlots; k++) {
         const card = cards[k];
         
-        // CORREÇÃO: Se tiver carta, aplica o estilo. Se não, estilo vazio.
         if (card) {
-            // Estilo NORMAL (com cor e borda)
+            // COM PICTOGRAMA: Usa cor e borda configuradas
             const cellStyle = `
                 background-color: ${config.cellBgColor};
                 border: ${config.borderWidth}px ${config.borderStyle} ${config.cellBorderColor};
@@ -122,7 +123,7 @@ function generateGridHTML(cards, config) {
             </div>
             `;
         } else {
-            // CORREÇÃO: SLOT VAZIO = INVISÍVEL (Sem borda, sem fundo)
+            // SEM PICTOGRAMA (VAZIO): Fundo transparente e sem borda
             html += `
             <div class="pdf-cell" style="background: transparent; border: none;"></div>
             `;
