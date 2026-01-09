@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import './BoardGenerator.css';
 import { generateBoardPDF } from '../utils/BoardPDFGenerator';
 
-// Cores (Mantidas iguais)
 const CAA_COLORS = [
   { color: '#FFFFFF', label: 'Branco – Artigos / Neutro' },
   { color: '#FDE047', label: 'Amarelo – Pessoas / Pronomes' },
@@ -62,37 +61,44 @@ const BoardGenerator = ({ onGenerate }) => {
   };
 
   const handleChange = (field, value) => setConfig(prev => ({ ...prev, [field]: value }));
+  
   const handleFinalize = () => {
     const allFlattenedCards = pages.flat().map(c => ({
       ...c, type: 'speak', bgColor: config.cellBgColor, borderColor: config.cellBorderColor
     }));
     onGenerate(allFlattenedCards);
   };
+
   const nextPage = () => { if (currentPage < pages.length - 1) setCurrentPage(prev => prev + 1); };
   const prevPage = () => { if (currentPage > 0) setCurrentPage(prev => prev - 1); };
 
-  // --- FUNÇÃO DE DOWNLOAD SEGURA ---
+  // --- FUNÇÃO DE DOWNLOAD CORRIGIDA ---
   const handleDownloadClick = async (e) => {
-      // PREVINE QUALQUER COMPORTAMENTO PADRÃO
-      if(e) {
+    // Evita comportamento padrão
+    if (e) {
         e.preventDefault();
         e.stopPropagation();
-      }
+    }
+    
+    if (pages.length === 0) {
+        alert("Gere uma prancha antes de baixar.");
+        return;
+    }
 
-      setIsDownloading(true);
-      try {
-          await generateBoardPDF(pages, config);
-      } catch (err) {
-          console.error(err);
-          alert("Erro ao baixar PDF");
-      } finally {
-          setIsDownloading(false);
-      }
+    setIsDownloading(true);
+    
+    try {
+        await generateBoardPDF(pages, config);
+    } catch (error) {
+        console.error("Erro no download:", error);
+        alert("Erro ao gerar o PDF. Tente novamente.");
+    } finally {
+        setIsDownloading(false);
+    }
   };
 
   return (
     <div className="board-generator-wrapper">
-      {/* MENU LATERAL */}
       <div className="config-panel">
           <h3>🛠️ Estrutura</h3>
           <div className="config-group">
@@ -233,14 +239,14 @@ const BoardGenerator = ({ onGenerate }) => {
         </div>
 
         <div className="action-buttons-row">
-            {/* BOTÃO CORRIGIDO: type="button" previne submit, onClick seguro */}
+            {/* BOTÃO DE DOWNLOAD */}
             <button 
                 className="btn-print" 
                 type="button" 
                 onClick={handleDownloadClick} 
                 disabled={pages.length === 0 || isDownloading}
             >
-                {isDownloading ? '⏳ Gerando...' : '📥 Baixar PDF'}
+                {isDownloading ? '⏳ Gerando Arquivo...' : '📥 Baixar PDF'}
             </button>
             <button className="btn-finalize" onClick={handleFinalize} disabled={pages.length === 0}>✅ Salvar</button>
         </div>
