@@ -1,6 +1,6 @@
 /* src/components/BoardGenerator.css */
 
-/* --- LAYOUT GERAL (PC) --- */
+/* LAYOUT GERAL */
 .board-generator-wrapper {
   display: flex;
   width: 100%;
@@ -8,14 +8,13 @@
   background-color: #F8FAFC;
   overflow: hidden;
   position: relative;
-  /* Garante que fique um ao lado do outro */
-  flex-direction: row; 
+  flex-direction: row;
 }
 
-/* --- PAINEL DE CONFIGURAÇÃO (FIXO NA ESQUERDA NO PC) --- */
+/* --- PAINEL DE CONFIGURAÇÃO --- */
 .config-panel {
-  width: 320px; /* Largura fixa */
-  background: white;
+  width: 320px;
+  background: #F1F5F9; /* Fundo cinza claro para destacar os cards brancos */
   border-right: 1px solid #E2E8F0;
   display: flex;
   flex-direction: column;
@@ -24,101 +23,138 @@
   flex-shrink: 0;
   height: 100%;
   
-  /* NO PC: SEMPRE VISÍVEL */
+  /* PC: Sempre visível */
   position: relative !important;
   transform: none !important;
-  opacity: 1 !important;
   left: auto !important;
 }
 
-/* Esconde o botão de fechar (X) no PC, pois o painel é fixo */
-.btn-close-sidebar {
-  display: none; 
-}
+.btn-close-sidebar { display: none; }
 
-/* CABEÇALHO DO PAINEL */
 .config-header {
-  padding: 20px;
+  padding: 15px 20px;
+  background: white;
   border-bottom: 1px solid #E2E8F0;
-  background: #fff;
 }
-.config-header h3 {
-  margin: 0;
-  font-size: 1.1rem;
-  color: #1E293B;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+.config-header h3 { margin: 0; font-size: 1.1rem; color: #1E293B; }
 
-/* CORPO DO PAINEL (ROLAGEM) */
+/* CORPO DO MENU (ONDE FICAM OS CARDS) */
 .config-body {
-  padding: 20px;
-  overflow-y: auto;
-  flex: 1; /* Ocupa o espaço restante */
+  padding: 15px;
+  overflow-y: auto; /* Rola se tiver muita coisa */
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Espaço entre os cards */
 }
 
-/* RODAPÉ DO PAINEL (BOTÕES) */
-.config-footer {
-  padding: 20px;
-  border-top: 1px solid #E2E8F0;
-  background: #F8FAFC;
-}
-
-/* INPUTS E GRUPOS */
-.config-group { margin-bottom: 20px; }
-.config-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 700;
-  color: #64748B;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-}
-.config-group input, 
-.config-group select {
-  width: 100%;
-  padding: 10px;
+/* --- ESTILO "CARD" PARA OS GRUPOS (O QUE VOCÊ PEDIU) --- */
+.config-card {
+  background: white;
   border: 1px solid #CBD5E1;
   border-radius: 8px;
-  box-sizing: border-box; /* Importante para não quebrar */
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
-.margins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* Título do Card (Fundo Cinza) */
+.config-card-header {
+  background: #E2E8F0;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #475569;
+  text-transform: uppercase;
+  border-bottom: 1px solid #CBD5E1;
+}
+
+/* Conteúdo do Card (Onde ficam os inputs) */
+.config-card-content {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.config-card-content label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 2px;
+  display: block;
+}
+
+.config-card-content input,
+.config-card-content select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #CBD5E1;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+  background: #fff;
+}
+.config-card-content input:focus, .config-card-content select:focus {
+  border-color: #2563EB; outline: none;
+}
+
+.margins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+/* RODAPÉ (BOTÃO SALVAR) */
+.config-footer {
+  padding: 15px;
+  background: white;
+  border-top: 1px solid #E2E8F0;
+  flex-shrink: 0; /* Garante que não encolha */
+  z-index: 10;
+}
+
+.btn-print {
+  width: 100%;
+  padding: 12px;
+  background: #10B981; /* Verde Sucesso */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.btn-print:hover { background: #059669; }
 
 /* --- ÁREA DA PRANCHA (DIREITA) --- */
 .preview-panel {
-  flex: 1; /* Ocupa todo o resto da tela */
+  flex: 1;
   display: flex;
   flex-direction: column;
   background-color: #E2E8F0;
-  position: relative;
   overflow: hidden;
+  position: relative;
 }
 
-/* BARRA DE FERRAMENTAS SUPERIOR */
 .preview-toolbar {
-  height: 70px;
+  height: 60px;
   background: white;
   border-bottom: 1px solid #E2E8F0;
   display: flex;
   align-items: center;
-  padding: 0 24px;
+  padding: 0 20px;
   gap: 15px;
   justify-content: space-between;
   flex-shrink: 0;
 }
 
-.input-area-mini { display: flex; flex: 1; gap: 10px; max-width: 600px; align-items: center; }
-.input-area-mini textarea { 
-  flex: 1; height: 40px; padding: 10px; border-radius: 20px; border: 1px solid #CBD5E1; resize: none; 
-}
-.input-area-mini button {
-  background: #2563EB; color: white; border: none; padding: 0 20px; height: 40px; border-radius: 20px; font-weight: 600; cursor: pointer; white-space: nowrap;
-}
+.input-area-mini { display: flex; flex: 1; gap: 10px; max-width: 600px; }
+.input-area-mini textarea { flex: 1; height: 36px; padding: 8px; border-radius: 6px; border: 1px solid #CBD5E1; resize: none; }
+.input-area-mini button { background: #2563EB; color: white; border: none; padding: 0 20px; border-radius: 6px; font-weight: bold; cursor: pointer; }
 
-.zoom-controls { display: flex; align-items: center; gap: 10px; }
+.zoom-controls { display: flex; align-items: center; gap: 8px; }
 
-/* MESA DE VISUALIZAÇÃO */
 .paper-preview-container {
   flex: 1;
   display: flex;
@@ -126,19 +162,17 @@
   align-items: center;
   overflow: hidden;
   background-image: radial-gradient(#94A3B8 1px, transparent 1px);
-  background-size: 24px 24px;
+  background-size: 20px 20px;
   padding: 40px;
-  position: relative;
 }
 
-/* PAPEL */
 .paper-sheet {
   background: white;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+  display: flex; flex-direction: column;
   transition: transform 0.2s ease;
   transform-origin: center center;
   box-sizing: border-box;
-  display: flex; flex-direction: column;
 }
 
 /* Tamanhos */
@@ -147,53 +181,33 @@
 .paper-sheet.A3.portrait { width: 297mm; height: 420mm; }
 .paper-sheet.A3.landscape { width: 420mm; height: 297mm; }
 
-/* Interior do Papel */
-.paper-content-wrapper { width: 100%; height: 100%; display: flex; flex-direction: column; }
-.paper-header { text-align: center; font-weight: 800; font-size: 24pt; padding: 15px; border-bottom: 2px solid #000; }
+.paper-header { text-align: center; font-weight: 800; font-size: 24pt; padding: 10px; border-bottom: 2px solid #000; }
 .paper-grid { display: grid; flex: 1; width: 100%; height: 100%; }
-.paper-cell { border: 1px solid #E2E8F0; display: flex; justify-content: center; align-items: center; overflow: hidden; background: #fff; }
+.paper-cell { border: 1px solid #000; display: flex; justify-content: center; align-items: center; overflow: hidden; background: #fff; }
 .cell-content { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4px; }
 .cell-content img { max-width: 90%; max-height: 70%; object-fit: contain; flex: 1; }
 .cell-content span { font-weight: 700; line-height: 1.1; margin-top: 4px; }
+.paper-footer { text-align: center; font-size: 10px; color: #94A3B8; margin-top: auto; padding: 5px; }
 
-/* PAGINAÇÃO (Setas) */
 .pagination-controls {
-  position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
-  background: white; padding: 8px 20px; border-radius: 50px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15); border: 1px solid #E2E8F0;
-  display: flex; align-items: center; gap: 15px; z-index: 100;
+  position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+  background: white; padding: 8px 20px; border-radius: 30px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; gap: 15px; align-items: center; z-index: 50;
 }
-.pagination-controls button { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #E2E8F0; background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.pagination-controls button:hover:not(:disabled) { background: #2563EB; color: white; }
-
-/* Botões de Ação (Baixar) */
-.action-buttons-row { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
-.btn-print { width: 100%; padding: 12px; background: #10B981; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+.pagination-controls button { width: 32px; height: 32px; border-radius: 50%; border: 1px solid #E2E8F0; background: white; cursor: pointer; }
 
 .hidden-page { display: none !important; }
 .no-pages-msg { color: #94A3B8; margin-top: 20%; font-size: 1.2rem; text-align: center; }
 
-/* --- REGRAS PARA MOBILE (SÓ AQUI MUDA) --- */
+/* MOBILE */
 @media (max-width: 768px) {
-  /* No celular, empilha um em cima do outro OU usa o slide */
-  .board-generator-wrapper {
-    position: relative;
-    overflow: hidden;
-  }
-
+  .board-generator-wrapper { position: relative; }
   .config-panel {
-    position: absolute; /* Volta a ser gaveta no celular */
-    left: 0; top: 0; bottom: 0;
-    width: 85%; /* Não ocupa tudo para dar pra clicar fora */
-    transform: translateX(-100%) !important; /* Escondido por padrão */
+    position: absolute; left: 0; top: 0; bottom: 0; width: 85%;
+    transform: translateX(-100%) !important;
     transition: transform 0.3s ease;
     z-index: 999;
   }
-  
-  /* Quando a classe 'open' for adicionada pelo React (no celular) */
-  .config-panel.open {
-    transform: translateX(0) !important;
-  }
-
+  .config-panel.open { transform: translateX(0) !important; }
   .btn-close-sidebar { display: block; background: none; border: none; font-size: 1.5rem; }
 }
