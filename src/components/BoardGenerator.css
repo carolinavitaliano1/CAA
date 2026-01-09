@@ -1,6 +1,6 @@
 /* src/components/BoardGenerator.css */
 
-/* LAYOUT GERAL */
+/* --- LAYOUT GERAL --- */
 .board-generator-wrapper {
   display: flex;
   width: 100%;
@@ -8,153 +8,121 @@
   background-color: #F8FAFC;
   overflow: hidden;
   position: relative;
-  flex-direction: row;
+  flex-direction: row; /* Lado a Lado */
 }
 
-/* --- PAINEL DE CONFIGURAÇÃO --- */
+/* --- PAINEL ESQUERDO (CONFIGURAÇÃO) --- */
 .config-panel {
-  width: 320px;
-  background: #F1F5F9; /* Fundo cinza claro para destacar os cards brancos */
+  /* MUDANÇA: Agora usa flex: 1 para dividir igualmente ou min-width para garantir leitura */
+  flex: 1; 
+  min-width: 320px; /* Garante que não fique pequeno demais */
+  max-width: 50%;   /* Trava em metade da tela (mesma largura) */
+  background: #F1F5F9;
   border-right: 1px solid #E2E8F0;
   display: flex;
   flex-direction: column;
   z-index: 20;
   box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-  flex-shrink: 0;
   height: 100%;
-  
-  /* PC: Sempre visível */
   position: relative !important;
-  transform: none !important;
   left: auto !important;
+  transform: none !important;
 }
-
-.btn-close-sidebar { display: none; }
 
 .config-header {
   padding: 15px 20px;
   background: white;
   border-bottom: 1px solid #E2E8F0;
+  flex-shrink: 0;
 }
 .config-header h3 { margin: 0; font-size: 1.1rem; color: #1E293B; }
+.btn-close-sidebar { display: none; } /* Esconde X no PC */
 
-/* CORPO DO MENU (ONDE FICAM OS CARDS) */
 .config-body {
-  padding: 15px;
-  overflow-y: auto; /* Rola se tiver muita coisa */
+  padding: 20px;
+  overflow-y: auto;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 15px; /* Espaço entre os cards */
+  gap: 15px;
 }
 
-/* --- ESTILO "CARD" PARA OS GRUPOS (O QUE VOCÊ PEDIU) --- */
+/* CARDS DE CONFIGURAÇÃO */
 .config-card {
   background: white;
   border: 1px solid #CBD5E1;
   border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
-
-/* Título do Card (Fundo Cinza) */
 .config-card-header {
   background: #E2E8F0;
-  padding: 8px 12px;
-  font-size: 0.8rem;
+  padding: 10px 15px;
+  font-size: 0.85rem;
   font-weight: 800;
   color: #475569;
   text-transform: uppercase;
   border-bottom: 1px solid #CBD5E1;
 }
+.config-card-content { padding: 15px; display: flex; flex-direction: column; gap: 10px; }
 
-/* Conteúdo do Card (Onde ficam os inputs) */
-.config-card-content {
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+/* Inputs e Selects */
+.config-card-content label { display: block; font-size: 0.9rem; font-weight: 600; color: #334155; margin-bottom: 4px; }
+.config-card-content input, .config-card-content select {
+  width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 0.95rem; background: #fff; box-sizing: border-box;
 }
+.config-card-content input:focus, .config-card-content select:focus { border-color: #2563EB; outline: none; }
 
-.config-card-content label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #334155;
-  margin-bottom: 2px;
-  display: block;
-}
+.margins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-.config-card-content input,
-.config-card-content select {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #CBD5E1;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  box-sizing: border-box;
-  background: #fff;
-}
-.config-card-content input:focus, .config-card-content select:focus {
-  border-color: #2563EB; outline: none;
-}
-
-.margins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-
-/* RODAPÉ (BOTÃO SALVAR) */
+/* RODAPÉ FIXO (SALVAR) */
 .config-footer {
-  padding: 15px;
+  padding: 20px;
   background: white;
   border-top: 1px solid #E2E8F0;
-  flex-shrink: 0; /* Garante que não encolha */
-  z-index: 10;
+  z-index: 30; /* Garante que fique acima do conteúdo rolado */
 }
-
 .btn-print {
-  width: 100%;
-  padding: 12px;
-  background: #10B981; /* Verde Sucesso */
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  font-size: 1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  width: 100%; padding: 14px; background: #10B981; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
 }
 .btn-print:hover { background: #059669; }
 
-/* --- ÁREA DA PRANCHA (DIREITA) --- */
+/* --- PAINEL DIREITO (PRANCHA / VISUALIZAÇÃO) --- */
 .preview-panel {
-  flex: 1;
+  flex: 1; /* Ocupa a outra metade */
   display: flex;
   flex-direction: column;
   background-color: #E2E8F0;
-  overflow: hidden;
   position: relative;
+  overflow: hidden;
 }
 
+/* BARRA DE FERRAMENTAS (CORREÇÃO DE CLIQUES) */
 .preview-toolbar {
-  height: 60px;
+  height: 80px; /* Mais altura para facilitar o clique */
   background: white;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid #CBD5E1;
   display: flex;
   align-items: center;
   padding: 0 20px;
   gap: 15px;
   justify-content: space-between;
   flex-shrink: 0;
+  z-index: 100; /* ESSENCIAL: Garante que fique por cima de tudo para clicar */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-.input-area-mini { display: flex; flex: 1; gap: 10px; max-width: 600px; }
-.input-area-mini textarea { flex: 1; height: 36px; padding: 8px; border-radius: 6px; border: 1px solid #CBD5E1; resize: none; }
-.input-area-mini button { background: #2563EB; color: white; border: none; padding: 0 20px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+.input-area-mini { display: flex; flex: 1; gap: 10px; align-items: center; }
+.input-area-mini textarea { 
+  flex: 1; height: 44px; padding: 10px; border-radius: 8px; border: 1px solid #94A3B8; resize: none; font-size: 1rem;
+}
+.input-area-mini button { 
+  height: 44px; padding: 0 25px; background: #2563EB; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; white-space: nowrap;
+}
+.input-area-mini button:hover { background: #1D4ED8; }
 
-.zoom-controls { display: flex; align-items: center; gap: 8px; }
+.zoom-controls { display: flex; align-items: center; gap: 10px; background: #F8FAFC; padding: 5px 10px; border-radius: 8px; border: 1px solid #E2E8F0; }
 
+/* MESA DE LUZ */
 .paper-preview-container {
   flex: 1;
   display: flex;
@@ -162,15 +130,18 @@
   align-items: center;
   overflow: hidden;
   background-image: radial-gradient(#94A3B8 1px, transparent 1px);
-  background-size: 20px 20px;
+  background-size: 24px 24px;
   padding: 40px;
+  position: relative;
+  z-index: 1;
 }
 
+/* FOLHA DE PAPEL */
 .paper-sheet {
   background: white;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
   display: flex; flex-direction: column;
-  transition: transform 0.2s ease;
+  transition: transform 0.1s ease-out; /* Zoom rápido */
   transform-origin: center center;
   box-sizing: border-box;
 }
@@ -189,25 +160,36 @@
 .cell-content span { font-weight: 700; line-height: 1.1; margin-top: 4px; }
 .paper-footer { text-align: center; font-size: 10px; color: #94A3B8; margin-top: auto; padding: 5px; }
 
+/* PAGINAÇÃO */
 .pagination-controls {
-  position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
-  background: white; padding: 8px 20px; border-radius: 30px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; gap: 15px; align-items: center; z-index: 50;
+  position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+  background: white; padding: 10px 25px; border-radius: 40px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2); 
+  display: flex; gap: 20px; align-items: center; 
+  z-index: 50; /* Garante clique */
+  border: 1px solid #CBD5E1;
 }
-.pagination-controls button { width: 32px; height: 32px; border-radius: 50%; border: 1px solid #E2E8F0; background: white; cursor: pointer; }
+.pagination-controls button { 
+  width: 40px; height: 40px; border-radius: 50%; border: 1px solid #CBD5E1; background: white; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center;
+}
+.pagination-controls button:hover { background: #EFF6FF; border-color: #2563EB; color: #2563EB; }
 
 .hidden-page { display: none !important; }
-.no-pages-msg { color: #94A3B8; margin-top: 20%; font-size: 1.2rem; text-align: center; }
+.no-pages-msg { color: #64748B; margin-top: 20%; font-size: 1.2rem; text-align: center; background: rgba(255,255,255,0.8); padding: 20px; border-radius: 12px; }
 
-/* MOBILE */
+/* --- MOBILE --- */
 @media (max-width: 768px) {
   .board-generator-wrapper { position: relative; }
   .config-panel {
-    position: absolute; left: 0; top: 0; bottom: 0; width: 85%;
+    position: absolute !important; left: 0; top: 0; bottom: 0; width: 90%; max-width: none;
     transform: translateX(-100%) !important;
     transition: transform 0.3s ease;
     z-index: 999;
   }
   .config-panel.open { transform: translateX(0) !important; }
-  .btn-close-sidebar { display: block; background: none; border: none; font-size: 1.5rem; }
+  .btn-close-sidebar { display: block; background: none; border: none; font-size: 2rem; padding: 0 10px; }
+  
+  .preview-toolbar { flex-direction: column; height: auto; padding: 15px; gap: 10px; align-items: stretch; }
+  .input-area-mini { flex-direction: column; }
+  .input-area-mini button { width: 100%; }
 }
