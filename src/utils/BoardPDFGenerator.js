@@ -23,7 +23,7 @@ export const generateBoardPDF = async (pages, config) => {
             const sheet = document.createElement('div');
             sheet.className = `pdf-sheet ${config.paperSize} ${config.orientation}`;
             
-            // Margens
+            // APLICA AS MARGENS
             sheet.style.paddingTop = `${config.marginTop}cm`;
             sheet.style.paddingRight = `${config.marginRight}cm`;
             sheet.style.paddingBottom = `${config.marginBottom}cm`;
@@ -60,17 +60,21 @@ export const generateBoardPDF = async (pages, config) => {
 
             container.appendChild(sheet);
 
-            // GERAÇÃO DA FOTO (CORRIGIDA)
+            // --- CORREÇÃO PRINCIPAL: PAUSA PARA RENDERIZAÇÃO ---
+            // Isso dá tempo ao navegador para desenhar bordas e imagens antes da foto
+            await new Promise(resolve => setTimeout(resolve, 250));
+
+            // FOTO
             const canvas = await html2canvas(sheet, {
                 scale: 2.5,
                 useCORS: true,
                 logging: false,
                 backgroundColor: '#ffffff',
-                // CONFIGURAÇÕES CRUCIAIS PARA EVITAR CORTE:
+                // CONFIGURAÇÕES ANTI-CORTE E ANTI-SCROLL:
                 windowWidth: 4000, 
-                width: sheet.offsetWidth, // Pega a largura exata do elemento
-                scrollX: 0, // Força posição zero horizontal
-                scrollY: 0, // Força posição zero vertical
+                width: sheet.offsetWidth, 
+                scrollX: 0, // Ignora rolagem horizontal
+                scrollY: 0, // Ignora rolagem vertical
                 x: 0,
                 y: 0,
                 onclone: (clonedDoc) => {
@@ -89,7 +93,6 @@ export const generateBoardPDF = async (pages, config) => {
             
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
             
-            // Remove a folha atual para limpar o DOM para a próxima
             container.removeChild(sheet);
         }
 
@@ -113,7 +116,6 @@ function generateGridHTML(cards, config) {
         const card = cards[k];
         
         if (card) {
-            // Célula PREENCHIDA
             const cellStyle = `
                 background-color: ${config.cellBgColor};
                 border: ${config.borderWidth}px ${config.borderStyle} ${config.cellBorderColor};
@@ -130,7 +132,6 @@ function generateGridHTML(cards, config) {
             </div>
             `;
         } else {
-            // Célula VAZIA (Invisível)
             html += `
             <div class="pdf-cell" style="background: transparent; border: none; opacity: 0;"></div>
             `;
