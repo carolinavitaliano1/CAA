@@ -1,94 +1,199 @@
 /* src/components/BoardGenerator.css */
 
+/* --- LAYOUT GERAL (PC) --- */
 .board-generator-wrapper {
   display: flex;
   width: 100%;
-  height: 100%; /* Ocupa o espaço abaixo do cabeçalho */
+  height: 100%;
+  background-color: #F8FAFC;
+  overflow: hidden;
+  position: relative;
+  /* Garante que fique um ao lado do outro */
+  flex-direction: row; 
+}
+
+/* --- PAINEL DE CONFIGURAÇÃO (FIXO NA ESQUERDA NO PC) --- */
+.config-panel {
+  width: 320px; /* Largura fixa */
+  background: white;
+  border-right: 1px solid #E2E8F0;
+  display: flex;
+  flex-direction: column;
+  z-index: 20;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+  flex-shrink: 0;
+  height: 100%;
+  
+  /* NO PC: SEMPRE VISÍVEL */
+  position: relative !important;
+  transform: none !important;
+  opacity: 1 !important;
+  left: auto !important;
+}
+
+/* Esconde o botão de fechar (X) no PC, pois o painel é fixo */
+.btn-close-sidebar {
+  display: none; 
+}
+
+/* CABEÇALHO DO PAINEL */
+.config-header {
+  padding: 20px;
+  border-bottom: 1px solid #E2E8F0;
+  background: #fff;
+}
+.config-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #1E293B;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* CORPO DO PAINEL (ROLAGEM) */
+.config-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1; /* Ocupa o espaço restante */
+}
+
+/* RODAPÉ DO PAINEL (BOTÕES) */
+.config-footer {
+  padding: 20px;
+  border-top: 1px solid #E2E8F0;
+  background: #F8FAFC;
+}
+
+/* INPUTS E GRUPOS */
+.config-group { margin-bottom: 20px; }
+.config-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+  color: #64748B;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+.config-group input, 
+.config-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  box-sizing: border-box; /* Importante para não quebrar */
+}
+.margins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* --- ÁREA DA PRANCHA (DIREITA) --- */
+.preview-panel {
+  flex: 1; /* Ocupa todo o resto da tela */
+  display: flex;
+  flex-direction: column;
+  background-color: #E2E8F0;
   position: relative;
   overflow: hidden;
 }
 
-/* --- MENU DESLIZANTE (SIDEBAR) --- */
-.config-panel {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 320px;
+/* BARRA DE FERRAMENTAS SUPERIOR */
+.preview-toolbar {
+  height: 70px;
   background: white;
-  z-index: 100; /* Fica por cima da prévia */
-  box-shadow: 4px 0 20px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-  
-  /* A Mágica do Slide */
-  transform: translateX(-100%); /* Esconde para a esquerda */
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.config-panel.open {
-  transform: translateX(0); /* Mostra */
-}
-
-.config-header {
-  padding: 15px 20px;
   border-bottom: 1px solid #E2E8F0;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-}
-.config-header h3 { margin: 0; font-size: 1.1rem; color: #1E293B; }
-.btn-close-sidebar { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #94A3B8; }
-
-.config-body { flex: 1; overflow-y: auto; padding: 20px; }
-
-.config-footer { padding: 20px; border-top: 1px solid #E2E8F0; background: #F8FAFC; }
-.btn-print { width: 100%; padding: 12px; background: #2563EB; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-
-/* Config Inputs */
-.config-group { margin-bottom: 20px; }
-.config-group label { display: block; margin-bottom: 8px; font-weight: 700; color: #64748B; font-size: 0.8rem; text-transform: uppercase; }
-.config-group input, .config-group select { width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 8px; }
-
-/* --- ÁREA DE PRÉVIA (SEMPRE VISÍVEL) --- */
-.preview-panel {
-  flex: 1;
-  width: 100%; /* Ocupa tudo */
-  display: flex;
-  flex-direction: column;
-  background: #E2E8F0;
-  transition: margin-left 0.3s; /* Opcional: se quiser empurrar o conteúdo */
+  padding: 0 24px;
+  gap: 15px;
+  justify-content: space-between;
+  flex-shrink: 0;
 }
 
-/* Se quiser que a prévia seja empurrada quando o menu abrir (Estilo Desktop): */
-@media (min-width: 1024px) {
-  .board-generator-wrapper { position: relative; }
-  .config-panel { position: relative; transform: none; width: 0; overflow: hidden; opacity: 0; }
-  .config-panel.open { width: 320px; opacity: 1; }
-  /* Remova o position: absolute da .config-panel acima se usar este bloco */
+.input-area-mini { display: flex; flex: 1; gap: 10px; max-width: 600px; align-items: center; }
+.input-area-mini textarea { 
+  flex: 1; height: 40px; padding: 10px; border-radius: 20px; border: 1px solid #CBD5E1; resize: none; 
 }
-/* MANTENHA O MODO ABSOLUTO SE QUISER QUE FIQUE POR CIMA COMO UM APP */
+.input-area-mini button {
+  background: #2563EB; color: white; border: none; padding: 0 20px; height: 40px; border-radius: 20px; font-weight: 600; cursor: pointer; white-space: nowrap;
+}
 
-/* Toolbar e Papel */
-.preview-toolbar { background: white; padding: 10px 20px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid #E2E8F0; }
-.input-area-mini { flex: 1; display: flex; gap: 10px; }
-.input-area-mini textarea { flex: 1; height: 38px; padding: 8px; border-radius: 20px; border: 1px solid #CBD5E1; resize: none; }
-.input-area-mini button { background: #2563EB; color: white; border: none; padding: 0 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+.zoom-controls { display: flex; align-items: center; gap: 10px; }
 
+/* MESA DE VISUALIZAÇÃO */
 .paper-preview-container {
-  flex: 1; overflow: hidden; display: flex; justify-content: center; align-items: center;
-  background-image: radial-gradient(#94A3B8 1px, transparent 1px); background-size: 24px 24px;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background-image: radial-gradient(#94A3B8 1px, transparent 1px);
+  background-size: 24px 24px;
+  padding: 40px;
+  position: relative;
 }
-.paper-sheet { background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; flex-direction: column; }
-/* (Mantenha seus estilos de paper-sheet A4, paper-grid, paper-cell aqui) */
-.paper-sheet.A4.landscape { width: 297mm; height: 210mm; } /* Exemplo */
-.paper-grid { display: grid; flex: 1; width: 100%; height: 100%; }
-.paper-cell { border: 1px solid #000; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-.cell-content img { max-width: 90%; max-height: 70%; object-fit: contain; }
 
-/* Paginação */
-.pagination-controls {
-  position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
-  background: white; padding: 8px 20px; border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; gap: 15px; align-items: center;
+/* PAPEL */
+.paper-sheet {
+  background: white;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+  transition: transform 0.2s ease;
+  transform-origin: center center;
+  box-sizing: border-box;
+  display: flex; flex-direction: column;
 }
-.pagination-controls button { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #E2E8F0; background: white; cursor: pointer; }
+
+/* Tamanhos */
+.paper-sheet.A4.portrait { width: 210mm; height: 297mm; }
+.paper-sheet.A4.landscape { width: 297mm; height: 210mm; }
+.paper-sheet.A3.portrait { width: 297mm; height: 420mm; }
+.paper-sheet.A3.landscape { width: 420mm; height: 297mm; }
+
+/* Interior do Papel */
+.paper-content-wrapper { width: 100%; height: 100%; display: flex; flex-direction: column; }
+.paper-header { text-align: center; font-weight: 800; font-size: 24pt; padding: 15px; border-bottom: 2px solid #000; }
+.paper-grid { display: grid; flex: 1; width: 100%; height: 100%; }
+.paper-cell { border: 1px solid #E2E8F0; display: flex; justify-content: center; align-items: center; overflow: hidden; background: #fff; }
+.cell-content { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4px; }
+.cell-content img { max-width: 90%; max-height: 70%; object-fit: contain; flex: 1; }
+.cell-content span { font-weight: 700; line-height: 1.1; margin-top: 4px; }
+
+/* PAGINAÇÃO (Setas) */
+.pagination-controls {
+  position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+  background: white; padding: 8px 20px; border-radius: 50px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15); border: 1px solid #E2E8F0;
+  display: flex; align-items: center; gap: 15px; z-index: 100;
+}
+.pagination-controls button { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #E2E8F0; background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.pagination-controls button:hover:not(:disabled) { background: #2563EB; color: white; }
+
+/* Botões de Ação (Baixar) */
+.action-buttons-row { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
+.btn-print { width: 100%; padding: 12px; background: #10B981; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+.hidden-page { display: none !important; }
+.no-pages-msg { color: #94A3B8; margin-top: 20%; font-size: 1.2rem; text-align: center; }
+
+/* --- REGRAS PARA MOBILE (SÓ AQUI MUDA) --- */
+@media (max-width: 768px) {
+  /* No celular, empilha um em cima do outro OU usa o slide */
+  .board-generator-wrapper {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .config-panel {
+    position: absolute; /* Volta a ser gaveta no celular */
+    left: 0; top: 0; bottom: 0;
+    width: 85%; /* Não ocupa tudo para dar pra clicar fora */
+    transform: translateX(-100%) !important; /* Escondido por padrão */
+    transition: transform 0.3s ease;
+    z-index: 999;
+  }
+  
+  /* Quando a classe 'open' for adicionada pelo React (no celular) */
+  .config-panel.open {
+    transform: translateX(0) !important;
+  }
+
+  .btn-close-sidebar { display: block; background: none; border: none; font-size: 1.5rem; }
+}
