@@ -1,29 +1,29 @@
 /* src/utils/BoardPDF.css */
 
-/* CONTAINER: Fica na frente de tudo, mas com fundo BRANCO SÓLIDO */
+/* CONTAINER: Fica na frente de tudo, com fundo BRANCO SÓLIDO */
 #pdf-generator-container {
     position: fixed;
     top: 0;
     left: 0;
-    /* Tamanho gigante para não cortar nada */
+    /* Tamanho gigante para cobrir qualquer monitor */
     width: 200vw; 
     height: 200vh;
     z-index: 999999; /* Z-index altíssimo para cobrir o site */
     background-color: #ffffff !important; /* CRUCIAL: Bloqueia a visão do menu atrás */
     visibility: visible;
-    overflow: auto;
+    overflow: hidden; /* Remove barras de rolagem durante a foto */
 }
 
 /* A FOLHA DE PAPEL */
 .pdf-sheet {
     background-color: #ffffff !important;
     box-sizing: border-box;
+    /* Divide a folha: Conteúdo (esticável) e Rodapé (fixo) */
     display: flex;
     flex-direction: column;
     overflow: hidden;
     position: relative;
     margin: 0;
-    /* Força a impressão das cores exatas */
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
 }
@@ -34,7 +34,7 @@
 .pdf-sheet.A3.portrait { width: 297mm; height: 420mm; }
 .pdf-sheet.A3.landscape { width: 420mm; height: 297mm; }
 
-/* ÁREA DO CONTEÚDO (Onde ficam os pictogramas) */
+/* ÁREA DO CONTEÚDO */
 .pdf-content {
     flex: 1; /* Ocupa todo o espaço disponível */
     width: 100%;
@@ -49,7 +49,6 @@
     font-size: 24pt;
     padding: 10px;
     flex-shrink: 0;
-    border-bottom-style: solid; /* Garante que a borda apareça */
 }
 
 .pdf-grid {
@@ -75,10 +74,10 @@
     padding: 4px;
     box-sizing: border-box;
     
-    /* MUDANÇA: Usando Flexbox em vez de Grid para a imagem encolher corretamente */
+    /* FLEXBOX: Garante que a imagem obedeça o espaço */
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Espalha: Texto Topo - Imagem - Texto Baixo */
+    justify-content: space-between; /* Texto em cima, Imagem no meio, Texto embaixo */
     align-items: center;
 }
 
@@ -88,7 +87,7 @@
     margin: 2px 0;
     font-weight: bold;
     z-index: 2;
-    flex-shrink: 0; /* O texto nunca encolhe */
+    flex-shrink: 0; /* O texto nunca encolhe, tem prioridade */
 }
 
 .pdf-cell-inner img {
@@ -108,7 +107,7 @@
     padding: 5px;
     font-family: Arial, sans-serif;
     background: white;
-    flex-shrink: 0; /* Garante que o rodapé nunca suma */
+    flex-shrink: 0;
     width: 100%;
     margin-top: auto;
 }
