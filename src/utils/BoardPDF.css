@@ -1,26 +1,29 @@
 /* src/utils/BoardPDF.css */
 
-/* CONTAINER FORA DA TELA - Com fundo branco e z-index alto para não pegar o site */
+/* CONTAINER: Fica na frente de tudo, mas com fundo BRANCO SÓLIDO */
 #pdf-generator-container {
     position: fixed;
-    left: -5000px; /* Esconde na lateral esquerda */
     top: 0;
-    width: 5000px;
-    height: 5000px;
-    z-index: 99999; /* Garante que fique "acima" do site durante a foto */
-    background: white; /* Garante fundo branco sólido */
+    left: 0;
+    /* Tamanho gigante para não cortar nada */
+    width: 200vw; 
+    height: 200vh;
+    z-index: 999999; /* Z-index altíssimo para cobrir o site */
+    background-color: #ffffff !important; /* CRUCIAL: Bloqueia a visão do menu atrás */
     visibility: visible;
+    overflow: auto;
 }
 
 /* A FOLHA DE PAPEL */
 .pdf-sheet {
-    background: white;
+    background-color: #ffffff !important;
     box-sizing: border-box;
-    /* Divide em 2 linhas: Conteúdo (esticável) e Rodapé (fixo) */
-    display: grid; 
-    grid-template-rows: 1fr max-content; 
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
     position: relative;
+    margin: 0;
+    /* Força a impressão das cores exatas */
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
 }
@@ -31,10 +34,10 @@
 .pdf-sheet.A3.portrait { width: 297mm; height: 420mm; }
 .pdf-sheet.A3.landscape { width: 420mm; height: 297mm; }
 
-/* ÁREA DE CONTEÚDO */
+/* ÁREA DO CONTEÚDO (Onde ficam os pictogramas) */
 .pdf-content {
+    flex: 1; /* Ocupa todo o espaço disponível */
     width: 100%;
-    height: 100%;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -46,13 +49,14 @@
     font-size: 24pt;
     padding: 10px;
     flex-shrink: 0;
+    border-bottom-style: solid; /* Garante que a borda apareça */
 }
 
 .pdf-grid {
     display: grid;
     width: 100%;
     height: 100%;
-    /* Colunas e Linhas definidas no JS */
+    /* As colunas/linhas são definidas no JS */
 }
 
 /* CÉLULA */
@@ -61,21 +65,21 @@
     overflow: hidden;
     box-sizing: border-box;
     display: flex;
+    background-clip: padding-box;
 }
 
-/* CONTEÚDO DA CÉLULA - A CORREÇÃO PRINCIPAL */
+/* CONTEÚDO DA CÉLULA (SOLUÇÃO FLEXBOX) */
 .pdf-cell-inner {
     width: 100%;
     height: 100%;
     padding: 4px;
     box-sizing: border-box;
     
-    /* Grid de 3 andares: Texto / Imagem / Texto */
-    /* Imagem (1fr) só pega o espaço que sobrar. Isso evita estouro */
-    display: grid;
-    grid-template-rows: auto 1fr auto; 
+    /* MUDANÇA: Usando Flexbox em vez de Grid para a imagem encolher corretamente */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Espalha: Texto Topo - Imagem - Texto Baixo */
     align-items: center;
-    justify-items: center;
 }
 
 .pdf-cell-inner span {
@@ -84,12 +88,15 @@
     margin: 2px 0;
     font-weight: bold;
     z-index: 2;
+    flex-shrink: 0; /* O texto nunca encolhe */
 }
 
 .pdf-cell-inner img {
+    /* A Mágica: min-height: 0 permite que a imagem encolha se faltar espaço */
+    flex: 1; 
+    min-height: 0; 
     width: 100%;
-    height: 100%;
-    object-fit: contain; /* Garante que a imagem nunca corte */
+    object-fit: contain;
     display: block;
 }
 
@@ -98,12 +105,12 @@
     text-align: center;
     font-size: 9pt;
     color: #555;
-    padding-top: 5px;
-    padding-bottom: 2px;
+    padding: 5px;
     font-family: Arial, sans-serif;
     background: white;
-    z-index: 20;
+    flex-shrink: 0; /* Garante que o rodapé nunca suma */
     width: 100%;
+    margin-top: auto;
 }
 
 .pdf-footer span {
