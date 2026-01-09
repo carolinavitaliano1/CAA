@@ -1,10 +1,8 @@
-// src/utils/BoardPDFGenerator.js
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import './BoardPDF.css';
 
 export const generateBoardPDF = async (pages, config) => {
-    // 1. Cria container temporário
     const container = document.createElement('div');
     container.id = 'pdf-generator-container';
     document.body.appendChild(container);
@@ -18,17 +16,15 @@ export const generateBoardPDF = async (pages, config) => {
         for (let i = 0; i < pages.length; i++) {
             const pageCards = pages[i];
             
-            // Cria a folha
             const sheet = document.createElement('div');
             sheet.className = `pdf-sheet ${config.paperSize} ${config.orientation}`;
             
-            // APLICA AS MARGENS CONFIGURADAS PELO USUÁRIO
+            // Aplica margens exatas
             sheet.style.paddingTop = `${config.marginTop}cm`;
             sheet.style.paddingRight = `${config.marginRight}cm`;
             sheet.style.paddingBottom = `${config.marginBottom}cm`;
             sheet.style.paddingLeft = `${config.marginLeft}cm`;
 
-            // HTML Interno
             sheet.innerHTML = `
                 <div class="pdf-content" style="
                     border: ${config.borderWidth}px ${config.borderStyle} ${config.boardBorderColor};
@@ -59,22 +55,25 @@ export const generateBoardPDF = async (pages, config) => {
 
             container.appendChild(sheet);
 
-           // Dentro do loop de páginas no seu BoardPDFGenerator.js
+            // GERAÇÃO DA IMAGEM
+            const canvas = await html2canvas(sheet, {
+                scale: 3, // Qualidade Alta
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff',
+                // TRUQUE IMPORTANTE: Garante que o elemento invisível seja renderizado
+                onclone: (clonedDoc) => {
+                    const el = clonedDoc.getElementById('pdf-generator-container');
+                    if (el) {
+                        el.style.visibility = 'visible';
+                        el.style.position = 'static';
+                        el.style.top = 'auto';
+                        el.style.left = 'auto';
+                    }
+                }
+            });
 
-const canvas = await html2canvas(sheet, {
-    scale: 3, // Aumentamos para 3 para ficar super nítido
-    useCORS: true, 
-    allowTaint: true,
-    backgroundColor: null, // Deixa o CSS da folha mandar no fundo
-    logging: false,
-    onclone: (clonedDoc) => {
-        // Força as cores a aparecerem no clone que será fotografado
-        const el = clonedDoc.getElementById('pdf-generator-container');
-        if (el) el.style.visibility = 'visible';
-    }
-});
-
-            const imgData = canvas.toDataURL('image/jpeg', 1.0); // JPEG é mais rápido e compatível
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
             if (i > 0) pdf.addPage();
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
@@ -100,8 +99,6 @@ function generateGridHTML(cards, config) {
 
     for (let k = 0; k < totalSlots; k++) {
         const card = cards[k];
-        
-        // Aplica a cor de fundo DIRETAMENTE no estilo inline (html2canvas prefere assim)
         const cellStyle = `
             background-color: ${config.cellBgColor};
             border: ${config.borderWidth}px ${config.borderStyle} ${config.cellBorderColor};
@@ -113,17 +110,14 @@ function generateGridHTML(cards, config) {
             <div class="pdf-cell" style="${cellStyle}">
                 <div class="pdf-cell-inner ${config.textPosition}">
                     ${config.textPosition === 'top' ? `<span style="font-family:${config.fontFamily}; font-size:${config.fontSize}pt; text-transform:${config.textCase}">${card.text}</span>` : ''}
-                    
                     <img src="${card.image}" crossorigin="anonymous" />
-                    
                     ${config.textPosition === 'bottom' ? `<span style="font-family:${config.fontFamily}; font-size:${config.fontSize}pt; text-transform:${config.textCase}">${card.text}</span>` : ''}
                 </div>
             </div>
             `;
         } else {
             html += `
-            <div class="pdf-cell" style="${cellStyle}">
-                </div>
+            <div class="pdf-cell" style="${cellStyle}"></div>
             `;
         }
     }
