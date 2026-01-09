@@ -60,9 +60,8 @@ export const generateBoardPDF = async (pages, config) => {
 
             container.appendChild(sheet);
 
-            // --- CORREÇÃO PRINCIPAL: PAUSA PARA RENDERIZAÇÃO ---
-            // Isso dá tempo ao navegador para desenhar bordas e imagens antes da foto
-            await new Promise(resolve => setTimeout(resolve, 250));
+            // PAUSA OBRIGATÓRIA: Espera o navegador calcular o layout Flexbox
+            await new Promise(resolve => setTimeout(resolve, 300));
 
             // FOTO
             const canvas = await html2canvas(sheet, {
@@ -70,11 +69,11 @@ export const generateBoardPDF = async (pages, config) => {
                 useCORS: true,
                 logging: false,
                 backgroundColor: '#ffffff',
-                // CONFIGURAÇÕES ANTI-CORTE E ANTI-SCROLL:
-                windowWidth: 4000, 
+                // PREVINE CORTES
+                windowWidth: 5000, 
                 width: sheet.offsetWidth, 
-                scrollX: 0, // Ignora rolagem horizontal
-                scrollY: 0, // Ignora rolagem vertical
+                scrollX: 0,
+                scrollY: 0,
                 x: 0,
                 y: 0,
                 onclone: (clonedDoc) => {
