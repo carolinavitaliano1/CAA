@@ -3,7 +3,7 @@ import jsPDF from 'jspdf';
 import './BoardPDF.css';
 
 export const generateBoardPDF = async (pages, config) => {
-    // 1. Cria container temporário fora da tela
+    // 1. Cria container temporário
     const container = document.createElement('div');
     container.id = 'pdf-generator-container';
     document.body.appendChild(container);
@@ -23,13 +23,13 @@ export const generateBoardPDF = async (pages, config) => {
             const sheet = document.createElement('div');
             sheet.className = `pdf-sheet ${config.paperSize} ${config.orientation}`;
             
-            // APLICA AS MARGENS DO USUÁRIO
+            // Margens
             sheet.style.paddingTop = `${config.marginTop}cm`;
             sheet.style.paddingRight = `${config.marginRight}cm`;
             sheet.style.paddingBottom = `${config.marginBottom}cm`;
             sheet.style.paddingLeft = `${config.marginLeft}cm`;
 
-            // HTML Interno
+            // HTML
             sheet.innerHTML = `
                 <div class="pdf-content" style="
                     border: ${config.borderWidth}px ${config.borderStyle} ${config.boardBorderColor};
@@ -60,25 +60,25 @@ export const generateBoardPDF = async (pages, config) => {
 
             container.appendChild(sheet);
 
-            // GERAÇÃO DA FOTO
+            // FOTO
             const canvas = await html2canvas(sheet, {
-                scale: 3, // Alta qualidade
+                scale: 2.5, // Equilíbrio entre qualidade e velocidade
                 useCORS: true,
                 logging: false,
                 backgroundColor: '#ffffff',
-                windowWidth: 3000, // Previne corte lateral em monitores pequenos
+                windowWidth: 3000, // IMPORTANTE: Simula tela larga para não cortar
                 onclone: (clonedDoc) => {
                     const el = clonedDoc.getElementById('pdf-generator-container');
-                    if (el) el.style.visibility = 'visible';
+                    if (el) {
+                        el.style.visibility = 'visible'; // Torna visível apenas na "foto"
+                    }
                 }
             });
 
             const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
-            // CORREÇÃO CRUCIAL AQUI:
-            // Garante que as novas páginas tenham a mesma orientação e tamanho da primeira
             if (i > 0) {
-                pdf.addPage(format, orientation);
+                pdf.addPage(format, orientation); // Garante orientação correta nas novas páginas
             }
             
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
@@ -106,7 +106,7 @@ function generateGridHTML(cards, config) {
         const card = cards[k];
         
         if (card) {
-            // COM PICTOGRAMA: Usa cor e borda configuradas
+            // Célula PREENCHIDA
             const cellStyle = `
                 background-color: ${config.cellBgColor};
                 border: ${config.borderWidth}px ${config.borderStyle} ${config.cellBorderColor};
@@ -123,9 +123,9 @@ function generateGridHTML(cards, config) {
             </div>
             `;
         } else {
-            // SEM PICTOGRAMA (VAZIO): Fundo transparente e sem borda
+            // Célula VAZIA (Invisível)
             html += `
-            <div class="pdf-cell" style="background: transparent; border: none;"></div>
+            <div class="pdf-cell" style="background: transparent; border: none; opacity: 0;"></div>
             `;
         }
     }
