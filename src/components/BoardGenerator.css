@@ -13,11 +13,8 @@
 
 /* --- PAINEL ESQUERDO (CONFIGURAÇÃO) --- */
 .config-panel {
-  /* MUDANÇA AQUI: Tamanho fixo e menor */
   width: 340px; 
-  flex-shrink: 0; /* Não encolhe, mantém 340px fixo */
-  /* Removemos o flex: 1 e max-width: 50% que deixava largo */
-  
+  flex-shrink: 0; 
   background: #F1F5F9;
   border-right: 1px solid #E2E8F0;
   display: flex;
@@ -25,8 +22,6 @@
   z-index: 20;
   box-shadow: 2px 0 10px rgba(0,0,0,0.05);
   height: 100%;
-  
-  /* Mantém fixo no PC */
   position: relative !important;
   left: auto !important;
   transform: none !important;
@@ -79,17 +74,31 @@
 .config-card-content input:focus, .config-card-content select:focus { border-color: #2563EB; outline: none; }
 .margins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-/* RODAPÉ (SALVAR) */
+/* RODAPÉ COM 2 BOTÕES */
 .config-footer {
   padding: 20px;
   background: white;
   border-top: 1px solid #E2E8F0;
   z-index: 30;
+  display: flex;
+  gap: 10px; /* Espaço entre os botões */
 }
+
 .btn-print {
-  width: 100%; padding: 14px; background: #10B981; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+  flex: 1; /* Ocupa metade */
+  padding: 14px;
+  background: #10B981; 
+  color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;
 }
 .btn-print:hover { background: #059669; }
+
+.btn-save-grid {
+  flex: 1; /* Ocupa metade */
+  padding: 14px;
+  background: #2563EB; /* Azul */
+  color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;
+}
+.btn-save-grid:hover { background: #1D4ED8; }
 
 
 /* --- PAINEL DIREITO (PRANCHA) --- */
@@ -121,14 +130,15 @@
 .input-area-mini {
   display: flex;
   flex: 1;
-  height: 48px; 
+  /* MUDANÇA: Altura menor para não ficar rente (42px) */
+  height: 42px; 
   align-items: stretch;
 }
 
 .input-area-mini textarea { 
   flex: 1; 
   height: auto;
-  padding: 12px 15px;
+  padding: 10px 15px; /* Padding menor */
   border-radius: 8px 0 0 8px;
   border: 1px solid #CBD5E1;
   border-right: none; 
@@ -165,7 +175,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  height: 48px;
+  height: 42px; /* Mesma altura nova do input */
   padding: 0 10px;
   color: #64748B;
   font-weight: 600;
