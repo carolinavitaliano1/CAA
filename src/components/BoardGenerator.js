@@ -26,11 +26,11 @@ const BoardGenerator = ({ onGenerate }) => {
     rows: 4, cols: 5, gap: 2,
     header: true, headerText: 'Minha Prancha', headerBgColor: '#FFFFFF',
     cellBgColor: '#FFFFFF', cellBorderColor: '#000000', borderWidth: 1, borderStyle: 'solid', 
-    boardBorderColor: '#000000', // GARANTIDO: Cor da Borda da Prancha
+    boardBorderColor: '#000000', 
     paperSize: 'A4', orientation: 'landscape',
     marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1,
     textPosition: 'bottom', fontFamily: 'Arial', fontSize: 12, 
-    textCase: 'uppercase', // GARANTIDO: Maiúscula/Minúscula
+    textCase: 'uppercase',
   });
 
   const handlePreview = async (e) => {
