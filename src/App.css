@@ -1,85 +1,39 @@
 /* src/App.css */
 
-/* CONFIGURAÇÕES GERAIS */
-:root { 
-  --bg-color: #f3f4f6; 
-  --header-height: 50px;
+:root {
+  --primary-color: #2563EB; /* Azul Moderno */
+  --secondary-color: #3B82F6;
+  --bg-color: #F8FAFC; /* Cinza Gelo (Muito Clean) */
+  --surface-color: #FFFFFF;
+  --text-primary: #1E293B;
+  --text-secondary: #64748B;
+  --border-color: #E2E8F0;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --radius: 12px;
 }
 
-html, body, #root { 
-  margin: 0; 
-  padding: 0; 
-  width: 100%; 
-  /* REMOVIDO: height: 100% e overflow: hidden */
-  /* Isso permite que a página cresça e você role até o fim */
-  min-height: 100vh; 
-  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* Trava a janela geral para parecer um App Nativo */
+  font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
   background-color: var(--bg-color);
-  box-sizing: border-box;
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
 }
 
-.App { 
-  width: 100%; 
-  min-height: 100vh; 
-  display: flex; 
-  flex-direction: column; 
+.App {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-.container { 
-  max-width: 100%; 
-  margin: 0 auto; 
-  padding: 10px; 
-  display: flex; 
-  flex-direction: column; 
-  gap: 10px; 
-  /* Mudado de height para min-height para não cortar conteúdo */
-  min-height: 100vh; 
-  box-sizing: border-box;
-}
-
-/* ... (MANTENHA O RESTO DO SEU CSS DA BARRA E FRASE AQUI) ... */
-.admin-bar { display: flex; justify-content: space-between; align-items: center; min-height: 40px; }
-.brand { font-weight: 800; font-size: 1.1rem; color: #1e3a8a; display: flex; align-items: center; gap: 8px; }
-.btn-menu { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #1e3a8a; padding: 0 10px 0 0; }
-.btn-toggle { background: white; border: 1px solid #e5e7eb; padding: 6px 12px; border-radius: 20px; font-weight: 600; cursor: pointer; font-size: 0.8rem; }
-.btn-toggle.active { background: #FEF3C7; color: #D97706; border-color: #D97706; }
-
-.sentence-bar { background: white; padding: 8px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; min-height: 70px; flex-shrink: 0; }
-.sentence-display { flex-grow: 1; display: flex; gap: 5px; overflow-x: auto; align-items: center; padding-right: 5px; }
-.sentence-item { display: flex; flex-direction: column; align-items: center; min-width: 45px; }
-.mini-img { width: 30px; height: 30px; object-fit: contain; }
-.sentence-item span { font-size: 0.7rem; font-weight: bold; border-bottom: 2px solid; width: 100%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.controls { display: flex; gap: 5px; }
-.btn-clear, .btn-play { border: none; width: 40px; height: 40px; border-radius: 10px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
-.btn-play { background: #2563EB; color: white; }
-.btn-clear { background: #fee2e2; color: #dc2626; }
-
-/* GRID PRINCIPAL - AJUSTADO PARA ROLAGEM */
-.grid-area { 
-  display: grid; 
-  grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); 
-  gap: 6px; 
-  padding-bottom: 80px; /* Espaço extra no fim para não cortar */
-  /* REMOVIDO: overflow-y: auto e flex: 1 */
-  /* Agora a grade usa a rolagem da janela principal */
-  align-content: start; 
-}
-
-/* ... (MANTENHA O RESTO DO SEU CSS DE CARTÕES E MODAL AQUI) ... */
-.card { aspect-ratio: 1; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 3px rgba(0,0,0,0.1); position: relative; border: 2px solid transparent; padding: 4px; background: white; transition: transform 0.1s; user-select: none; }
-.card:active { transform: scale(0.95); }
-.card.is-folder { background: white !important; border-width: 3px; }
-.folder-tag { position: absolute; top: 0; left: 0; width: 100%; padding: 2px; font-size: 0.5rem; color: white; text-transform: uppercase; text-align: center; border-radius: 8px 8px 0 0; font-weight: bold; }
-.card-img { width: 70%; height: 70%; object-fit: contain; margin-bottom: 2px; }
-.label { font-weight: 700; text-align: center; font-size: 0.75rem; color: #333; line-height: 1.1; word-wrap: break-word; max-width: 100%; }
-.add-card { background: #E5E7EB !important; border: 2px dashed #9CA3AF; color: #6B7280; justify-content: center; }
-.add-card .icon { font-size: 1.5rem; }
-
-@media (min-width: 768px) {
-  .grid-area { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 15px; }
-  .label { font-size: 1rem; }
-  .container { padding: 20px; max-width: 1000px; }
-  .add-card .icon { font-size: 2.5rem; }
-}
-
-/* (Pode colar o resto do seu CSS de Modal e Sidebar aqui se quiser, ou deixar como estava) */
+/* Scrollbar Bonita (Estilo Mac/Moderno) */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
