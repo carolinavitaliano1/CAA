@@ -14,7 +14,6 @@ const CAA_COLORS = [
   { color: '#000000', label: 'Preto (Borda)' }
 ];
 
-// ADICIONEI 'onGenerate' NAS PROPS PARA MANDAR OS CARTÕES PRO APP
 const BoardGenerator = ({ isSidebarOpen, toggleSidebar, onGenerate }) => {
   const [text, setText] = useState("");
   const [pages, setPages] = useState([]);
@@ -69,13 +68,11 @@ const BoardGenerator = ({ isSidebarOpen, toggleSidebar, onGenerate }) => {
     setIsGenerating(false);
   };
 
-  // FUNÇÃO PARA SALVAR NO GRID DO APP
   const handleFinalize = () => {
     if (pages.length === 0) return alert("Gere uma prancha primeiro!");
-    // Pega todos os cartões de todas as páginas em uma lista única
     const allCardsFlat = pages.flat();
     if (onGenerate) {
-      onGenerate(allCardsFlat); // Manda para o App.js
+      onGenerate(allCardsFlat);
     } else {
       alert("Erro de conexão com o App Principal");
     }
@@ -105,18 +102,26 @@ const BoardGenerator = ({ isSidebarOpen, toggleSidebar, onGenerate }) => {
                 <span>X</span>
                 <input type="number" value={config.cols} onChange={e => handleChange('cols', parseInt(e.target.value))} placeholder="Cols" />
               </div>
+              
+              {/* --- AVISO SOLICITADO --- */}
+              <div className="config-warning">
+                ⚠️ Mudou a estrutura? Clique em <strong>GERAR</strong> novamente para atualizar.
+              </div>
+
             </div>
           </div>
 
           <div className="config-card">
             <div className="config-card-header">Cabeçalho</div>
             <div className="config-card-content">
-              <label style={{display:'flex', alignItems:'center', justifyContent: 'space-between', cursor:'pointer'}}>
-                Mostrar Título
+              {/* --- ALINHAMENTO LATERAL SOLICITADO --- */}
+              <label className="checkbox-row-label">
+                <span>Mostrar Título</span>
                 <input type="checkbox" checked={config.header} onChange={e => handleChange('header', e.target.checked)} />
               </label>
+              
               {config.header && (
-                <input type="text" value={config.headerText} onChange={e => handleChange('headerText', e.target.value)} placeholder="Título..." style={{marginTop: '10px'}} />
+                <input type="text" value={config.headerText} onChange={e => handleChange('headerText', e.target.value)} placeholder="Título..." style={{marginTop: '5px'}} />
               )}
             </div>
           </div>
@@ -198,7 +203,6 @@ const BoardGenerator = ({ isSidebarOpen, toggleSidebar, onGenerate }) => {
           </div>
         </div>
 
-        {/* RODAPÉ COM DOIS BOTÕES */}
         <div className="config-footer">
           <button className="btn-save-grid" onClick={handleFinalize}>
             📱 Salvar no App
