@@ -14,7 +14,8 @@ const CAA_COLORS = [
   { color: '#000000', label: 'Preto (Borda)' }
 ];
 
-const BoardGenerator = ({ isSidebarOpen, toggleSidebar }) => {
+// ADICIONEI 'onGenerate' NAS PROPS PARA MANDAR OS CARTÕES PRO APP
+const BoardGenerator = ({ isSidebarOpen, toggleSidebar, onGenerate }) => {
   const [text, setText] = useState("");
   const [pages, setPages] = useState([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -52,9 +53,9 @@ const BoardGenerator = ({ isSidebarOpen, toggleSidebar }) => {
         const img = (json && json.length > 0) 
           ? `https://static.arasaac.org/pictograms/${json[0]._id}/${json[0]._id}_500.png` 
           : 'https://static.arasaac.org/pictograms/2475/2475_500.png';
-        return { id: Math.random(), text: word, image: img };
+        return { id: Math.random(), text: word, image: img, bgColor: config.cellBgColor, borderColor: config.cellBorderColor };
       } catch (err) {
-        return { id: Math.random(), text: word, image: 'https://static.arasaac.org/pictograms/2475/2475_500.png' };
+        return { id: Math.random(), text: word, image: 'https://static.arasaac.org/pictograms/2475/2475_500.png', bgColor: config.cellBgColor, borderColor: config.cellBorderColor };
       }
     });
 
@@ -66,6 +67,18 @@ const BoardGenerator = ({ isSidebarOpen, toggleSidebar }) => {
     if (newPages.length === 0) newPages.push([]);
     setPages(newPages);
     setIsGenerating(false);
+  };
+
+  // FUNÇÃO PARA SALVAR NO GRID DO APP
+  const handleFinalize = () => {
+    if (pages.length === 0) return alert("Gere uma prancha primeiro!");
+    // Pega todos os cartões de todas as páginas em uma lista única
+    const allCardsFlat = pages.flat();
+    if (onGenerate) {
+      onGenerate(allCardsFlat); // Manda para o App.js
+    } else {
+      alert("Erro de conexão com o App Principal");
+    }
   };
 
   const handleDownloadClick = async () => {
@@ -84,7 +97,6 @@ const BoardGenerator = ({ isSidebarOpen, toggleSidebar }) => {
         </div>
 
         <div className="config-body">
-          
           <div className="config-card">
             <div className="config-card-header">Estrutura (Linhas x Colunas)</div>
             <div className="config-card-content">
@@ -99,7 +111,6 @@ const BoardGenerator = ({ isSidebarOpen, toggleSidebar }) => {
           <div className="config-card">
             <div className="config-card-header">Cabeçalho</div>
             <div className="config-card-content">
-              {/* CORREÇÃO DO LADO DO TEXTO: Texto antes, Checkbox depois */}
               <label style={{display:'flex', alignItems:'center', justifyContent: 'space-between', cursor:'pointer'}}>
                 Mostrar Título
                 <input type="checkbox" checked={config.header} onChange={e => handleChange('header', e.target.checked)} />
@@ -118,7 +129,6 @@ const BoardGenerator = ({ isSidebarOpen, toggleSidebar }) => {
                 <option value="bottom">Embaixo</option>
                 <option value="top">Em cima</option>
               </select>
-
               <label style={{marginTop: '10px'}}>Tipo de Fonte</label>
               <select value={config.fontFamily} onChange={e => handleChange('fontFamily', e.target.value)}>
                 <option value="Arial">Arial (Padrão)</option>
@@ -129,7 +139,6 @@ const BoardGenerator = ({ isSidebarOpen, toggleSidebar }) => {
                 <option value="Georgia">Georgia</option>
                 <option value="Courier New">Courier New</option>
               </select>
-
               <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                 <div style={{flex:1}}>
                   <label>Tamanho</label>
@@ -153,12 +162,10 @@ const BoardGenerator = ({ isSidebarOpen, toggleSidebar }) => {
               <select value={config.headerBgColor} onChange={e => handleChange('headerBgColor', e.target.value)}>
                  {CAA_COLORS.map(c => <option key={c.color} value={c.color}>{c.label}</option>)}
               </select>
-              
               <label style={{marginTop:'10px'}}>Fundo da Célula</label>
               <select value={config.cellBgColor} onChange={e => handleChange('cellBgColor', e.target.value)}>
                  {CAA_COLORS.map(c => <option key={c.color} value={c.color}>{c.label}</option>)}
               </select>
-
               <label style={{marginTop:'10px'}}>Cor da Borda</label>
               <select value={config.cellBorderColor} onChange={e => handleChange('cellBorderColor', e.target.value)}>
                  <option value="#000000">Preto</option>
@@ -180,7 +187,6 @@ const BoardGenerator = ({ isSidebarOpen, toggleSidebar }) => {
                   <option value="portrait">Retrato</option>
                 </select>
               </div>
-              
               <label style={{marginTop:'10px', fontSize:'0.75rem'}}>Margens (cm): Top | Dir | Base | Esq</label>
               <div className="margins-grid">
                 <input type="number" step="0.5" value={config.marginTop} onChange={e => handleChange('marginTop', parseFloat(e.target.value))} />
@@ -192,7 +198,11 @@ const BoardGenerator = ({ isSidebarOpen, toggleSidebar }) => {
           </div>
         </div>
 
+        {/* RODAPÉ COM DOIS BOTÕES */}
         <div className="config-footer">
+          <button className="btn-save-grid" onClick={handleFinalize}>
+            📱 Salvar no App
+          </button>
           <button className="btn-print" onClick={handleDownloadClick}>
             💾 Baixar PDF
           </button>
