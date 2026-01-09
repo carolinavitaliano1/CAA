@@ -3,7 +3,9 @@ import jsPDF from 'jspdf';
 import './BoardPDF.css';
 
 export const generateBoardPDF = async (pages, config) => {
-    // 1. Cria container temporário
+    // 1. Garante que a tela esteja no topo para evitar cortes
+    window.scrollTo(0, 0);
+
     const container = document.createElement('div');
     container.id = 'pdf-generator-container';
     document.body.appendChild(container);
@@ -46,8 +48,9 @@ export const generateBoardPDF = async (pages, config) => {
                     ` : ''}
                     
                     <div class="pdf-grid" style="
-                        grid-template-columns: repeat(${config.cols}, 1fr);
-                        grid-template-rows: repeat(${config.rows}, 1fr);
+                        /* CORREÇÃO CRUCIAL: minmax(0, 1fr) impede que o grid estoure a página */
+                        grid-template-columns: repeat(${config.cols}, minmax(0, 1fr));
+                        grid-template-rows: repeat(${config.rows}, minmax(0, 1fr));
                         gap: ${config.gap}px;
                     ">
                         ${generateGridHTML(pageCards, config)}
@@ -60,15 +63,16 @@ export const generateBoardPDF = async (pages, config) => {
 
             container.appendChild(sheet);
 
-            // PAUSA IMPORTANTE: Espera o navegador arrumar os elementos
+            // PAUSA: Espera imagens e layout carregarem
             await new Promise(resolve => setTimeout(resolve, 300));
 
             // FOTO
             const canvas = await html2canvas(sheet, {
-                scale: 2.5,
+                scale: 2.5, // Qualidade alta
                 useCORS: true,
                 logging: false,
                 backgroundColor: '#ffffff',
+                // PREVINE CORTES
                 windowWidth: 5000, 
                 width: sheet.offsetWidth, 
                 scrollX: 0,
@@ -130,6 +134,7 @@ function generateGridHTML(cards, config) {
             </div>
             `;
         } else {
+            // Células vazias invisíveis
             html += `
             <div class="pdf-cell" style="background: transparent; border: none; opacity: 0;"></div>
             `;
