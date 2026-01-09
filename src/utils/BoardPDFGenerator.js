@@ -3,6 +3,7 @@ import jsPDF from 'jspdf';
 import './BoardPDF.css';
 
 export const generateBoardPDF = async (pages, config) => {
+    // Garante rolagem no topo
     window.scrollTo(0, 0);
 
     const container = document.createElement('div');
@@ -58,7 +59,8 @@ export const generateBoardPDF = async (pages, config) => {
 
             container.appendChild(sheet);
 
-            await new Promise(resolve => setTimeout(resolve, 300));
+            // Aumentei o tempo para 500ms para garantir que carregue tudo
+            await new Promise(resolve => setTimeout(resolve, 500));
 
             const canvas = await html2canvas(sheet, {
                 scale: 2.5, 
@@ -71,9 +73,14 @@ export const generateBoardPDF = async (pages, config) => {
                 scrollY: 0,
                 x: 0,
                 y: 0,
+                // O TRUQUE MESTRE: Traz a folha para a frente da câmera na hora da foto
                 onclone: (clonedDoc) => {
                     const el = clonedDoc.getElementById('pdf-generator-container');
-                    if (el) el.style.visibility = 'visible';
+                    if (el) {
+                        el.style.left = '0px'; 
+                        el.style.top = '0px';
+                        el.style.visibility = 'visible';
+                    }
                 }
             });
 
