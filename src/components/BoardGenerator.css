@@ -13,9 +13,11 @@
 
 /* --- PAINEL ESQUERDO (CONFIGURAÇÃO) --- */
 .config-panel {
-  flex: 1; 
-  min-width: 320px;
-  max-width: 50%; 
+  /* MUDANÇA AQUI: Tamanho fixo e menor */
+  width: 340px; 
+  flex-shrink: 0; /* Não encolhe, mantém 340px fixo */
+  /* Removemos o flex: 1 e max-width: 50% que deixava largo */
+  
   background: #F1F5F9;
   border-right: 1px solid #E2E8F0;
   display: flex;
@@ -23,6 +25,8 @@
   z-index: 20;
   box-shadow: 2px 0 10px rgba(0,0,0,0.05);
   height: 100%;
+  
+  /* Mantém fixo no PC */
   position: relative !important;
   left: auto !important;
   transform: none !important;
@@ -31,7 +35,7 @@
 /* CABEÇALHO ESQUERDO */
 .config-header {
   height: 80px; 
-  padding: 0 20px; 
+  padding: 0 20px;
   background: white;
   border-bottom: 1px solid #E2E8F0;
   flex-shrink: 0;
@@ -51,7 +55,7 @@
   gap: 15px;
 }
 
-/* CARDS */
+/* CARDS DE CONFIGURAÇÃO */
 .config-card {
   background: white;
   border: 1px solid #CBD5E1;
@@ -75,7 +79,7 @@
 .config-card-content input:focus, .config-card-content select:focus { border-color: #2563EB; outline: none; }
 .margins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-/* RODAPÉ */
+/* RODAPÉ (SALVAR) */
 .config-footer {
   padding: 20px;
   background: white;
@@ -90,7 +94,7 @@
 
 /* --- PAINEL DIREITO (PRANCHA) --- */
 .preview-panel {
-  flex: 1; 
+  flex: 1; /* AGORA ELE OCUPA TODO O RESTO DA TELA */
   display: flex;
   flex-direction: column;
   background-color: #E2E8F0;
@@ -98,14 +102,14 @@
   overflow: hidden;
 }
 
-/* --- BARRA DE FERRAMENTAS (CORREÇÃO DE ALINHAMENTO) --- */
+/* --- BARRA DE FERRAMENTAS --- */
 .preview-toolbar {
   background: white;
   border-bottom: 1px solid #E2E8F0;
   height: 80px; 
   padding: 0 20px; 
   display: flex;
-  align-items: center; /* Centraliza verticalmente na barra */
+  align-items: center;
   gap: 15px;
   flex-shrink: 0;
   z-index: 100;
@@ -113,53 +117,46 @@
   box-sizing: border-box;
 }
 
-/* CONTAINER DO INPUT + BOTÃO */
+/* INPUT OCUPA TUDO */
 .input-area-mini {
   display: flex;
   flex: 1;
-  height: 48px; /* Altura fixa para o grupo todo */
-  align-items: stretch; /* O SEGREDO: Estica filhos para terem a mesma altura */
+  height: 48px; 
+  align-items: stretch;
 }
 
-/* Campo de Texto */
 .input-area-mini textarea { 
   flex: 1; 
-  height: auto; /* Deixa o stretch definir a altura */
+  height: auto;
   padding: 12px 15px;
-  border-radius: 8px 0 0 8px; /* Arredondado na esquerda */
+  border-radius: 8px 0 0 8px;
   border: 1px solid #CBD5E1;
-  border-right: none; /* Remove borda dupla no encontro */
+  border-right: none; 
   resize: none;
   font-size: 1rem;
   font-family: inherit;
   background-color: #F8FAFC;
-  box-sizing: border-box; /* Garante cálculo correto */
-  margin: 0; /* Remove margens padrão */
+  box-sizing: border-box;
+  margin: 0;
   line-height: 1.5;
 }
-.input-area-mini textarea:focus {
-  border-color: #2563EB;
-  background-color: #fff;
-  outline: none;
-  z-index: 2; 
-}
+.input-area-mini textarea:focus { border-color: #2563EB; background-color: #fff; outline: none; z-index: 2; }
 
-/* Botão Gerar */
 .input-area-mini button { 
-  height: auto; /* Deixa o stretch definir a altura */
+  height: auto;
   padding: 0 25px;
   background: #2563EB;
   color: white;
   border: 1px solid #2563EB;
-  border-radius: 0 8px 8px 0; /* Arredondado na direita */
+  border-radius: 0 8px 8px 0;
   font-weight: 700;
   font-size: 0.95rem;
   cursor: pointer;
   white-space: nowrap;
-  box-sizing: border-box; /* Garante cálculo correto */
-  margin: 0; /* Remove margens padrão */
+  box-sizing: border-box;
+  margin: 0;
   display: flex;
-  align-items: center; /* Centraliza texto dentro do botão */
+  align-items: center;
 }
 .input-area-mini button:hover { background: #1D4ED8; border-color: #1D4ED8; }
 
