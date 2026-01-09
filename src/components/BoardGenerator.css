@@ -95,54 +95,57 @@
   overflow: hidden;
 }
 
-/* --- BARRA DE FERRAMENTAS (AQUI ESTÁ A MUDANÇA) --- */
+/* --- BARRA DE FERRAMENTAS (TOOLBAR) --- */
 .preview-toolbar {
   background: white;
   border-bottom: 1px solid #CBD5E1;
-  padding: 15px 20px; /* Mais espaço interno */
+  /* Espaçamento IDÊNTICO ao painel da esquerda para alinhar visualmente */
+  padding: 15px 20px; 
   display: flex;
-  flex-direction: column; /* Organiza em linhas se precisar, mas vamos usar gap */
+  align-items: center; /* Centraliza verticalmente */
   gap: 15px;
   z-index: 100;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
 }
 
-/* Linha principal da Toolbar */
+/* Área de Input (Digitar + Botão) - AGORA OCUPA O ESPAÇO DISPONÍVEL */
 .input-area-mini {
   display: flex;
-  width: 100%; /* OCUPA A LARGURA TODA AGORA */
-  max-width: none; /* REMOVIDO O LIMITE DE 600px */
-  gap: 15px;
+  flex: 1; /* Cresce para empurrar o zoom para a direita */
+  gap: 10px;
   align-items: center;
 }
 
-/* O Campo de Texto (Agora bonito e largo) */
+/* Caixa de Texto */
 .input-area-mini textarea { 
-  flex: 1; /* Cresce para ocupar tudo */
-  height: 50px; /* Um pouco mais alto */
-  padding: 12px;
+  flex: 1; /* Ocupa toda a largura disponível */
+  height: 46px; /* Altura confortável */
+  padding: 10px 15px;
   border-radius: 8px;
-  border: 2px solid #E2E8F0; /* Borda mais grossa e bonita */
+  border: 2px solid #E2E8F0;
   resize: none;
   font-size: 1rem;
   font-family: inherit;
   transition: border-color 0.2s;
+  background-color: #F8FAFC;
 }
 .input-area-mini textarea:focus {
   border-color: #2563EB;
+  background-color: #fff;
   outline: none;
 }
 
 /* Botão Gerar */
 .input-area-mini button { 
-  height: 50px;
-  padding: 0 30px;
+  height: 46px; /* Mesma altura do texto */
+  padding: 0 25px;
   background: #2563EB;
   color: white;
   border: none;
   border-radius: 8px;
-  font-weight: 800;
-  font-size: 1rem;
+  font-weight: 700;
+  font-size: 0.95rem;
   cursor: pointer;
   white-space: nowrap;
   box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
@@ -150,21 +153,21 @@
 }
 .input-area-mini button:hover { background: #1D4ED8; }
 
-/* Área do Zoom (Separada e organizada) */
+/* Controle de Zoom (Canto Direito) */
 .zoom-controls {
   display: flex;
   align-items: center;
-  gap: 10px;
-  background: #F8FAFC;
-  padding: 8px 15px;
+  gap: 8px;
+  background: #F1F5F9;
+  padding: 0 15px;
+  height: 46px; /* Mesma altura dos outros */
   border-radius: 8px;
   border: 1px solid #E2E8F0;
-  align-self: flex-start; /* Alinha à esquerda */
-  font-size: 0.9rem;
-  font-weight: 600;
   color: #64748B;
+  font-weight: 600;
 }
-.zoom-controls input { cursor: pointer; }
+.zoom-controls label { font-size: 1.2rem; }
+.zoom-controls input { cursor: pointer; width: 80px; }
 
 /* --- MESA DE LUZ --- */
 .paper-preview-container {
@@ -183,7 +186,7 @@
 /* FOLHA DE PAPEL */
 .paper-sheet {
   background: white;
-  box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.25); /* Sombra mais realista */
+  box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.25);
   display: flex; flex-direction: column;
   transition: transform 0.1s ease-out;
   transform-origin: center center;
@@ -233,7 +236,8 @@
   .config-panel.open { transform: translateX(0) !important; }
   .btn-close-sidebar { display: block; background: none; border: none; font-size: 2rem; padding: 0 10px; }
   
-  .preview-toolbar { padding: 15px; gap: 10px; align-items: stretch; }
-  .input-area-mini { flex-direction: column; }
+  .preview-toolbar { flex-direction: column; padding: 15px; gap: 10px; height: auto; align-items: stretch; }
+  .input-area-mini { flex-direction: column; width: 100%; }
   .input-area-mini button { width: 100%; }
+  .zoom-controls { justify-content: center; width: 100%; box-sizing: border-box; }
 }
