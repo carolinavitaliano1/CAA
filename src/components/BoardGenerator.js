@@ -26,11 +26,11 @@ const BoardGenerator = ({ onGenerate }) => {
     rows: 4, cols: 5, gap: 2,
     header: true, headerText: 'Minha Prancha', headerBgColor: '#FFFFFF',
     cellBgColor: '#FFFFFF', cellBorderColor: '#000000', borderWidth: 1, borderStyle: 'solid', 
-    boardBorderColor: '#000000', // OPÇÃO QUE TINHA SUMIDO
+    boardBorderColor: '#000000', 
     paperSize: 'A4', orientation: 'landscape',
     marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1,
     textPosition: 'bottom', fontFamily: 'Arial', fontSize: 12, 
-    textCase: 'uppercase', // OPÇÃO QUE TINHA SUMIDO
+    textCase: 'uppercase',
   });
 
   const handlePreview = async (e) => {
@@ -146,8 +146,6 @@ const BoardGenerator = ({ onGenerate }) => {
                   {CAA_COLORS.map(c => <option key={c.color} value={c.color} style={{backgroundColor: c.color}}>{c.label}</option>)}
               </select>
           </div>
-          
-          {/* SELETOR DE BORDA DA PRANCHA */}
           <div className="config-group">
               <label>Cor da Borda (Prancha):</label>
               <select value={config.boardBorderColor} onChange={(e) => handleChange('boardBorderColor', e.target.value)}>
@@ -172,7 +170,6 @@ const BoardGenerator = ({ onGenerate }) => {
               <label>Tamanho e Caixa:</label>
               <div style={{display:'flex', gap:'5px'}}>
                   <input type="number" value={config.fontSize} onChange={(e) => handleChange('fontSize', e.target.value)} placeholder="pt" />
-                  {/* SELETOR DE MAIÚSCULA/MINÚSCULA */}
                   <select value={config.textCase} onChange={(e) => handleChange('textCase', e.target.value)}>
                       <option value="uppercase">MAIÚSCULA</option>
                       <option value="lowercase">minúscula</option>
