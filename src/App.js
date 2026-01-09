@@ -1,6 +1,7 @@
+/* src/App.js - Versão Integrada (Lógica + Novo Layout) */
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
-import BoardGenerator from './components/BoardGenerator'; // Garanta que este arquivo existe na pasta components!
+import BoardGenerator from './components/BoardGenerator'; 
 
 // Cores Oficiais CAA
 const CAA_COLORS = [
@@ -79,15 +80,11 @@ function App() {
 
   // --- GERADOR DE PRANCHAS (Lógica) ---
   const handleMassGeneration = (newCards) => {
-    // Adiciona os cartões gerados à prancha ATUAL
     const updatedBoard = { 
       ...currentBoard, 
       cards: [...currentBoard.cards, ...newCards] 
     };
-    
     setData({ ...data, boards: { ...data.boards, [currentBoardId]: updatedBoard } });
-    
-    // Volta para o Grid para mostrar o resultado
     setCurrentView('board');
     alert(`Pronto! ${newCards.length} novos cartões foram criados na pasta "${currentBoard.title}".`);
   };
@@ -179,10 +176,43 @@ function App() {
     reader.readAsText(file);
   };
 
+  // --------------------------------------------------------------------------------
+  // RENDERIZAÇÃO
+  // --------------------------------------------------------------------------------
   return (
-    <div className={`container ${isEditMode ? 'mode-edit' : 'mode-play'}`}>
+    <div className={`App ${isEditMode ? 'mode-edit' : 'mode-play'}`}>
       
-      {/* SIDEBAR (MENU LATERAL) */}
+      {/* 1. BARRA DE TOPO (NOVO DESIGN) */}
+      <header className="admin-bar">
+        <div className="brand-group">
+          {/* Botão Menu controla o estado isSidebarOpen */}
+          <button 
+            className={`btn-menu-toggle ${isSidebarOpen ? 'active' : ''}`} 
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            title="Menu"
+          >
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          
+          <span className="brand-name">NeuroCAA</span>
+        </div>
+
+        {/* Botão de Modo Edição (Só aparece no Grid) */}
+        {currentView === 'board' && (
+          <div className="header-actions">
+            <button className={`btn-toggle ${isEditMode ? 'active' : ''}`} onClick={() => setIsEditMode(!isEditMode)}>
+              {isEditMode ? '🔓 Editando' : '🔒 Usar'}
+            </button>
+          </div>
+        )}
+      </header>
+
+      {/* 2. MENU LATERAL (SIDEBAR GERAL) */}
+      {/* Este menu controla a navegação entre Grid, Gerador e Biblioteca */}
       <div className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
       <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
@@ -191,16 +221,13 @@ function App() {
         </div>
         <nav className="sidebar-nav">
           <button onClick={() => { setCurrentView('board'); setCurrentBoardId('root'); setIsSidebarOpen(false); }}>
-            🏠 Início (Grid)
+            🏠 Início
           </button>
-          
-          {/* NOVA ABA: GERADOR */}
-          <button onClick={() => { setCurrentView('generator'); setIsSidebarOpen(false); }} style={{color: '#2563EB', fontWeight: 'bold', background: '#eff6ff'}}>
-            ✨ Gerador (Criar Rápido)
+          <button onClick={() => { setCurrentView('generator'); setIsSidebarOpen(false); }} style={{color: '#2563EB', background: '#eff6ff', fontWeight:'bold'}}>
+            ✨ Gerador de PDF
           </button>
-
           <button onClick={() => { setCurrentView('library'); setIsSidebarOpen(false); }}>
-            📚 Minhas Pranchas
+            📚 Minhas Pastas
           </button>
           <hr />
           <button onClick={exportData}>💾 Fazer Backup</button>
@@ -209,66 +236,16 @@ function App() {
         </nav>
       </div>
 
-      {/* TOPO */}
-      <div className="admin-bar">
-        <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
-            <button className="btn-menu" onClick={() => setIsSidebarOpen(true)}>☰</button>
-            <div className="brand">NeuroCAA</div>
-        </div>
+      {/* 3. CONTEÚDO PRINCIPAL (Muda conforme a view) */}
+      <main className="container">
         
-        {/* Botão de Modo Edição só aparece no Grid */}
+        {/* VIEW: GRID DE CARTÕES (PÁGINA PRINCIPAL) */}
         {currentView === 'board' && (
-          <button className={`btn-toggle ${isEditMode ? 'active' : ''}`} onClick={() => setIsEditMode(!isEditMode)}>
-            {isEditMode ? '🔓 Editar' : '🔒 Usar'}
-          </button>
-        )}
-      </div>
-
-      {/* ======================================================== */}
-      {/* VIEW: GERADOR DE PRANCHAS (AQUI ESTÁ A TELA QUE VOCÊ QUER) */}
-      {/* ======================================================== */}
-      {currentView === 'generator' && (
-        <div className="generator-view" style={{padding: '10px'}}>
-            <h2 style={{color: '#1e3a8a', textAlign: 'center'}}>✨ Gerador de Prancha</h2>
-            <p style={{textAlign: 'center', color: '#64748b'}}>
-               Os cartões criados aqui serão adicionados à pasta atual: <strong>{currentBoard.title}</strong>
-            </p>
-            
-            {/* O COMPONENTE QUE VOCÊ CRIOU */}
-            <BoardGenerator onGenerate={handleMassGeneration} />
-
-            <button 
-                className="btn-back-home" 
-                style={{width: '100%', padding: '15px', marginTop: '20px'}}
-                onClick={() => setCurrentView('board')}
-            >
-                Voltar para o Grid
-            </button>
-        </div>
-      )}
-
-      {/* VIEW: BIBLIOTECA */}
-      {currentView === 'library' && (
-        <div className="library-view">
-            <h2>📚 Todas as Pranchas</h2>
-            <div className="library-grid">
-                {Object.values(data.boards).map(board => (
-                    <div key={board.id} className="library-card" onClick={() => navigateToBoard(board.id)}>
-                        <h3>{board.title}</h3>
-                        <p>{board.cards.length} cartões</p>
-                    </div>
-                ))}
-            </div>
-            <button className="btn-back-home" onClick={() => setCurrentView('board')}>Voltar</button>
-        </div>
-      )}
-
-      {/* VIEW: GRID PRINCIPAL */}
-      {currentView === 'board' && (
-        <>
+          <>
+            {/* Barra da Frase */}
             <div className="sentence-bar">
                 <div className="sentence-display">
-                {sentence.length === 0 ? <span className="placeholder">Frase...</span> : 
+                {sentence.length === 0 ? <span className="placeholder" style={{color:'#94a3b8', paddingLeft:'10px'}}>Toque nos cartões para formar frases...</span> : 
                     sentence.map((item, idx) => (
                     <div key={idx} className="sentence-item">
                         <img src={item.image} alt="" className="mini-img" />
@@ -283,27 +260,63 @@ function App() {
                 </div>
             </div>
 
-            <div className="nav-header">
-                {currentBoard.parentId && <button onClick={() => setCurrentBoardId(currentBoard.parentId)} className="btn-back">⬅ Voltar</button>}
-                <span className="board-title">📂 {currentBoard.title}</span>
-                {isEditMode && <button className="btn-delete" style={{padding: '5px 10px'}} onClick={() => { if(window.confirm('Limpar pasta?')) setData({...data, boards: {...data.boards, [currentBoardId]: {...currentBoard, cards: []}}}) }}>🗑️</button>}
+            {/* Título da Pasta e Voltar */}
+            <div className="nav-header" style={{display:'flex', justifyContent:'space-between', alignItems:'center', padding:'10px 0'}}>
+                <div style={{display:'flex', gap:'10px', alignItems:'center'}}>
+                   {currentBoard.parentId && <button onClick={() => setCurrentBoardId(currentBoard.parentId)} className="btn-back">⬅ Voltar</button>}
+                   <span className="board-title" style={{fontWeight:'bold', fontSize:'1.1rem'}}>📂 {currentBoard.title}</span>
+                </div>
+                {isEditMode && <button className="btn-delete" style={{padding: '5px 10px'}} onClick={() => { if(window.confirm('Limpar pasta?')) setData({...data, boards: {...data.boards, [currentBoardId]: {...currentBoard, cards: []}}}) }}>🗑️ Limpar Tudo</button>}
             </div>
 
+            {/* Grid de Cartões */}
             <div className="grid-area">
                 {currentBoard.cards.map((item) => (
                 <div key={item.id} className={`card ${item.type === 'folder' ? 'is-folder' : ''}`} style={{ backgroundColor: item.bgColor || '#FFF', borderColor: item.borderColor || '#ccc' }} onClick={() => handleCardClick(item)}>
-                    {isEditMode && <span className="edit-badge">✏️</span>}
-                    {item.type === 'folder' && <div className="folder-tag" style={{backgroundColor: item.borderColor}}>PASTA</div>}
+                    {isEditMode && <span className="edit-badge" style={{position:'absolute', top:'-5px', right:'-5px', background:'white', borderRadius:'50%', padding:'2px'}}>✏️</span>}
+                    {item.type === 'folder' && <div className="folder-tag" style={{backgroundColor: item.borderColor || '#ccc'}}>PASTA</div>}
                     <img src={item.image} alt={item.text} className="card-img" />
                     <span className="label" style={{color: '#333'}}>{item.text}</span>
                 </div>
                 ))}
                 {isEditMode && <button className="card add-card" onClick={addNewCard}><span className="icon">➕</span></button>}
             </div>
-        </>
-      )}
+          </>
+        )}
 
-      {/* MODAL DE EDIÇÃO (Mantido igual ao último que fizemos) */}
+        {/* VIEW: GERADOR DE PDF (NOVO LAYOUT INTEGRADO) */}
+        {currentView === 'generator' && (
+           /* Passamos o estado do menu (isSidebarOpen) para o gerador controlar o painel dele também, se quiser, ou mantemos separado */
+           /* Neste caso, o Gerador ocupa a tela toda, então ele tem seu próprio container */
+           <div style={{position:'fixed', top:64, left:0, width:'100%', height:'calc(100% - 64px)', zIndex:10}}>
+              <BoardGenerator 
+                  onGenerate={handleMassGeneration} 
+                  /* Opcional: Se quiser que o botão do topo abra o menu de config do gerador */
+                  isSidebarOpen={isSidebarOpen} 
+                  toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+              />
+           </div>
+        )}
+
+        {/* VIEW: BIBLIOTECA (LISTA DE PASTAS) */}
+        {currentView === 'library' && (
+          <div className="library-view">
+             <h2>📚 Todas as Pranchas</h2>
+             <div className="library-grid" style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(150px, 1fr))', gap:'15px'}}>
+                 {Object.values(data.boards).map(board => (
+                     <div key={board.id} className="library-card" onClick={() => navigateToBoard(board.id)} style={{background:'white', padding:'20px', borderRadius:'10px', cursor:'pointer', border:'1px solid #ddd'}}>
+                         <h3>{board.title}</h3>
+                         <p>{board.cards.length} cartões</p>
+                     </div>
+                 ))}
+             </div>
+             <button className="btn-back-home" style={{marginTop:'20px', padding:'10px'}} onClick={() => setCurrentView('board')}>Voltar para Início</button>
+          </div>
+        )}
+
+      </main>
+
+      {/* 4. MODAL DE EDIÇÃO (Mantido Intacto) */}
       {editingCard && (
         <div className="modal-overlay">
           <div className="modal">
