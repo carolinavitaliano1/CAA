@@ -1,6 +1,6 @@
 /* src/components/BoardGenerator.css */
 
-/* --- LAYOUT GERAL --- */
+/* --- LAYOUT GERAL (DIVIDIDO MEIO A MEIO) --- */
 .board-generator-wrapper {
   display: flex;
   width: 100%;
@@ -8,15 +8,14 @@
   background-color: #F8FAFC;
   overflow: hidden;
   position: relative;
-  flex-direction: row; /* Lado a Lado */
+  flex-direction: row;
 }
 
 /* --- PAINEL ESQUERDO (CONFIGURAÇÃO) --- */
 .config-panel {
-  /* MUDANÇA: Agora usa flex: 1 para dividir igualmente ou min-width para garantir leitura */
   flex: 1; 
-  min-width: 320px; /* Garante que não fique pequeno demais */
-  max-width: 50%;   /* Trava em metade da tela (mesma largura) */
+  min-width: 320px;
+  max-width: 50%; /* Mantém a divisão igual */
   background: #F1F5F9;
   border-right: 1px solid #E2E8F0;
   display: flex;
@@ -35,8 +34,8 @@
   border-bottom: 1px solid #E2E8F0;
   flex-shrink: 0;
 }
-.config-header h3 { margin: 0; font-size: 1.1rem; color: #1E293B; }
-.btn-close-sidebar { display: none; } /* Esconde X no PC */
+.config-header h3 { margin: 0; font-size: 1.1rem; color: #1E293B; font-weight: 800; letter-spacing: -0.5px; }
+.btn-close-sidebar { display: none; }
 
 .config-body {
   padding: 20px;
@@ -65,7 +64,7 @@
 }
 .config-card-content { padding: 15px; display: flex; flex-direction: column; gap: 10px; }
 
-/* Inputs e Selects */
+/* Inputs e Selects do Menu */
 .config-card-content label { display: block; font-size: 0.9rem; font-weight: 600; color: #334155; margin-bottom: 4px; }
 .config-card-content input, .config-card-content select {
   width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 0.95rem; background: #fff; box-sizing: border-box;
@@ -79,16 +78,16 @@
   padding: 20px;
   background: white;
   border-top: 1px solid #E2E8F0;
-  z-index: 30; /* Garante que fique acima do conteúdo rolado */
+  z-index: 30;
 }
 .btn-print {
   width: 100%; padding: 14px; background: #10B981; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
 }
 .btn-print:hover { background: #059669; }
 
-/* --- PAINEL DIREITO (PRANCHA / VISUALIZAÇÃO) --- */
+/* --- PAINEL DIREITO (PRANCHA) --- */
 .preview-panel {
-  flex: 1; /* Ocupa a outra metade */
+  flex: 1;
   display: flex;
   flex-direction: column;
   background-color: #E2E8F0;
@@ -96,33 +95,78 @@
   overflow: hidden;
 }
 
-/* BARRA DE FERRAMENTAS (CORREÇÃO DE CLIQUES) */
+/* --- BARRA DE FERRAMENTAS (AQUI ESTÁ A MUDANÇA) --- */
 .preview-toolbar {
-  height: 80px; /* Mais altura para facilitar o clique */
   background: white;
   border-bottom: 1px solid #CBD5E1;
+  padding: 15px 20px; /* Mais espaço interno */
   display: flex;
-  align-items: center;
-  padding: 0 20px;
+  flex-direction: column; /* Organiza em linhas se precisar, mas vamos usar gap */
   gap: 15px;
-  justify-content: space-between;
-  flex-shrink: 0;
-  z-index: 100; /* ESSENCIAL: Garante que fique por cima de tudo para clicar */
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  z-index: 100;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
-.input-area-mini { display: flex; flex: 1; gap: 10px; align-items: center; }
-.input-area-mini textarea { 
-  flex: 1; height: 44px; padding: 10px; border-radius: 8px; border: 1px solid #94A3B8; resize: none; font-size: 1rem;
+/* Linha principal da Toolbar */
+.input-area-mini {
+  display: flex;
+  width: 100%; /* OCUPA A LARGURA TODA AGORA */
+  max-width: none; /* REMOVIDO O LIMITE DE 600px */
+  gap: 15px;
+  align-items: center;
 }
+
+/* O Campo de Texto (Agora bonito e largo) */
+.input-area-mini textarea { 
+  flex: 1; /* Cresce para ocupar tudo */
+  height: 50px; /* Um pouco mais alto */
+  padding: 12px;
+  border-radius: 8px;
+  border: 2px solid #E2E8F0; /* Borda mais grossa e bonita */
+  resize: none;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+.input-area-mini textarea:focus {
+  border-color: #2563EB;
+  outline: none;
+}
+
+/* Botão Gerar */
 .input-area-mini button { 
-  height: 44px; padding: 0 25px; background: #2563EB; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; white-space: nowrap;
+  height: 50px;
+  padding: 0 30px;
+  background: #2563EB;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+  transition: background 0.2s;
 }
 .input-area-mini button:hover { background: #1D4ED8; }
 
-.zoom-controls { display: flex; align-items: center; gap: 10px; background: #F8FAFC; padding: 5px 10px; border-radius: 8px; border: 1px solid #E2E8F0; }
+/* Área do Zoom (Separada e organizada) */
+.zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #F8FAFC;
+  padding: 8px 15px;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+  align-self: flex-start; /* Alinha à esquerda */
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #64748B;
+}
+.zoom-controls input { cursor: pointer; }
 
-/* MESA DE LUZ */
+/* --- MESA DE LUZ --- */
 .paper-preview-container {
   flex: 1;
   display: flex;
@@ -139,9 +183,9 @@
 /* FOLHA DE PAPEL */
 .paper-sheet {
   background: white;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.25); /* Sombra mais realista */
   display: flex; flex-direction: column;
-  transition: transform 0.1s ease-out; /* Zoom rápido */
+  transition: transform 0.1s ease-out;
   transform-origin: center center;
   box-sizing: border-box;
 }
@@ -166,7 +210,7 @@
   background: white; padding: 10px 25px; border-radius: 40px;
   box-shadow: 0 5px 20px rgba(0,0,0,0.2); 
   display: flex; gap: 20px; align-items: center; 
-  z-index: 50; /* Garante clique */
+  z-index: 50;
   border: 1px solid #CBD5E1;
 }
 .pagination-controls button { 
@@ -177,7 +221,7 @@
 .hidden-page { display: none !important; }
 .no-pages-msg { color: #64748B; margin-top: 20%; font-size: 1.2rem; text-align: center; background: rgba(255,255,255,0.8); padding: 20px; border-radius: 12px; }
 
-/* --- MOBILE --- */
+/* MOBILE */
 @media (max-width: 768px) {
   .board-generator-wrapper { position: relative; }
   .config-panel {
@@ -189,7 +233,7 @@
   .config-panel.open { transform: translateX(0) !important; }
   .btn-close-sidebar { display: block; background: none; border: none; font-size: 2rem; padding: 0 10px; }
   
-  .preview-toolbar { flex-direction: column; height: auto; padding: 15px; gap: 10px; align-items: stretch; }
+  .preview-toolbar { padding: 15px; gap: 10px; align-items: stretch; }
   .input-area-mini { flex-direction: column; }
   .input-area-mini button { width: 100%; }
 }
