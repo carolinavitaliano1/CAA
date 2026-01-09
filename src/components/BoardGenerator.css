@@ -1,250 +1,148 @@
 /* src/components/BoardGenerator.css */
 
-/* --- LAYOUT GLOBAL (TELA CHEIA) --- */
+/* O CONTAINER PRINCIPAL */
 .board-generator-wrapper {
   display: flex;
-  height: 100vh; /* Ocupa 100% da altura da tela */
-  width: 100vw;
-  overflow: hidden; /* Trava a rolagem da janela inteira */
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f0f2f5;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #e9ecef;
 }
 
-/* --- PAINEL ESQUERDO (CONFIGURAÇÃO) --- */
+/* --- PAINEL ESQUERDO (MENU) --- */
 .config-panel {
-  width: 320px; /* Largura fixa para o menu */
+  width: 340px;
   background: white;
-  border-right: 1px solid #ddd;
   display: flex;
   flex-direction: column;
-  flex-shrink: 0;
-  z-index: 20; /* Fica acima da sombra do papel */
-  box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-  overflow-y: auto; /* Rolagem interna apenas aqui */
+  border-right: 1px solid #ccc;
+  z-index: 20;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.1);
   padding: 20px;
+  overflow-y: auto;
 }
 
 .config-panel h3 {
   margin-top: 0;
   font-size: 1.1rem;
-  color: #2c3e50;
-  border-bottom: 2px solid #f1f1f1;
+  color: #333;
+  border-bottom: 2px solid #f0f0f0;
   padding-bottom: 10px;
   margin-bottom: 20px;
 }
 
-.config-group {
-  margin-bottom: 15px;
+.config-group { margin-bottom: 15px; }
+.config-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; font-size: 0.9rem; }
+.config-group input, .config-group select {
+  width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;
 }
 
-.config-group label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  color: #555;
-}
+.margins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-.config-group input[type="text"],
-.config-group input[type="number"],
-.config-group select {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ced4da;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  box-sizing: border-box;
-  transition: border-color 0.2s;
-}
-
-.config-group input:focus,
-.config-group select:focus {
-  border-color: #007bff;
-  outline: none;
-}
-
-.margins-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-/* --- PAINEL DIREITO (ÁREA DE TRABALHO) --- */
+/* --- ÁREA DE TRABALHO (DIREITA) --- */
 .preview-panel {
-  flex: 1; /* Ocupa o resto da tela */
+  flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: #e9ecef;
   position: relative;
-  overflow: hidden; /* SEM ROLAGEM AQUI TAMBÉM */
+  overflow: hidden;
 }
 
-/* BARRA DE FERRAMENTAS (Topo) */
+/* BARRA SUPERIOR */
 .preview-toolbar {
-  background: white;
-  padding: 10px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #ddd;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-  z-index: 10;
   height: 60px;
-  box-sizing: border-box;
-}
-
-.input-area-mini {
-  display: flex;
-  flex: 1;
-  gap: 10px;
-  max-width: 600px;
-}
-
-.input-area-mini textarea {
-  flex: 1;
-  height: 38px;
-  padding: 8px 12px;
-  border: 1px solid #ced4da;
-  border-radius: 6px;
-  resize: none;
-  font-family: inherit;
-}
-
-.input-area-mini button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 0 20px;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.input-area-mini button:hover {
-  background-color: #0056b3;
-}
-
-.zoom-controls {
+  background: white;
+  border-bottom: 1px solid #ddd;
   display: flex;
   align-items: center;
-  gap: 10px;
-  background: #f8f9fa;
-  padding: 5px 15px;
-  border-radius: 20px;
-  border: 1px solid #ddd;
+  justify-content: space-between;
+  padding: 0 20px;
+  flex-shrink: 0;
 }
 
-/* --- A MESA DE TRABALHO (ONDE O PAPEL FICA) --- */
+.input-area-mini { display: flex; gap: 10px; flex: 1; max-width: 600px; }
+.input-area-mini textarea { flex: 1; height: 36px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; resize: none; }
+.input-area-mini button { background: #007bff; color: white; border: none; padding: 0 20px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+
+/* MESA DE VISUALIZAÇÃO (PAPEL) */
 .paper-preview-container {
   flex: 1;
   display: flex;
-  justify-content: center; /* CENTRALIZA HORIZONTALMENTE */
-  align-items: center;     /* CENTRALIZA VERTICALMENTE */
-  overflow: hidden;        /* CORTA O EXCESSO (SEM ROLAGEM) */
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
   background-image: radial-gradient(#cbd5e0 1px, transparent 1px);
-  background-size: 20px 20px; /* Grade de fundo bonita */
+  background-size: 20px 20px;
   padding: 0;
   position: relative;
 }
 
-.book-viewer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  /* O papel define o tamanho e o zoom escala isso */
-}
-
-/* A FOLHA DE PAPEL */
+/* O PAPEL EM SI */
 .paper-sheet {
   background: white;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.2); /* Sombra mais destacada */
-  transition: transform 0.1s ease-out; /* Zoom suave */
-  transform-origin: center center; /* Zoom a partir do MEIO */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  transition: transform 0.1s ease-out;
+  transform-origin: center center;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
-  /* O tamanho (A4/A3) é definido pelas classes JS */
 }
-
-/* Tamanhos Visuais */
+/* Tamanhos */
 .paper-sheet.A4.portrait { width: 210mm; height: 297mm; }
 .paper-sheet.A4.landscape { width: 297mm; height: 210mm; }
 .paper-sheet.A3.portrait { width: 297mm; height: 420mm; }
 .paper-sheet.A3.landscape { width: 420mm; height: 297mm; }
 
 /* Conteúdo Interno */
-.paper-content-wrapper {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
+.paper-content-wrapper { width: 100%; height: 100%; display: flex; flex-direction: column; }
+.paper-header { text-align: center; font-weight: bold; font-size: 24pt; padding: 10px; border-bottom: 2px solid #000; }
+.paper-grid { display: grid; flex: 1; width: 100%; height: 100%; }
+.paper-cell { border: 1px dashed #ddd; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+.cell-content { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4px; }
+.cell-content img { max-width: 90%; max-height: 70%; object-fit: contain; flex: 1; }
+.cell-content span { font-weight: bold; line-height: 1.1; }
+.paper-footer { text-align: center; font-size: 10px; color: #aaa; margin-top: auto; padding: 5px; }
 
-.paper-header {
-  text-align: center;
-  font-weight: bold;
-  font-size: 24pt;
-  padding: 10px;
-  border-bottom: 2px solid #000;
-}
-
-/* GRID VISUAL */
-.paper-grid {
-  display: grid; /* Mantém o grid funcionando */
-  flex: 1;
-  width: 100%;
-  height: 100%;
-}
-
-.paper-cell {
-  border: 1px dashed #e0e0e0; /* Borda suave na visualização */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-.cell-content {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4px;
-  text-align: center;
-}
-
-.cell-content img {
-  max-width: 90%;
-  max-height: 70%;
-  object-fit: contain;
-  flex: 1;
-}
-
-.cell-content span {
-  font-weight: bold;
-  line-height: 1.1;
-  z-index: 2;
-}
-
-.paper-footer {
-  text-align: center;
-  font-size: 10px;
-  color: #aaa;
-  padding-top: 5px;
-  margin-top: auto;
-}
-
-/* --- CONTROLES DE PÁGINA (FLUTUANTES E BONITOS) --- */
+/* --- PAGINAÇÃO (BOTÕES FLUTUANTES) --- */
 .pagination-controls {
   position: absolute;
   bottom: 30px;
   left: 50%;
-  transform: translateX(-50%); /* Centraliza perfeitamente */
+  transform: translateX(-50%);
   background: white;
-  padding: 8px 20px;
+  padding: 8px 25px;
   border-radius: 50px;
-  box-shadow: 0 4px 15px rgba(0,0
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  z-index: 100;
+}
+
+.pagination-controls button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: #f8f9fa;
+  color: #333;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.pagination-controls button:hover:not(:disabled) { background: #007bff; color: white; transform: translateY(-2px); }
+.pagination-controls button:disabled { opacity: 0.5; cursor: default; }
+
+/* BOTÕES DE BAIXAR (Menu Esquerdo) */
+.action-buttons-row { margin-top: auto; padding-top: 20px; border-top: 1px solid #eee; display: flex; flex-direction: column; gap: 10px; }
+.action-buttons-row button { padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: white; }
+.btn-print { background-color: #28a745; }
+.btn-finalize { background-color: #17a2b8; }
+
+.hidden-page { display: none !important; }
+.no-pages-msg { color: #888; margin-top: 20%; font-size: 1.2rem; }
