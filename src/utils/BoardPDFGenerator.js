@@ -11,18 +11,18 @@ export const generateBoardPDF = async (pages, config) => {
     try {
         const orientation = config.orientation === 'landscape' ? 'l' : 'p';
         const format = config.paperSize.toLowerCase();
-        
+
         const pdf = new jsPDF(orientation, 'mm', format);
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
 
         for (let i = 0; i < pages.length; i++) {
             const pageCards = pages[i];
-            
+
             // Cria a folha
             const sheet = document.createElement('div');
             sheet.className = `pdf-sheet ${config.paperSize} ${config.orientation}`;
-            
+
             // Margens
             sheet.style.paddingTop = `${config.marginTop}cm`;
             sheet.style.paddingRight = `${config.marginRight}cm`;
@@ -44,7 +44,7 @@ export const generateBoardPDF = async (pages, config) => {
                             ${config.headerText}
                         </div>
                     ` : ''}
-                    
+
                     <div class="pdf-grid" style="
                         grid-template-columns: repeat(${config.cols}, 1fr);
                         grid-template-rows: repeat(${config.rows}, 1fr);
@@ -54,7 +54,7 @@ export const generateBoardPDF = async (pages, config) => {
                     </div>
                 </div>
                 <div class="pdf-footer">
-                     Gerado via NeuroCAA - Sistema protegido por direitos autorais - Pictogramas utilizados sob licença ARASAAC (CC BY-NC-SA 4.0) - <span>Conheça a plataforma</span>
+                    Gerado via NeuroCAA - Sistema protegido por direitos autorais - Pictogramas utilizados sob licença ARASAAC (CC BY-NC-SA 4.0) - <span>Conheça a plataforma</span>
                 </div>
             `;
 
@@ -80,9 +80,9 @@ export const generateBoardPDF = async (pages, config) => {
             if (i > 0) {
                 pdf.addPage(format, orientation); // Garante orientação correta nas novas páginas
             }
-            
+
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-            
+
             container.removeChild(sheet);
         }
 
@@ -104,7 +104,7 @@ function generateGridHTML(cards, config) {
 
     for (let k = 0; k < totalSlots; k++) {
         const card = cards[k];
-        
+
         if (card) {
             // Célula PREENCHIDA
             const cellStyle = `
