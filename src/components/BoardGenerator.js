@@ -26,11 +26,11 @@ const BoardGenerator = ({ onGenerate }) => {
     rows: 4, cols: 5, gap: 2,
     header: true, headerText: 'Minha Prancha', headerBgColor: '#FFFFFF',
     cellBgColor: '#FFFFFF', cellBorderColor: '#000000', borderWidth: 1, borderStyle: 'solid', 
-    boardBorderColor: '#000000', // BORDA DA PRANCHA (VOLTOU)
+    boardBorderColor: '#000000', // GARANTIDO: Cor da Borda da Prancha
     paperSize: 'A4', orientation: 'landscape',
     marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1,
     textPosition: 'bottom', fontFamily: 'Arial', fontSize: 12, 
-    textCase: 'uppercase', // MAIÚSCULA/MINÚSCULA (VOLTOU)
+    textCase: 'uppercase', // GARANTIDO: Maiúscula/Minúscula
   });
 
   const handlePreview = async (e) => {
@@ -146,7 +146,6 @@ const BoardGenerator = ({ onGenerate }) => {
                   {CAA_COLORS.map(c => <option key={c.color} value={c.color} style={{backgroundColor: c.color}}>{c.label}</option>)}
               </select>
           </div>
-          {/* SELETOR DE BORDA DA PRANCHA QUE FALTAVA */}
           <div className="config-group">
               <label>Cor da Borda (Prancha):</label>
               <select value={config.boardBorderColor} onChange={(e) => handleChange('boardBorderColor', e.target.value)}>
@@ -158,7 +157,6 @@ const BoardGenerator = ({ onGenerate }) => {
               <input type="number" value={config.borderWidth} onChange={(e) => handleChange('borderWidth', e.target.value)} />
           </div>
 
-          {/* SELETOR DE TEXTO QUE FALTAVA */}
           <h3>🔤 Texto</h3>
           <div className="config-group">
               <label>Posição:</label>
