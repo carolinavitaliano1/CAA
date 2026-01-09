@@ -1,6 +1,6 @@
 /* src/components/BoardGenerator.css */
 
-/* --- LAYOUT GERAL (DIVIDIDO MEIO A MEIO) --- */
+/* --- LAYOUT GERAL --- */
 .board-generator-wrapper {
   display: flex;
   width: 100%;
@@ -28,18 +28,18 @@
   transform: none !important;
 }
 
-/* CABEÇALHO ESQUERDO (Referência para o alinhamento) */
+/* CABEÇALHO ESQUERDO */
 .config-header {
-  padding: 20px; /* Alinhamento vertical exato */
+  height: 80px; /* Altura fixa para alinhar com o lado direito */
+  padding: 0 20px; /* Alinhamento horizontal */
   background: white;
   border-bottom: 1px solid #E2E8F0;
   flex-shrink: 0;
-  height: 80px; /* Altura fixa para alinhar com o lado direito */
   display: flex;
   align-items: center;
   box-sizing: border-box;
 }
-.config-header h3 { margin: 0; font-size: 1.2rem; color: #1E293B; font-weight: 800; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; }
+.config-header h3 { margin: 0; font-size: 1.1rem; color: #1E293B; font-weight: 800; letter-spacing: -0.5px; }
 .btn-close-sidebar { display: none; }
 
 .config-body {
@@ -68,13 +68,11 @@
   border-bottom: 1px solid #CBD5E1;
 }
 .config-card-content { padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-
 .config-card-content label { display: block; font-size: 0.9rem; font-weight: 600; color: #334155; margin-bottom: 4px; }
 .config-card-content input, .config-card-content select {
   width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 0.95rem; background: #fff; box-sizing: border-box;
 }
 .config-card-content input:focus, .config-card-content select:focus { border-color: #2563EB; outline: none; }
-
 .margins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
 /* RODAPÉ (SALVAR) */
@@ -100,13 +98,12 @@
   overflow: hidden;
 }
 
-/* --- BARRA DE FERRAMENTAS (CABEÇALHO DIREITO) --- */
-/* Agora simétrico ao cabeçalho esquerdo */
+/* --- BARRA DE FERRAMENTAS (AQUI ESTÁ A CORREÇÃO DA LARGURA) --- */
 .preview-toolbar {
   background: white;
-  border-bottom: 1px solid #E2E8F0;
-  padding: 0 20px; /* Padding lateral igual ao da esquerda */
-  height: 80px;    /* Mesma altura do cabeçalho da esquerda */
+  border-bottom: 1px solid #E2E8F0; /* Linha preta/cinza que você mencionou */
+  height: 80px; /* Mesma altura da esquerda */
+  padding: 0 20px; /* Mesmo alinhamento lateral */
   display: flex;
   align-items: center;
   gap: 15px;
@@ -116,24 +113,23 @@
   box-sizing: border-box;
 }
 
-/* GRUPO DE INPUT (OCUPA QUASE TUDO) */
+/* GRUPO DE INPUT (OCUPA TODO O ESPAÇO DISPONÍVEL) */
 .input-area-mini {
   display: flex;
-  flex: 1; /* Cresce o máximo possível */
-  height: 48px; /* Altura do input */
-  gap: 0; /* Grudado no botão para parecer uma peça só */
-  position: relative;
+  flex: 1; /* ISSE É O SEGREDO: Ocupa tudo que sobrar */
+  height: 48px; 
+  gap: 0; /* Coladinho no botão */
   align-items: center;
 }
 
-/* Campo de Texto (Largo e Limpo) */
+/* Campo de Texto (Esticado) */
 .input-area-mini textarea { 
-  flex: 1; 
+  flex: 1; /* Estica o máximo possível */
   height: 100%;
   padding: 12px 15px;
-  border-radius: 8px 0 0 8px; /* Arredondado só na esquerda */
+  border-radius: 8px 0 0 8px;
   border: 1px solid #CBD5E1;
-  border-right: none; /* Remove borda entre texto e botão */
+  border-right: none; 
   resize: none;
   font-size: 1rem;
   font-family: inherit;
@@ -141,38 +137,24 @@
   box-sizing: border-box;
   line-height: 1.5;
 }
-.input-area-mini textarea:focus {
-  border-color: #2563EB;
-  background-color: #fff;
-  outline: none;
-  z-index: 2; /* Fica por cima da borda do botão */
-}
+.input-area-mini textarea:focus { border-color: #2563EB; background-color: #fff; outline: none; z-index: 2; }
 
-/* Botão Gerar (Grudado no texto) */
+/* Botão Gerar */
 .input-area-mini button { 
   height: 100%;
   padding: 0 25px;
   background: #2563EB;
   color: white;
   border: 1px solid #2563EB;
-  border-radius: 0 8px 8px 0; /* Arredondado só na direita */
+  border-radius: 0 8px 8px 0;
   font-weight: 700;
   font-size: 0.95rem;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.2s;
 }
 .input-area-mini button:hover { background: #1D4ED8; border-color: #1D4ED8; }
 
-/* SEPARADOR VERTICAL (Opcional, para dividir input do zoom) */
-.toolbar-divider {
-  width: 1px;
-  height: 40px;
-  background-color: #E2E8F0;
-  margin: 0 5px;
-}
-
-/* CONTROLE DE ZOOM (Limpo e alinhado) */
+/* CONTROLE DE ZOOM (No canto direito, arrumado) */
 .zoom-controls {
   display: flex;
   align-items: center;
@@ -183,32 +165,14 @@
   font-weight: 600;
   background: #fff;
   border-radius: 8px;
-  border: 1px solid transparent; /* Invisível mas ocupa espaço */
 }
-
 .zoom-controls label { font-size: 1.2rem; cursor: default; }
-
-/* Slider de Zoom estilizado */
 .zoom-controls input[type="range"] {
-  -webkit-appearance: none;
   width: 100px;
-  height: 6px;
-  background: #E2E8F0;
-  border-radius: 5px;
   cursor: pointer;
-}
-.zoom-controls input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 16px;
-  height: 16px;
-  background: #2563EB;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid white;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
-/* --- MESA DE LUZ --- */
+/* MESA DE LUZ */
 .paper-preview-container {
   flex: 1;
   display: flex;
@@ -232,7 +196,6 @@
   box-sizing: border-box;
 }
 
-/* Tamanhos */
 .paper-sheet.A4.portrait { width: 210mm; height: 297mm; }
 .paper-sheet.A4.landscape { width: 297mm; height: 210mm; }
 .paper-sheet.A3.portrait { width: 297mm; height: 420mm; }
@@ -251,9 +214,7 @@
   position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
   background: white; padding: 10px 25px; border-radius: 40px;
   box-shadow: 0 5px 20px rgba(0,0,0,0.2); 
-  display: flex; gap: 20px; align-items: center; 
-  z-index: 50;
-  border: 1px solid #CBD5E1;
+  display: flex; gap: 20px; align-items: center; z-index: 50; border: 1px solid #CBD5E1;
 }
 .pagination-controls button { 
   width: 40px; height: 40px; border-radius: 50%; border: 1px solid #CBD5E1; background: white; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center;
@@ -263,18 +224,11 @@
 .hidden-page { display: none !important; }
 .no-pages-msg { color: #64748B; margin-top: 20%; font-size: 1.2rem; text-align: center; background: rgba(255,255,255,0.8); padding: 20px; border-radius: 12px; }
 
-/* MOBILE */
 @media (max-width: 768px) {
   .board-generator-wrapper { position: relative; }
-  .config-panel {
-    position: absolute !important; left: 0; top: 0; bottom: 0; width: 90%; max-width: none;
-    transform: translateX(-100%) !important;
-    transition: transform 0.3s ease;
-    z-index: 999;
-  }
+  .config-panel { position: absolute !important; left: 0; top: 0; bottom: 0; width: 90%; max-width: none; transform: translateX(-100%) !important; transition: transform 0.3s ease; z-index: 999; }
   .config-panel.open { transform: translateX(0) !important; }
   .btn-close-sidebar { display: block; background: none; border: none; font-size: 2rem; padding: 0 10px; }
-  
   .preview-toolbar { height: auto; padding: 15px; flex-direction: column; align-items: stretch; gap: 10px; }
   .input-area-mini { width: 100%; height: 50px; }
   .zoom-controls { justify-content: center; width: 100%; }
