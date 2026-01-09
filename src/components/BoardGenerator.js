@@ -25,10 +25,12 @@ const BoardGenerator = ({ onGenerate }) => {
   const [config, setConfig] = useState({
     rows: 4, cols: 5, gap: 2,
     header: true, headerText: 'Minha Prancha', headerBgColor: '#FFFFFF',
-    cellBgColor: '#FFFFFF', cellBorderColor: '#000000', borderWidth: 1, borderStyle: 'solid', boardBorderColor: '#000000',
+    cellBgColor: '#FFFFFF', cellBorderColor: '#000000', borderWidth: 1, borderStyle: 'solid', 
+    boardBorderColor: '#000000', // Cor da Borda da Prancha
     paperSize: 'A4', orientation: 'landscape',
     marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1,
-    textPosition: 'bottom', fontFamily: 'Arial', fontSize: 12, textCase: 'uppercase',
+    textPosition: 'bottom', fontFamily: 'Arial', fontSize: 12, 
+    textCase: 'uppercase', // Maiúscula/Minúscula
   });
 
   const handlePreview = async (e) => {
@@ -72,9 +74,7 @@ const BoardGenerator = ({ onGenerate }) => {
   const nextPage = () => { if (currentPage < pages.length - 1) setCurrentPage(prev => prev + 1); };
   const prevPage = () => { if (currentPage > 0) setCurrentPage(prev => prev - 1); };
 
-  // --- FUNÇÃO DE DOWNLOAD CORRIGIDA ---
   const handleDownloadClick = async (e) => {
-    // Evita comportamento padrão
     if (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -141,14 +141,52 @@ const BoardGenerator = ({ onGenerate }) => {
               </select>
           </div>
           <div className="config-group">
-              <label>Cor da Borda:</label>
+              <label>Cor da Borda (Célula):</label>
               <select value={config.cellBorderColor} onChange={(e) => handleChange('cellBorderColor', e.target.value)}>
+                  {CAA_COLORS.map(c => <option key={c.color} value={c.color} style={{backgroundColor: c.color}}>{c.label}</option>)}
+              </select>
+          </div>
+          {/* AQUI ESTÁ A COR DA BORDA DA PRANCHA QUE FALTAVA */}
+          <div className="config-group">
+              <label>Cor da Borda (Prancha):</label>
+              <select value={config.boardBorderColor} onChange={(e) => handleChange('boardBorderColor', e.target.value)}>
                   {CAA_COLORS.map(c => <option key={c.color} value={c.color} style={{backgroundColor: c.color}}>{c.label}</option>)}
               </select>
           </div>
           <div className="config-group">
               <label>Espessura:</label>
               <input type="number" value={config.borderWidth} onChange={(e) => handleChange('borderWidth', e.target.value)} />
+          </div>
+
+          {/* AQUI ESTÁ A SEÇÃO DE TEXTO QUE FALTAVA */}
+          <h3>🔤 Texto</h3>
+          <div className="config-group">
+              <label>Posição:</label>
+              <select value={config.textPosition} onChange={(e) => handleChange('textPosition', e.target.value)}>
+                  <option value="bottom">Embaixo</option>
+                  <option value="top">Em cima</option>
+                  <option value="none">Ocultar</option>
+              </select>
+          </div>
+          <div className="config-group">
+              <label>Tamanho e Caixa:</label>
+              <div style={{display:'flex', gap:'5px'}}>
+                  <input type="number" value={config.fontSize} onChange={(e) => handleChange('fontSize', e.target.value)} placeholder="pt" />
+                  {/* SELETOR DE MAIÚSCULA / MINÚSCULA */}
+                  <select value={config.textCase} onChange={(e) => handleChange('textCase', e.target.value)}>
+                      <option value="uppercase">MAIÚSCULA</option>
+                      <option value="lowercase">minúscula</option>
+                  </select>
+              </div>
+          </div>
+          <div className="config-group">
+              <label>Fonte:</label>
+              <select value={config.fontFamily} onChange={(e) => handleChange('fontFamily', e.target.value)}>
+                  <option value="Arial">Arial</option>
+                  <option value="Times New Roman">Times</option>
+                  <option value="Verdana">Verdana</option>
+                  <option value="Comic Sans MS">Comic Sans</option>
+              </select>
           </div>
 
           <h3>📄 Papel</h3>
@@ -239,7 +277,6 @@ const BoardGenerator = ({ onGenerate }) => {
         </div>
 
         <div className="action-buttons-row">
-            {/* BOTÃO DE DOWNLOAD */}
             <button 
                 className="btn-print" 
                 type="button" 
