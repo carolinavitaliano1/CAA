@@ -1,23 +1,23 @@
 /* src/utils/BoardPDF.css */
 
-/* --- CONTAINER INVISÍVEL E SEGURO --- */
+/* CONTAINER FORA DA TELA - Com fundo branco e z-index alto para não pegar o site */
 #pdf-generator-container {
     position: fixed;
-    left: -5000px; /* Esconde fora da tela */
+    left: -5000px; /* Esconde na lateral esquerda */
     top: 0;
-    width: 5000px; /* Garante espaço de sobra */
+    width: 5000px;
     height: 5000px;
-    z-index: 99999; /* Fica na frente de tudo para não pegar o menu do site */
-    background: white;
+    z-index: 99999; /* Garante que fique "acima" do site durante a foto */
+    background: white; /* Garante fundo branco sólido */
     visibility: visible;
 }
 
-/* --- A FOLHA DE PAPEL --- */
+/* A FOLHA DE PAPEL */
 .pdf-sheet {
     background: white;
     box-sizing: border-box;
-    /* Divide a folha: Conteúdo (esticável) e Rodapé (fixo) */
-    display: grid;
+    /* Divide em 2 linhas: Conteúdo (esticável) e Rodapé (fixo) */
+    display: grid; 
     grid-template-rows: 1fr max-content; 
     overflow: hidden;
     position: relative;
@@ -25,13 +25,13 @@
     print-color-adjust: exact;
 }
 
-/* Tamanhos Padrão A4/A3 */
+/* Tamanhos Físicos */
 .pdf-sheet.A4.portrait { width: 210mm; height: 297mm; }
 .pdf-sheet.A4.landscape { width: 297mm; height: 210mm; }
 .pdf-sheet.A3.portrait { width: 297mm; height: 420mm; }
 .pdf-sheet.A3.landscape { width: 420mm; height: 297mm; }
 
-/* --- ÁREA DO CONTEÚDO --- */
+/* ÁREA DE CONTEÚDO */
 .pdf-content {
     width: 100%;
     height: 100%;
@@ -52,36 +52,32 @@
     display: grid;
     width: 100%;
     height: 100%;
-    /* As colunas/linhas são definidas no JS */
+    /* Colunas e Linhas definidas no JS */
 }
 
-/* --- A CÉLULA (QUADRADINHO) --- */
+/* CÉLULA */
 .pdf-cell {
     position: relative;
     overflow: hidden;
     box-sizing: border-box;
-    display: flex; /* Garante que o inner ocupe tudo */
+    display: flex;
 }
 
-/* --- O CONTEÚDO DA CÉLULA (A Mágica Acontece Aqui) --- */
+/* CONTEÚDO DA CÉLULA - A CORREÇÃO PRINCIPAL */
 .pdf-cell-inner {
     width: 100%;
     height: 100%;
-    padding: 4px; /* Margem interna segura */
+    padding: 4px;
     box-sizing: border-box;
     
-    /* GRID INTERNO: [Texto] [Imagem] [Texto] */
+    /* Grid de 3 andares: Texto / Imagem / Texto */
+    /* Imagem (1fr) só pega o espaço que sobrar. Isso evita estouro */
     display: grid;
-    /* auto = altura do texto
-       1fr  = espaço da imagem (o que sobrar)
-       auto = altura do texto
-    */
     grid-template-rows: auto 1fr auto; 
     align-items: center;
     justify-items: center;
 }
 
-/* Texto */
 .pdf-cell-inner span {
     font-family: Arial, sans-serif;
     line-height: 1.1;
@@ -90,15 +86,14 @@
     z-index: 2;
 }
 
-/* Imagem */
 .pdf-cell-inner img {
     width: 100%;
     height: 100%;
-    object-fit: contain; /* Garante que a imagem nunca estique ou corte */
+    object-fit: contain; /* Garante que a imagem nunca corte */
     display: block;
 }
 
-/* --- RODAPÉ --- */
+/* RODAPÉ */
 .pdf-footer {
     text-align: center;
     font-size: 9pt;
