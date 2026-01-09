@@ -15,7 +15,7 @@
 .config-panel {
   flex: 1; 
   min-width: 320px;
-  max-width: 50%; /* Mantém a divisão igual */
+  max-width: 50%; /* Mantém a divisão exata de 50% */
   background: #F1F5F9;
   border-right: 1px solid #E2E8F0;
   display: flex;
@@ -28,13 +28,18 @@
   transform: none !important;
 }
 
+/* CABEÇALHO ESQUERDO (Referência para o alinhamento) */
 .config-header {
-  padding: 15px 20px;
+  padding: 20px; /* Alinhamento vertical exato */
   background: white;
   border-bottom: 1px solid #E2E8F0;
   flex-shrink: 0;
+  height: 80px; /* Altura fixa para alinhar com o lado direito */
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
 }
-.config-header h3 { margin: 0; font-size: 1.1rem; color: #1E293B; font-weight: 800; letter-spacing: -0.5px; }
+.config-header h3 { margin: 0; font-size: 1.2rem; color: #1E293B; font-weight: 800; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; }
 .btn-close-sidebar { display: none; }
 
 .config-body {
@@ -64,7 +69,6 @@
 }
 .config-card-content { padding: 15px; display: flex; flex-direction: column; gap: 10px; }
 
-/* Inputs e Selects do Menu */
 .config-card-content label { display: block; font-size: 0.9rem; font-weight: 600; color: #334155; margin-bottom: 4px; }
 .config-card-content input, .config-card-content select {
   width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 0.95rem; background: #fff; box-sizing: border-box;
@@ -73,7 +77,7 @@
 
 .margins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-/* RODAPÉ FIXO (SALVAR) */
+/* RODAPÉ (SALVAR) */
 .config-footer {
   padding: 20px;
   background: white;
@@ -85,9 +89,10 @@
 }
 .btn-print:hover { background: #059669; }
 
+
 /* --- PAINEL DIREITO (PRANCHA) --- */
 .preview-panel {
-  flex: 1;
+  flex: 1; /* Ocupa os outros 50% */
   display: flex;
   flex-direction: column;
   background-color: #E2E8F0;
@@ -95,79 +100,113 @@
   overflow: hidden;
 }
 
-/* --- BARRA DE FERRAMENTAS (TOOLBAR) --- */
+/* --- BARRA DE FERRAMENTAS (CABEÇALHO DIREITO) --- */
+/* Agora simétrico ao cabeçalho esquerdo */
 .preview-toolbar {
   background: white;
-  border-bottom: 1px solid #CBD5E1;
-  /* Espaçamento IDÊNTICO ao painel da esquerda para alinhar visualmente */
-  padding: 15px 20px; 
+  border-bottom: 1px solid #E2E8F0;
+  padding: 0 20px; /* Padding lateral igual ao da esquerda */
+  height: 80px;    /* Mesma altura do cabeçalho da esquerda */
   display: flex;
-  align-items: center; /* Centraliza verticalmente */
+  align-items: center;
   gap: 15px;
+  flex-shrink: 0;
   z-index: 100;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  flex-shrink: 0;
+  box-sizing: border-box;
 }
 
-/* Área de Input (Digitar + Botão) - AGORA OCUPA O ESPAÇO DISPONÍVEL */
+/* GRUPO DE INPUT (OCUPA QUASE TUDO) */
 .input-area-mini {
   display: flex;
-  flex: 1; /* Cresce para empurrar o zoom para a direita */
-  gap: 10px;
+  flex: 1; /* Cresce o máximo possível */
+  height: 48px; /* Altura do input */
+  gap: 0; /* Grudado no botão para parecer uma peça só */
+  position: relative;
   align-items: center;
 }
 
-/* Caixa de Texto */
+/* Campo de Texto (Largo e Limpo) */
 .input-area-mini textarea { 
-  flex: 1; /* Ocupa toda a largura disponível */
-  height: 46px; /* Altura confortável */
-  padding: 10px 15px;
-  border-radius: 8px;
-  border: 2px solid #E2E8F0;
+  flex: 1; 
+  height: 100%;
+  padding: 12px 15px;
+  border-radius: 8px 0 0 8px; /* Arredondado só na esquerda */
+  border: 1px solid #CBD5E1;
+  border-right: none; /* Remove borda entre texto e botão */
   resize: none;
   font-size: 1rem;
   font-family: inherit;
-  transition: border-color 0.2s;
   background-color: #F8FAFC;
+  box-sizing: border-box;
+  line-height: 1.5;
 }
 .input-area-mini textarea:focus {
   border-color: #2563EB;
   background-color: #fff;
   outline: none;
+  z-index: 2; /* Fica por cima da borda do botão */
 }
 
-/* Botão Gerar */
+/* Botão Gerar (Grudado no texto) */
 .input-area-mini button { 
-  height: 46px; /* Mesma altura do texto */
+  height: 100%;
   padding: 0 25px;
   background: #2563EB;
   color: white;
-  border: none;
-  border-radius: 8px;
+  border: 1px solid #2563EB;
+  border-radius: 0 8px 8px 0; /* Arredondado só na direita */
   font-weight: 700;
   font-size: 0.95rem;
   cursor: pointer;
   white-space: nowrap;
-  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
   transition: background 0.2s;
 }
-.input-area-mini button:hover { background: #1D4ED8; }
+.input-area-mini button:hover { background: #1D4ED8; border-color: #1D4ED8; }
 
-/* Controle de Zoom (Canto Direito) */
+/* SEPARADOR VERTICAL (Opcional, para dividir input do zoom) */
+.toolbar-divider {
+  width: 1px;
+  height: 40px;
+  background-color: #E2E8F0;
+  margin: 0 5px;
+}
+
+/* CONTROLE DE ZOOM (Limpo e alinhado) */
 .zoom-controls {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #F1F5F9;
-  padding: 0 15px;
-  height: 46px; /* Mesma altura dos outros */
-  border-radius: 8px;
-  border: 1px solid #E2E8F0;
+  height: 48px;
+  padding: 0 10px;
   color: #64748B;
   font-weight: 600;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid transparent; /* Invisível mas ocupa espaço */
 }
-.zoom-controls label { font-size: 1.2rem; }
-.zoom-controls input { cursor: pointer; width: 80px; }
+
+.zoom-controls label { font-size: 1.2rem; cursor: default; }
+
+/* Slider de Zoom estilizado */
+.zoom-controls input[type="range"] {
+  -webkit-appearance: none;
+  width: 100px;
+  height: 6px;
+  background: #E2E8F0;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.zoom-controls input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #2563EB;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
 
 /* --- MESA DE LUZ --- */
 .paper-preview-container {
@@ -236,8 +275,7 @@
   .config-panel.open { transform: translateX(0) !important; }
   .btn-close-sidebar { display: block; background: none; border: none; font-size: 2rem; padding: 0 10px; }
   
-  .preview-toolbar { flex-direction: column; padding: 15px; gap: 10px; height: auto; align-items: stretch; }
-  .input-area-mini { flex-direction: column; width: 100%; }
-  .input-area-mini button { width: 100%; }
-  .zoom-controls { justify-content: center; width: 100%; box-sizing: border-box; }
+  .preview-toolbar { height: auto; padding: 15px; flex-direction: column; align-items: stretch; gap: 10px; }
+  .input-area-mini { width: 100%; height: 50px; }
+  .zoom-controls { justify-content: center; width: 100%; }
 }
