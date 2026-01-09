@@ -15,7 +15,7 @@
 .config-panel {
   flex: 1; 
   min-width: 320px;
-  max-width: 50%; /* Mantém a divisão exata de 50% */
+  max-width: 50%; 
   background: #F1F5F9;
   border-right: 1px solid #E2E8F0;
   display: flex;
@@ -30,8 +30,8 @@
 
 /* CABEÇALHO ESQUERDO */
 .config-header {
-  height: 80px; /* Altura fixa para alinhar com o lado direito */
-  padding: 0 20px; /* Alinhamento horizontal */
+  height: 80px; 
+  padding: 0 20px; 
   background: white;
   border-bottom: 1px solid #E2E8F0;
   flex-shrink: 0;
@@ -51,7 +51,7 @@
   gap: 15px;
 }
 
-/* CARDS DE CONFIGURAÇÃO */
+/* CARDS */
 .config-card {
   background: white;
   border: 1px solid #CBD5E1;
@@ -75,7 +75,7 @@
 .config-card-content input:focus, .config-card-content select:focus { border-color: #2563EB; outline: none; }
 .margins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-/* RODAPÉ (SALVAR) */
+/* RODAPÉ */
 .config-footer {
   padding: 20px;
   background: white;
@@ -90,7 +90,7 @@
 
 /* --- PAINEL DIREITO (PRANCHA) --- */
 .preview-panel {
-  flex: 1; /* Ocupa os outros 50% */
+  flex: 1; 
   display: flex;
   flex-direction: column;
   background-color: #E2E8F0;
@@ -98,14 +98,14 @@
   overflow: hidden;
 }
 
-/* --- BARRA DE FERRAMENTAS (AQUI ESTÁ A CORREÇÃO DA LARGURA) --- */
+/* --- BARRA DE FERRAMENTAS (CORREÇÃO DE ALINHAMENTO) --- */
 .preview-toolbar {
   background: white;
-  border-bottom: 1px solid #E2E8F0; /* Linha preta/cinza que você mencionou */
-  height: 80px; /* Mesma altura da esquerda */
-  padding: 0 20px; /* Mesmo alinhamento lateral */
+  border-bottom: 1px solid #E2E8F0;
+  height: 80px; 
+  padding: 0 20px; 
   display: flex;
-  align-items: center;
+  align-items: center; /* Centraliza verticalmente na barra */
   gap: 15px;
   flex-shrink: 0;
   z-index: 100;
@@ -113,48 +113,57 @@
   box-sizing: border-box;
 }
 
-/* GRUPO DE INPUT (OCUPA TODO O ESPAÇO DISPONÍVEL) */
+/* CONTAINER DO INPUT + BOTÃO */
 .input-area-mini {
   display: flex;
-  flex: 1; /* ISSE É O SEGREDO: Ocupa tudo que sobrar */
-  height: 48px; 
-  gap: 0; /* Coladinho no botão */
-  align-items: center;
+  flex: 1;
+  height: 48px; /* Altura fixa para o grupo todo */
+  align-items: stretch; /* O SEGREDO: Estica filhos para terem a mesma altura */
 }
 
-/* Campo de Texto (Esticado) */
+/* Campo de Texto */
 .input-area-mini textarea { 
-  flex: 1; /* Estica o máximo possível */
-  height: 100%;
+  flex: 1; 
+  height: auto; /* Deixa o stretch definir a altura */
   padding: 12px 15px;
-  border-radius: 8px 0 0 8px;
+  border-radius: 8px 0 0 8px; /* Arredondado na esquerda */
   border: 1px solid #CBD5E1;
-  border-right: none; 
+  border-right: none; /* Remove borda dupla no encontro */
   resize: none;
   font-size: 1rem;
   font-family: inherit;
   background-color: #F8FAFC;
-  box-sizing: border-box;
+  box-sizing: border-box; /* Garante cálculo correto */
+  margin: 0; /* Remove margens padrão */
   line-height: 1.5;
 }
-.input-area-mini textarea:focus { border-color: #2563EB; background-color: #fff; outline: none; z-index: 2; }
+.input-area-mini textarea:focus {
+  border-color: #2563EB;
+  background-color: #fff;
+  outline: none;
+  z-index: 2; 
+}
 
 /* Botão Gerar */
 .input-area-mini button { 
-  height: 100%;
+  height: auto; /* Deixa o stretch definir a altura */
   padding: 0 25px;
   background: #2563EB;
   color: white;
   border: 1px solid #2563EB;
-  border-radius: 0 8px 8px 0;
+  border-radius: 0 8px 8px 0; /* Arredondado na direita */
   font-weight: 700;
   font-size: 0.95rem;
   cursor: pointer;
   white-space: nowrap;
+  box-sizing: border-box; /* Garante cálculo correto */
+  margin: 0; /* Remove margens padrão */
+  display: flex;
+  align-items: center; /* Centraliza texto dentro do botão */
 }
 .input-area-mini button:hover { background: #1D4ED8; border-color: #1D4ED8; }
 
-/* CONTROLE DE ZOOM (No canto direito, arrumado) */
+/* ZOOM */
 .zoom-controls {
   display: flex;
   align-items: center;
@@ -165,12 +174,10 @@
   font-weight: 600;
   background: #fff;
   border-radius: 8px;
+  box-sizing: border-box;
 }
 .zoom-controls label { font-size: 1.2rem; cursor: default; }
-.zoom-controls input[type="range"] {
-  width: 100px;
-  cursor: pointer;
-}
+.zoom-controls input[type="range"] { width: 100px; cursor: pointer; }
 
 /* MESA DE LUZ */
 .paper-preview-container {
@@ -186,7 +193,6 @@
   z-index: 1;
 }
 
-/* FOLHA DE PAPEL */
 .paper-sheet {
   background: white;
   box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.25);
@@ -209,7 +215,6 @@
 .cell-content span { font-weight: 700; line-height: 1.1; margin-top: 4px; }
 .paper-footer { text-align: center; font-size: 10px; color: #94A3B8; margin-top: auto; padding: 5px; }
 
-/* PAGINAÇÃO */
 .pagination-controls {
   position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
   background: white; padding: 10px 25px; border-radius: 40px;
