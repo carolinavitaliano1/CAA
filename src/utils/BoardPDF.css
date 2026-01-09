@@ -14,9 +14,10 @@
 .pdf-sheet {
     background: white;
     box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden; /* CORTA TUDO O QUE PASSAR DA BORDA */
+    /* MUDANÇA CRUCIAL: Grid Layout */
+    display: grid; 
+    grid-template-rows: 1fr max-content; /* 1fr (Conteúdo) e max-content (Rodapé) */
+    overflow: hidden;
     position: relative;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
@@ -29,11 +30,10 @@
 
 .pdf-content {
     width: 100%;
-    flex: 1; 
+    height: 100%; /* Ocupa 100% da área "1fr" */
+    overflow: hidden; /* Corta o que sobrar */
     display: flex;
     flex-direction: column;
-    min-height: 0; 
-    overflow: hidden;
 }
 
 .pdf-header {
@@ -49,6 +49,7 @@
     flex: 1;
     width: 100%;
     height: 100%;
+    /* Grid template columns/rows definido no JS */
 }
 
 .pdf-cell {
@@ -68,7 +69,7 @@
     justify-content: center;
     width: 100%;
     height: 100%;
-    padding: 8px; /* Espaço para proteger a imagem */
+    padding: 8px;
     text-align: center;
     z-index: 1;
     box-sizing: border-box;
@@ -78,7 +79,7 @@
 .pdf-cell-inner img {
     object-fit: contain;
     max-width: 92%; 
-    max-height: 65%; /* Reduzido para não cobrir texto/borda */
+    max-height: 65%;
     flex-shrink: 1;
 }
 
@@ -99,10 +100,8 @@
     padding-bottom: 2px;
     font-family: Arial, sans-serif;
     background: white;
-    flex-shrink: 0;
-    margin-top: auto;
-    position: relative;
-    z-index: 10;
+    z-index: 20;
+    /* Não precisa de margin-top: auto pois o Grid já empurra pro fundo */
 }
 
 .pdf-footer span {
