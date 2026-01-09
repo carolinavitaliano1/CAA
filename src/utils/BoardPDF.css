@@ -1,13 +1,15 @@
 /* src/utils/BoardPDF.css */
 
-/* CONTAINER FANTASMA (Fixed garante que fique no topo da visão da "câmera") */
+/* CONTAINER FANTASMA */
 #pdf-generator-container {
-    position: fixed; /* MUDADO PARA FIXED */
+    position: fixed;
     top: 0;
     left: 0;
     width: 5000px; /* Largura gigante para garantir paisagem */
-    z-index: -9999; /* Atrás de tudo */
-    visibility: hidden; /* Invisível pro usuário */
+    height: 5000px;
+    z-index: -9999;
+    visibility: hidden;
+    overflow: visible;
 }
 
 /* A Folha de Papel */
@@ -15,7 +17,7 @@
     background: white;
     box-sizing: border-box;
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Organiza: Cabeçalho -> Conteúdo -> Rodapé */
     overflow: hidden;
     position: relative;
     /* Força impressão de cores */
@@ -29,12 +31,15 @@
 .pdf-sheet.A3.portrait { width: 297mm; height: 420mm; }
 .pdf-sheet.A3.landscape { width: 420mm; height: 297mm; }
 
-/* Conteúdo Interno */
+/* CONTEÚDO (GRID) */
 .pdf-content {
     width: 100%;
-    height: 100%;
+    /* MUDANÇA CRUCIAL: flex: 1 faz ele ocupar SÓ o espaço que sobra, respeitando o rodapé */
+    flex: 1; 
     display: flex;
     flex-direction: column;
+    min-height: 0; /* Importante para o Grid não estourar */
+    overflow: hidden; /* Garante que nada saia para fora da borda */
 }
 
 .pdf-header {
@@ -42,13 +47,13 @@
     font-weight: bold;
     font-size: 24pt;
     padding: 10px;
-    flex-shrink: 0;
+    flex-shrink: 0; /* Não deixa o cabeçalho amassar */
 }
 
 /* Grid */
 .pdf-grid {
     display: grid;
-    flex: 1;
+    flex: 1; /* Ocupa todo o espaço do container pai */
     width: 100%;
     height: 100%;
 }
@@ -89,14 +94,19 @@
     font-weight: bold;
 }
 
+/* RODAPÉ */
 .pdf-footer {
     text-align: center;
     font-size: 9pt;
     color: #555;
     padding-top: 5px;
+    padding-bottom: 0;
     font-family: Arial, sans-serif;
     background: white;
+    flex-shrink: 0; /* Garante que o rodapé nunca diminua ou suma */
+    margin-top: auto; /* Empurra para o fundo se sobrar espaço */
 }
+
 .pdf-footer span {
     color: #0044CC;
     font-weight: bold;
