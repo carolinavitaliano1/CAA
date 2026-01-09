@@ -3,10 +3,10 @@ import jsPDF from 'jspdf';
 import './BoardPDF.css';
 
 export const generateBoardPDF = async (pages, config) => {
-    // 1. Rolar para o topo (Essencial para o html2canvas alinhar)
+    // 1. Rola para o topo (Essencial)
     window.scrollTo(0, 0);
 
-    // 2. Criar container
+    // 2. Cria o container na frente de tudo
     const container = document.createElement('div');
     container.id = 'pdf-generator-container';
     document.body.appendChild(container);
@@ -22,17 +22,14 @@ export const generateBoardPDF = async (pages, config) => {
         for (let i = 0; i < pages.length; i++) {
             const pageCards = pages[i];
             
-            // Criar Folha
             const sheet = document.createElement('div');
             sheet.className = `pdf-sheet ${config.paperSize} ${config.orientation}`;
             
-            // Margens
             sheet.style.paddingTop = `${config.marginTop}cm`;
             sheet.style.paddingRight = `${config.marginRight}cm`;
             sheet.style.paddingBottom = `${config.marginBottom}cm`;
             sheet.style.paddingLeft = `${config.marginLeft}cm`;
 
-            // HTML Interno
             sheet.innerHTML = `
                 <div class="pdf-content" style="
                     border: ${config.borderWidth}px ${config.borderStyle} ${config.boardBorderColor};
@@ -49,9 +46,9 @@ export const generateBoardPDF = async (pages, config) => {
                     ` : ''}
                     
                     <div class="pdf-grid" style="
-                        /* Grid simples para estrutura, o conteúdo interno usa Flexbox */
-                        grid-template-columns: repeat(${config.cols}, minmax(0, 1fr));
-                        grid-template-rows: repeat(${config.rows}, minmax(0, 1fr));
+                        /* Grid simples para a estrutura macro */
+                        grid-template-columns: repeat(${config.cols}, 1fr);
+                        grid-template-rows: repeat(${config.rows}, 1fr);
                         gap: ${config.gap}px;
                     ">
                         ${generateGridHTML(pageCards, config)}
@@ -64,7 +61,7 @@ export const generateBoardPDF = async (pages, config) => {
 
             container.appendChild(sheet);
 
-            // Pausa de 500ms para garantir que as imagens carreguem
+            // Pausa de 500ms para carregar imagens
             await new Promise(resolve => setTimeout(resolve, 500));
 
             // Captura
@@ -72,10 +69,11 @@ export const generateBoardPDF = async (pages, config) => {
                 scale: 2.5,
                 useCORS: true,
                 logging: false,
-                backgroundColor: '#ffffff', // Reforço do fundo branco
+                backgroundColor: '#ffffff', // Garante fundo branco
                 scrollX: 0,
                 scrollY: 0,
-                // Removemos configurações complexas de 'onclone' pois o CSS já resolve a posição
+                x: 0,
+                y: 0
             });
 
             const imgData = canvas.toDataURL('image/jpeg', 0.95);
@@ -83,7 +81,6 @@ export const generateBoardPDF = async (pages, config) => {
             if (i > 0) pdf.addPage(format, orientation);
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
             
-            // Limpa a folha atual para a próxima
             container.removeChild(sheet);
         }
 
