@@ -3,7 +3,7 @@ import jsPDF from 'jspdf';
 import './BoardPDF.css';
 
 export const generateBoardPDF = async (pages, config) => {
-    // 1. Rolar para o topo (Essencial)
+    // 1. Rolar para o topo (Essencial para o html2canvas alinhar)
     window.scrollTo(0, 0);
 
     // 2. Criar container
@@ -49,7 +49,7 @@ export const generateBoardPDF = async (pages, config) => {
                     ` : ''}
                     
                     <div class="pdf-grid" style="
-                        /* minmax(0, 1fr) é vital para o grid não estourar */
+                        /* Grid simples para estrutura, o conteúdo interno usa Flexbox */
                         grid-template-columns: repeat(${config.cols}, minmax(0, 1fr));
                         grid-template-rows: repeat(${config.rows}, minmax(0, 1fr));
                         gap: ${config.gap}px;
@@ -64,7 +64,7 @@ export const generateBoardPDF = async (pages, config) => {
 
             container.appendChild(sheet);
 
-            // Pausa para renderização
+            // Pausa de 500ms para garantir que as imagens carreguem
             await new Promise(resolve => setTimeout(resolve, 500));
 
             // Captura
@@ -75,7 +75,7 @@ export const generateBoardPDF = async (pages, config) => {
                 backgroundColor: '#ffffff', // Reforço do fundo branco
                 scrollX: 0,
                 scrollY: 0,
-                // Removemos o 'onclone' complexo porque o CSS já garante a posição correta
+                // Removemos configurações complexas de 'onclone' pois o CSS já resolve a posição
             });
 
             const imgData = canvas.toDataURL('image/jpeg', 0.95);
@@ -83,7 +83,7 @@ export const generateBoardPDF = async (pages, config) => {
             if (i > 0) pdf.addPage(format, orientation);
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
             
-            // Limpa a folha atual
+            // Limpa a folha atual para a próxima
             container.removeChild(sheet);
         }
 
