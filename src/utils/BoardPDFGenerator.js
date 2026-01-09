@@ -11,25 +11,25 @@ export const generateBoardPDF = async (pages, config) => {
     try {
         const orientation = config.orientation === 'landscape' ? 'l' : 'p';
         const format = config.paperSize.toLowerCase();
-
+        
         const pdf = new jsPDF(orientation, 'mm', format);
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
 
         for (let i = 0; i < pages.length; i++) {
             const pageCards = pages[i];
-
+            
             // Cria a folha
             const sheet = document.createElement('div');
             sheet.className = `pdf-sheet ${config.paperSize} ${config.orientation}`;
-
+            
             // Margens
             sheet.style.paddingTop = `${config.marginTop}cm`;
             sheet.style.paddingRight = `${config.marginRight}cm`;
             sheet.style.paddingBottom = `${config.marginBottom}cm`;
             sheet.style.paddingLeft = `${config.marginLeft}cm`;
 
-            // HTML
+            // HTML Interno
             sheet.innerHTML = `
                 <div class="pdf-content" style="
                     border: ${config.borderWidth}px ${config.borderStyle} ${config.boardBorderColor};
@@ -44,7 +44,7 @@ export const generateBoardPDF = async (pages, config) => {
                             ${config.headerText}
                         </div>
                     ` : ''}
-
+                    
                     <div class="pdf-grid" style="
                         grid-template-columns: repeat(${config.cols}, 1fr);
                         grid-template-rows: repeat(${config.rows}, 1fr);
@@ -54,23 +54,29 @@ export const generateBoardPDF = async (pages, config) => {
                     </div>
                 </div>
                 <div class="pdf-footer">
-                    Gerado via NeuroCAA - Sistema protegido por direitos autorais - Pictogramas utilizados sob licença ARASAAC (CC BY-NC-SA 4.0) - <span>Conheça a plataforma</span>
+                     Gerado via NeuroCAA - Sistema protegido por direitos autorais - Pictogramas utilizados sob licença ARASAAC (CC BY-NC-SA 4.0) - <span>Conheça a plataforma</span>
                 </div>
             `;
 
             container.appendChild(sheet);
 
-            // FOTO
+            // GERAÇÃO DA FOTO (CORRIGIDA)
             const canvas = await html2canvas(sheet, {
-                scale: 2.5, // Equilíbrio entre qualidade e velocidade
+                scale: 2.5,
                 useCORS: true,
                 logging: false,
                 backgroundColor: '#ffffff',
-                windowWidth: 3000, // IMPORTANTE: Simula tela larga para não cortar
+                // CONFIGURAÇÕES CRUCIAIS PARA EVITAR CORTE:
+                windowWidth: 4000, 
+                width: sheet.offsetWidth, // Pega a largura exata do elemento
+                scrollX: 0, // Força posição zero horizontal
+                scrollY: 0, // Força posição zero vertical
+                x: 0,
+                y: 0,
                 onclone: (clonedDoc) => {
                     const el = clonedDoc.getElementById('pdf-generator-container');
                     if (el) {
-                        el.style.visibility = 'visible'; // Torna visível apenas na "foto"
+                        el.style.visibility = 'visible';
                     }
                 }
             });
@@ -78,11 +84,12 @@ export const generateBoardPDF = async (pages, config) => {
             const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
             if (i > 0) {
-                pdf.addPage(format, orientation); // Garante orientação correta nas novas páginas
+                pdf.addPage(format, orientation);
             }
-
+            
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-
+            
+            // Remove a folha atual para limpar o DOM para a próxima
             container.removeChild(sheet);
         }
 
@@ -104,7 +111,7 @@ function generateGridHTML(cards, config) {
 
     for (let k = 0; k < totalSlots; k++) {
         const card = cards[k];
-
+        
         if (card) {
             // Célula PREENCHIDA
             const cellStyle = `
