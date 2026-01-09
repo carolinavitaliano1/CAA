@@ -3,6 +3,7 @@ import jsPDF from 'jspdf';
 import './BoardPDF.css';
 
 export const generateBoardPDF = async (pages, config) => {
+    // 1. Cria container temporário
     const container = document.createElement('div');
     container.id = 'pdf-generator-container';
     document.body.appendChild(container);
@@ -16,15 +17,17 @@ export const generateBoardPDF = async (pages, config) => {
         for (let i = 0; i < pages.length; i++) {
             const pageCards = pages[i];
             
+            // Cria a folha
             const sheet = document.createElement('div');
             sheet.className = `pdf-sheet ${config.paperSize} ${config.orientation}`;
             
-            // Aplica margens exatas
+            // APLICA AS MARGENS
             sheet.style.paddingTop = `${config.marginTop}cm`;
             sheet.style.paddingRight = `${config.marginRight}cm`;
             sheet.style.paddingBottom = `${config.marginBottom}cm`;
             sheet.style.paddingLeft = `${config.marginLeft}cm`;
 
+            // HTML Interno
             sheet.innerHTML = `
                 <div class="pdf-content" style="
                     border: ${config.borderWidth}px ${config.borderStyle} ${config.boardBorderColor};
@@ -57,19 +60,13 @@ export const generateBoardPDF = async (pages, config) => {
 
             // GERAÇÃO DA IMAGEM
             const canvas = await html2canvas(sheet, {
-                scale: 3, // Qualidade Alta
+                scale: 3, 
                 useCORS: true,
                 logging: false,
                 backgroundColor: '#ffffff',
-                // TRUQUE IMPORTANTE: Garante que o elemento invisível seja renderizado
                 onclone: (clonedDoc) => {
                     const el = clonedDoc.getElementById('pdf-generator-container');
-                    if (el) {
-                        el.style.visibility = 'visible';
-                        el.style.position = 'static';
-                        el.style.top = 'auto';
-                        el.style.left = 'auto';
-                    }
+                    if (el) el.style.visibility = 'visible';
                 }
             });
 
